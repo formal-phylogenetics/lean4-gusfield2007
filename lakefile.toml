@@ -1,0 +1,31 @@
+name = "Gusfield2007"
+version = "0.1.0"
+keywords = ["math", "phylogenetics", "recombination"]
+srcDir = "src"
+defaultTargets = ["Gusfield2007", "External", "MainResults"]
+
+[leanOptions]
+pp.unicode.fun = true
+autoImplicit = false
+maxSynthPendingDepth = 3
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.36.0-rc1"
+
+[[require]]
+name = "Phylogenetics"
+git = "https://github.com/vltanh/lean4-phylogenetics"
+rev = "f1a3592dee6e3f7d5e7a68a0695ac457de23d2de"
+
+[[lean_lib]]
+name = "Gusfield2007"
+globs = ["Gusfield2007.+"]
+
+[[lean_lib]]
+name = "External"
+globs = ["External.+"]
+
+[[lean_lib]]
+name = "MainResults"

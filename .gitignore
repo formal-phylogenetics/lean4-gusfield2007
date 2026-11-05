@@ -1,0 +1,7 @@
+/.lake/
+/notes
+/NEXT.md
+/.vscode
+__pycache__/
+*.olean
+*.ilean
