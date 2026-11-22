@@ -91,7 +91,7 @@ theorem predRow_spec (hX : IsChain S₀ X) {r : κ → Bool} (hr : r ∈ X) :
     ext i
     simp [fl]
   have hrne : (fl S₀ r).Nonempty := by
-    rw [Set.nonempty_iff_ne_empty]
+    rw [Set.ne_empty_iff_nonempty.symm]
     intro h
     exact hX.ne r hr (fl_injective (h.trans hempty.symm))
   unfold predRow

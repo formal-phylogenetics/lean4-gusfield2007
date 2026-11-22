@@ -22,7 +22,7 @@ locator only.
 
 ## Repository and toolchain
 
-- Lean and Mathlib `v4.36.0-rc1`, Mathlib commit `625d8914199bc567cca9b91f90e8e5afafa5ae51`.
+- Lean and Mathlib `v4.37.0-rc1`, Mathlib commit `31ce06eaadf4a200c0e1407c5f10953cf606b8f8`.
 - The library [lean4-phylogenetics](https://github.com/vltanh/lean4-phylogenetics) is required by commit, for the Splits
   Equivalence Theorem only ([`lakefile.toml`](../lakefile.toml)).
 - Palomar is not a target. [`palomar/`](../palomar) keeps the files for a possible submission: `comparator.json`, which runs

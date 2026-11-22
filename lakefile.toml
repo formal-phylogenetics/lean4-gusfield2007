@@ -12,12 +12,12 @@ maxSynthPendingDepth = 3
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.36.0-rc1"
+rev = "v4.37.0-rc1"
 
 [[require]]
 name = "Phylogenetics"
 git = "https://github.com/vltanh/lean4-phylogenetics"
-rev = "f1a3592dee6e3f7d5e7a68a0695ac457de23d2de"
+rev = "4daee158d74436ce6ed6f52e337ba00f1b43ea32"
 
 [[lean_lib]]
 name = "Gusfield2007"

@@ -555,7 +555,7 @@ theorem typeCount_le_historyBound (A : Option (Fin S → Bool)) (n : ℕ) :
           funext a
           simp
         omega
-      · have hpos := Finset.card_pos.2 (Finset.nonempty_iff_ne_empty.2 hTe)
+      · have hpos := Finset.card_pos.2 (Finset.ne_empty_iff_nonempty.1 hTe)
         have hle : typeCount (withAncestor A M) T ≤ (withAncestor A M).card := Finset.card_image_le
         have hcard : (withAncestor A M).card ≤ M.card + 1 := by
           cases A with

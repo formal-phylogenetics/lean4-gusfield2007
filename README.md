@@ -121,7 +121,7 @@ python3 scripts/route_check.py check docs/paper_routes.tsv --accept docs/route_d
 scripts/check_kernels.sh palomar/comparator.json            # Lean's kernel, NanoDa, con-ron
 ```
 
-- Toolchain: Lean and Mathlib `v4.36.0-rc1` ([`lean-toolchain`](lean-toolchain), [`lake-manifest.json`](lake-manifest.json)).
+- Toolchain: Lean and Mathlib `v4.37.0-rc1` ([`lean-toolchain`](lean-toolchain), [`lake-manifest.json`](lake-manifest.json)).
 - [`scripts/check_kernels.sh`](scripts/check_kernels.sh) uses `lake comparator`, `leanexport` and `con-ron`, under `lake env`.
 - After adding a module, run `python3 scripts/gen_audit.py`. After moving declarations, run `python3 scripts/linkify_docs.py` to update the documents' links.
 - [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md) records the versions, the decisions and what "line N" means.

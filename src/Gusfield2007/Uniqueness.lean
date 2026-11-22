@@ -848,7 +848,7 @@ theorem Network.mem_treeSplits_iff_of_line342 (hd : N.Derives M) (hf : N.IsFully
     {A : Set (ι → Bool)} (hA : A ⊆ M) (h₁ : 2 ≤ A.encard) (h₂ : 2 ≤ ((M : Set (ι → Bool)) \ A).encard) :
     A ∈ N.treeSplits M ↔ A ∈ charSplits M := by
   have hnonempty : ∀ X : Set (ι → Bool), 2 ≤ X.encard → X.Nonempty := fun X hX => by
-    rw [Set.nonempty_iff_ne_empty]
+    rw [Set.ne_empty_iff_nonempty.symm]
     rintro rfl
     simp at hX
   have hne1 : ∀ X : Set (ι → Bool), 2 ≤ X.encard → X.encard ≠ 1 := fun X hX h => by
@@ -2304,7 +2304,7 @@ theorem Network.mem_charSplits_of_portsDistinct {N : Network ι V E} (hd : N.Der
       have hee := hp B e f _ _ hB hc₁ hc₂ hleaf hlab
       exact hf₃ (hee ▸ htp.1)
   have hnonempty : ∀ X : Set (ι → Bool), 2 ≤ X.encard → X.Nonempty := fun X hX => by
-    rw [Set.nonempty_iff_ne_empty]
+    rw [Set.ne_empty_iff_nonempty.symm]
     rintro rfl
     simp at hX
   have hne1 : ∀ X : Set (ι → Bool), 2 ≤ X.encard → X.encard ≠ 1 := fun X hX h => by

@@ -176,7 +176,7 @@ theorem Network.exists_gen_of_closed [Finite ι] [Finite V] (N : Network ι V E)
         exact Finset.mem_singleton_self _
     · -- A last node `v` of `P`.
       obtain ⟨v, hv, hmin⟩ := N.wellFounded_transGen_swap.has_min (↑(P.erase N.root) : Set V) (by
-        rw [Finset.coe_nonempty, Finset.nonempty_iff_ne_empty]
+        rw [Finset.coe_nonempty, Finset.ne_empty_iff_nonempty.symm]
         exact hP₁)
       have hvP : v ∈ P := Finset.mem_of_mem_erase hv
       have hvr : v ≠ N.root := Finset.ne_of_mem_erase hv
