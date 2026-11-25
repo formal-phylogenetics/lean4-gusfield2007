@@ -4,24 +4,30 @@ version: "v0.4"
 project:
   name: "A decomposition theory for phylogenetic networks and incompatible characters"
   description: >-
-    A Lean formalization of Gusfield, Bansal, Bafna, Song 2007, the decomposition theory of phylogenetic networks with
-    recombination and incompatible characters, with the sources that only it uses: Gusfield 1991, Gusfield, Eddhu,
-    Langley 2004, Myers, Griffiths 2003, Hudson, Kaplan 1985 and Song, Hein 2005. It imports Mathlib, and from the
-    library lean4-phylogenetics only the Splits Equivalence Theorem, whose modules import Mathlib only. No result of the
-    literature is assumed. No person has reviewed the proofs.
+    A Lean 4 formalization of Dan Gusfield, Vikas Bansal, Vineet Bafna and Yun S. Song (2007), "A
+    decomposition theory for phylogenetic networks and incompatible characters", J. Comput. Biol. 14
+    (2007), 1247-1272, with the sources that only it uses: Gusfield 1991, Gusfield, Eddhu, Langley
+    2004, Myers, Griffiths 2003, Hudson, Kaplan 1985 and Song, Hein 2005. The paper treats
+    phylogenetic networks with recombination. The formalization imports Mathlib, and from the
+    library lean4-phylogenetics only the Splits Equivalence Theorem, whose modules import Mathlib
+    only.
 
 
-    Proved: the Decomposition Theorem for phylogenetic networks, the sufficient conditions for decomposability, and the
-    refutation of all four Full-Decomposition Optimality Conjectures; every other numbered result but Theorem 4, which
-    is false as printed and whose true form is proved in both directions; the sentences at lines 135, 156, 180, 299,
-    329, 381, 403, 411, 418, 420, 554, 559, 590 and 608, Footnote 2, and the numbers of Figures 5-10. Of the sources,
-    the Perfect Phylogeny Theorem, the galled-tree results of Gusfield, Eddhu, Langley 2004 with an algorithm proved
-    correct, the haplotype bound and the integer program of Myers, Griffiths 2003, the bound of Hudson, Kaplan 1985 and
-    the bound by ordered SPR of Song, Hein 2005.
+    Proved: the Decomposition Theorem for phylogenetic networks, the sufficient conditions for
+    decomposability, and the refutation of all four Full-Decomposition Optimality Conjectures; every
+    other numbered result but Theorem 4, which is false as printed and whose true form is proved in
+    both directions; the sentences at lines 135, 156, 180, 299, 329, 381, 403, 411, 418, 420, 554,
+    559, 590 and 608, Footnote 2, and the numbers of Figures 5-10. Of the sources, the Perfect
+    Phylogeny Theorem, the galled-tree results of Gusfield, Eddhu, Langley 2004 with an algorithm
+    proved correct, the haplotype bound and the integer program of Myers, Griffiths 2003, the bound
+    of Hudson, Kaplan 1985 and the bound by ordered SPR of Song, Hein 2005.
 
 
-    The audit records E42-E54 and E67 on the paper, including that Theorem 4 is false as printed, and E76-E79 and E85 on
-    the sources.
+    The audit records E42-E54 and E67 on the paper, including that Theorem 4 is false as printed,
+    and E76-E79 and E85 on the sources.
+
+
+    No result of the literature is assumed. No person has reviewed the proofs.
   authors:
     - "The-Anh Vu-Le"
   license: "Apache-2.0"
@@ -43,8 +49,11 @@ sources:
     type: "article"
     location: "https://doi.org/10.1089/cmb.2006.0137"
     relationship: "formalizes"
-    note: "Read in the PMC author manuscript, PMC2581772, and an author's copy with its symbols, https://people.eecs.berkeley.edu/~yss/Pub/decomposition.pdf; the journal's typeset text wasn't reachable."
     author_endorsement: "not-contacted"
+    note: >-
+      Read in the PMC author manuscript, PMC2581772, and an author's copy with its symbols,
+      https://people.eecs.berkeley.edu/~yss/Pub/decomposition.pdf; the journal's typeset text wasn't
+      reachable.
   - title: "ReCombinatorics: The Algorithmics of Ancestral Recombination Graphs and Explicit Phylogenetic Networks"
     authors:
       - "Dan Gusfield"
@@ -52,7 +61,10 @@ sources:
     type: "book"
     location: "https://doi.org/10.7551/mitpress/9432.001.0001"
     relationship: "background"
-    note: "Section 7.3.5 has the repair of Theorem 4 of Gusfield et al. 2007, for canonical ARGs, a stricter class than Gusfield2007.Network.IsEfficientAtEntry. Read only in snippets from Open Library's search inside, and its front matter."
+    note: >-
+      Section 7.3.5 has the repair of Theorem 4 of Gusfield et al. 2007, for canonical ARGs, a
+      stricter class than Gusfield2007.Network.IsEfficientAtEntry. Read only in snippets from Open
+      Library's search inside, and its front matter.
   - title: "Efficient algorithms for inferring evolutionary trees"
     authors:
       - "Dan Gusfield"
@@ -60,7 +72,9 @@ sources:
     type: "article"
     location: "https://doi.org/10.1002/net.3230210104"
     relationship: "background"
-    note: "The Perfect Phylogeny Theorem is proved in Gusfield2007/External/Gusfield1991. The paper wasn't read."
+    note: >-
+      The Perfect Phylogeny Theorem is proved in Gusfield2007/External/Gusfield1991. The paper
+      wasn't read.
   - title: "Phylogenetics"
     authors:
       - "Charles Semple"
@@ -69,7 +83,10 @@ sources:
     type: "book"
     location: "https://www.worldcat.org/isbn/9780198509424"
     relationship: "background"
-    note: "The Splits Equivalence Theorem, Theorem 3.1.4, is proved in the library lean4-phylogenetics (Phylogenetics.SplitsEquivalence) and restated in Gusfield2007/External/SempleSteel2003. The book wasn't read."
+    note: >-
+      The Splits Equivalence Theorem, Theorem 3.1.4, is proved in the library lean4-phylogenetics
+      (Phylogenetics.SplitsEquivalence) and restated in Gusfield2007/External/SempleSteel2003. The
+      book wasn't read.
   - title: "Optimal, efficient reconstruction of phylogenetic networks with constrained recombination"
     authors:
       - "Dan Gusfield"
@@ -79,7 +96,11 @@ sources:
     type: "article"
     location: "https://doi.org/10.1142/S0219720004000521"
     relationship: "background"
-    note: "Theorems 2.2, 2.6, 2.7, 8.1 to 8.3, Corollary 5.1 for galled trees, and an algorithm with its correctness and count of operations, are proved in Gusfield2007/External/GusfieldEtAl2004, whose README lists what is left. Corollary 2.1 is false in one direction. Read in the authors' copy, not the journal's text."
+    note: >-
+      Theorems 2.2, 2.6, 2.7, 8.1 to 8.3, Corollary 5.1 for galled trees, and an algorithm with its
+      correctness and count of operations, are proved in Gusfield2007/External/GusfieldEtAl2004,
+      whose README lists what is left. Corollary 2.1 is false in one direction. Read in the authors'
+      copy, not the journal's text.
   - title: "Bounds on the minimum number of recombination events in a sample history"
     authors:
       - "Simon R. Myers"
@@ -88,7 +109,10 @@ sources:
     type: "article"
     location: "https://doi.org/10.1093/genetics/163.1.375"
     relationship: "background"
-    note: "The haplotype bound and its equality case, with distinct columns, Algorithms 1 and 3, Proposition 2 and the bounds R_h and R_s are proved in Gusfield2007/External/MyersGriffiths2003. Read."
+    note: >-
+      The haplotype bound and its equality case, with distinct columns, Algorithms 1 and 3,
+      Proposition 2 and the bounds R_h and R_s are proved in
+      Gusfield2007/External/MyersGriffiths2003. Read.
   - title: "Statistical properties of the number of recombination events in the history of a sample of DNA sequences"
     authors:
       - "Richard R. Hudson"
@@ -97,7 +121,9 @@ sources:
     type: "article"
     location: "https://doi.org/10.1093/genetics/111.1.147"
     relationship: "background"
-    note: "The lower bound on the number of recombinations and the algorithm of Appendix 2 are proved in Gusfield2007/External/HudsonKaplan1985. Read."
+    note: >-
+      The lower bound on the number of recombinations and the algorithm of Appendix 2 are proved in
+      Gusfield2007/External/HudsonKaplan1985. Read.
   - title: "Constructing minimal ancestral recombination graphs"
     authors:
       - "Yun S. Song"
@@ -106,12 +132,18 @@ sources:
     type: "article"
     location: "https://doi.org/10.1089/cmb.2005.12.147"
     relationship: "background"
-    note: "The bound by ordered SPR, and that the minimum over sequences of trees is R¹, are proved in Gusfield2007/External/SongHein2005. Read in the authors' copy."
+    note: >-
+      The bound by ordered SPR, and that the minimum over sequences of trees is R¹, are proved in
+      Gusfield2007/External/SongHein2005. Read in the authors' copy.
 
 related_formalizations:
   - id: "https://github.com/vltanh/lean4-phylogenetics"
     relationship: "adapts"
-    note: "The project imports two modules of this library, pinned at commit 3fcabfd: Phylogenetics.Tree.SplitsEquivalence, the Splits Equivalence Theorem, and Phylogenetics.Tree.XTree, what it needs about X-trees. Both import Mathlib only. The rest of the code imports Mathlib only."
+    note: >-
+      The project imports these modules of this library, pinned at commit 3fcabfd:
+      Phylogenetics.Tree.SplitsEquivalence, the Splits Equivalence Theorem, and
+      Phylogenetics.Tree.XTree, what it needs about X-trees. Both import Mathlib only. The rest of
+      the code imports Mathlib only.
   - id: "https://github.com/vltanh/lean4-camus"
     relationship: "independent"
     note: "Surveyed; no code used."
@@ -136,7 +168,8 @@ status:
 automation:
   methods:
     - method: "agent"
-      models: ["GPT-6 family (exact revision not exposed)"]
+      models:
+        - "GPT-6 family (exact revision not exposed)"
       framework: "Codex"
       tool_setup: "formalize-math-paper skill; three sub-agents; shared local workspace. Source audit and foundations, no numbered paper result."
       cost:
@@ -145,7 +178,8 @@ automation:
         hardware: "local machine"
       prompting_notes: "Slash command with the three paper links; statement corrections asked of the user and approved."
     - method: "agent"
-      models: ["claude-opus-5-5"]
+      models:
+        - "claude-opus-5-5"
       framework: "Claude Code (VS Code extension)"
       tool_setup: "formalize-math-paper skill, repository vltanh/formalize-math-paper, commit e339f64 (the last round's log names no commit); Claude Code 2.1.314; 85 sub-agents, at most 11 at once, up to commit 282215c."
       cost:
@@ -155,7 +189,15 @@ automation:
       prompting_notes: "Slash command with the three paper links, continuing from the earlier handoff; later the user asked to match the sources closely, to formalize what the report listed as not formalized, to add Gusfield et al. 2007 and Allman et al. 2023 as primary papers on the library lean4-phylogenetics, and to finish what remained, leaving only empirical claims and wrong statements."
   spend_usd: "not tracked"
   notes: >-
-    The user chose the papers and the versions of the first three, agreed to the statement corrections of ECToBlob and TOB-QMC, and decided the library's boundary, the layout, the kernels and publication. AI systems wrote the code, the statements, the audit and the documents. The automation above is for the whole of lean4-phylo-tree-of-blobs, a collection of five papers then, where this formalization was made before it moved to this repository on 2026-11-04. Gusfield2007/ has 90 modules, and palomar/Gusfield2007/ the Challenge and the Solution; the audit checks 6,848 declarations, of this repository and of the library modules it imports, all on the standard axioms; three kernels accept the 15 theorems of the Challenge (scripts/check_kernels.sh). See docs/Gusfield2007/CREDITS.md.
+    The user chose the papers and the versions of the first three, agreed to the statement
+    corrections of ECToBlob and TOB-QMC, and decided the library's boundary, the layout, the kernels
+    and publication. AI systems wrote the code, the statements, the audit and the documents. The
+    automation above is for the whole of lean4-phylo-tree-of-blobs, with its other papers; this
+    formalization was made there and moved to this repository on 2026-11-04. Gusfield2007/ is the
+    library, and palomar/Gusfield2007/ has the Challenge and the Solution; the audit checks every
+    declaration of this repository and of the library modules it imports, all on the standard
+    axioms; three kernels accept the theorems of the Challenge (scripts/check_kernels.sh). See
+    docs/Gusfield2007/CREDITS.md.
 
 fidelity:
   divergences: >-
@@ -195,8 +237,12 @@ review:
   reviewers:
     - "none (no human review)"
   notes: >-
-    Independent AI agents reviewed the statements against the sources and compared the formal proofs with the papers'; a
-    separate agent checked the findings. The route check and the three kernels (scripts/check_kernels.sh: Lean's kernel, NanoDa, con-ron) ran locally; Comparator checks that the Solution proves exactly the statements of the Challenge, palomar/Gusfield2007/Challenge.lean, which imports only Mathlib and holds a copy of the definitions of Gusfield2007/Defs.lean.
+    Independent AI agents reviewed the statements against the sources and compared the formal proofs
+    with the papers'; a separate agent checked the findings. The route check and the three kernels
+    (scripts/check_kernels.sh: Lean's kernel, NanoDa, con-ron) ran locally; Comparator checks that
+    the Solution proves exactly the statements of the Challenge,
+    palomar/Gusfield2007/Challenge.lean, which imports only Mathlib and holds a copy of the
+    definitions of Gusfield2007/Defs.lean.
 
 alignment:
   namespace: "Gusfield2007Challenge"
@@ -205,7 +251,8 @@ alignment:
       lean: "Gusfield2007Challenge.theorem1"
       module: "Gusfield2007.Challenge"
       status: "proved"
-      note: "M nonempty, implicit in the paper; no constant column, its standing assumption at line 112."
+      note: >-
+        M nonempty, implicit in the paper; no constant column, its standing assumption at line 112.
     - source: "Gusfield et al. 2007, Theorem 3"
       lean: "Gusfield2007Challenge.theorem3"
       module: "Gusfield2007.Challenge"
@@ -220,7 +267,8 @@ alignment:
       lean: "Gusfield2007Challenge.theorem6"
       module: "Gusfield2007.Challenge"
       status: "proved"
-      note: "A network with only single crossovers also obeys multiple, and then both conclusions hold."
+      note: >-
+        A network with only single crossovers also obeys multiple, and then both conclusions hold.
     - source: "Gusfield et al. 2007, Theorem 7"
       lean: "Gusfield2007Challenge.theorem7"
       module: "Gusfield2007.Challenge"
@@ -240,7 +288,9 @@ alignment:
       lean: "Gusfield2007Challenge.theorem10"
       module: "Gusfield2007.Challenge"
       status: "proved, corrected"
-      note: "With the rooted count, in each crossover model and with no hypothesis on the columns; the printed proof's step at line 560 is false for identical columns and is replaced."
+      note: >-
+        With the rooted count, in each crossover model and with no hypothesis on the columns; the
+        printed proof's step at line 560 is false for identical columns and is replaced.
     - source: "Gusfield et al. 2007, Corollary 2"
       lean: "Gusfield2007Challenge.corollary2"
       module: "Gusfield2007.Challenge"
@@ -277,4 +327,4 @@ alignment:
       status: "proved"
       note: "Written as a sum."
 
-acknowledgements: "Lean, Mathlib; the authors of the paper and its sources."
+acknowledgements: "Lean and Mathlib; lean4-phylogenetics, for the Splits Equivalence Theorem and what it needs about X-trees; the authors of the paper and of its sources."

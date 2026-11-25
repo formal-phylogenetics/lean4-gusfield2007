@@ -2,9 +2,11 @@
 
 [![CI](https://github.com/vltanh/lean4-gusfield2007/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/vltanh/lean4-gusfield2007/actions/workflows/lean_action_ci.yml)
 
-A Lean 4 formalization of D. Gusfield, V. Bansal, V. Bafna, Y. S. Song, *A decomposition theory for phylogenetic networks and incompatible characters*, [J. Comput. Biol. 14 (2007), 1247–1272](https://doi.org/10.1089/cmb.2006.0137), with the results it cites. The paper studies phylogenetic networks with recombination that derive a set `M` of binary sequences. A blob is the set of arcs of a class of recombination cycles under sharing an arc, and contracting the blobs leaves a tree. The Decomposition Theorem (Theorem 1) says that every such `M` has a network in which each blob holds exactly the sites of one non-trivial connected component of the incompatibility graph `G(M)`, with every compatible site on a tree edge. The paper then gives sufficient conditions under which such a fully decomposed network uses the fewest recombinations, and refutes the Full-Decomposition Optimality Conjectures.
+A Lean 4 formalization of Dan Gusfield, Vikas Bansal, Vineet Bafna and Yun S. Song (2007), "A decomposition theory for phylogenetic networks and incompatible characters", [J. Comput. Biol. 14 (2007), 1247-1272](https://doi.org/10.1089/cmb.2006.0137), with the results it cites. The paper studies phylogenetic networks with recombination that derive a set `M` of binary sequences. A blob is the set of arcs of a class of recombination cycles under sharing an arc, and contracting the blobs leaves a tree. The Decomposition Theorem (Theorem 1) says that every such `M` has a network in which each blob holds exactly the sites of one non-trivial connected component of the incompatibility graph `G(M)`, with every compatible site on a tree edge. The paper then gives sufficient conditions under which such a fully decomposed network uses the fewest recombinations, and refutes the Full-Decomposition Optimality Conjectures.
 
 Every numbered result is proved, as printed or in a corrected form, with no `sorry` and no assumed result of the literature. Theorem 4 is false as printed, and its true form is proved in both directions. One theorem is conditional, and says so in its statement: Theorem 10, with `R(M + S)` read by the definition at line 385, is refuted for multiple crossovers given a finite computation that Lean's kernel hasn't completed. The paper's own use of that symbol suggests `R_S(M)`, and with that Theorem 10 is proved. One statement of the paper, at its line 425, stays open.
+
+This paper is a background formalization of the collection rooted at [lean4-phylogenetics](https://github.com/vltanh/lean4-phylogenetics), outside the hubs' catalogs.
 
 ## Status
 
@@ -59,7 +61,7 @@ The statements of record are the theorems of the Challenge, [`palomar/Gusfield20
 | Theorem 4, false | [`Gusfield2007.theorem4_false_top`](Gusfield2007/ProofOfDecomposition/Uniqueness.lean#L1943), [`Gusfield2007.theorem4_false_siteFree`](Gusfield2007/ProofOfDecomposition/Uniqueness.lean#L2028) | Theorem 4 as printed fails, in any crossover model, even with `RegularArcs` and the degree condition, and on a perfect phylogeny with a site-free arc (E43) |
 | Theorem 10, unrooted | [`Gusfield2007.minDecomposable_of_haplotypeBound_eq`](Gusfield2007/OptimalityConjectures/OpenStatements.lean#L34) | if `H(M) = R(M)`, then `M` is min decomposable; not in the paper |
 | Theorem 10, literal | [`Gusfield2007.theorem10Printed_single_false`](Gusfield2007/OptimalityConjectures/OpenStatements.lean#L667) | with `R(M + S)` read by line 385, Theorem 10 is false for single crossovers, on 14 rows and 8 sites |
-| Theorem 10, literal | [`Gusfield2007.theorem10Printed_multiple_false_of_search`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L294) | **conditional**: with that reading, it is false for multiple crossovers on 74 rows and 34 sites, given [`Gusfield2007.printedMSearch`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L269) |
+| Theorem 10, literal | [`Gusfield2007.theorem10Printed_multiple_false_of_search`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L294) | conditional: with that reading, it is false for multiple crossovers on 74 rows and 34 sites, given [`Gusfield2007.printedMSearch`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L269) |
 | §5.3 | [`Gusfield2007.unrootedConjecture_single_false`](Gusfield2007/OptimalityConjectures/Counterexamples.lean#L214), [`Gusfield2007.unrootedConjecture_multiple_false`](Gusfield2007/OptimalityConjectures/Counterexamples.lean#L469) | the counterexamples: on Figure 6, `F¹ ≥ 4` and `R¹ ≤ 3`; on Figure 8, `F ≥ 4` and `R ≤ 3` |
 | Line 329 | [`Gusfield2007.exists_isEfficientAtEntry_of_fullyDecomposed`](Gusfield2007/ProofOfDecomposition/EntryNet.lean#L516) | a fully decomposed network can be made efficient, also with the entry node counted, with no more recombination nodes, the same ancestral sequence, and staying fully decomposed |
 | §4.2 | [`Gusfield2007.treeness_merged_false`](Gusfield2007/Applications/MergedTreeness.lean#L94) | the treeness inequality fails for a blob that merges two components: treeness 5, where `T̄` has 4 edges |
@@ -106,7 +108,7 @@ The statements of record are the theorems of the Challenge, [`palomar/Gusfield20
 - [`scripts/Audit.lean`](scripts/Audit.lean) checks every declaration of the project and of the modules of the library `Phylogenetics` that it imports, including private and generated ones, against [`propext`](https://leanprover-community.github.io/mathlib4_docs/Init/Core.html#propext), [`Classical.choice`](https://leanprover-community.github.io/mathlib4_docs/Init/Prelude.html#Classical.choice) and [`Quot.sound`](https://leanprover-community.github.io/mathlib4_docs/Init/Prelude.html#Quot.sound), and writes the routes of the proofs.
 - [`scripts/route_check.py`](scripts/route_check.py) compares those routes with the paper's, in [`docs/Gusfield2007/paper_routes.tsv`](docs/Gusfield2007/paper_routes.tsv); [`docs/Gusfield2007/route_differences.tsv`](docs/Gusfield2007/route_differences.tsv) records every difference, with its reason.
 - [`scripts/check_kernels.sh`](scripts/check_kernels.sh) checks the Challenge's theorems, as the Solution proves them, under Lean's kernel and NanoDa, through Comparator, and under con-ron.
-- **No person has reviewed the proofs.** Independent agents reviewed the statements against the sources, compared the proofs with the paper, and checked the findings and the literature section.
+- No person has reviewed the proofs. Independent agents reviewed the statements against the sources, compared the proofs with the paper, and checked the findings and the literature section.
 
 ## Dependencies
 
@@ -115,7 +117,7 @@ The statements of record are the theorems of the Challenge, [`palomar/Gusfield20
 
 ## Palomar
 
-No submission to Palomar is planned. [`palomar/Gusfield2007/`](palomar/Gusfield2007) has the files of an entry: the Challenge, which imports only Mathlib, the Solution, [`comparator.json`](palomar/Gusfield2007/comparator.json), which names them and the 15 theorems, and [`formalization.yaml`](palomar/Gusfield2007/formalization.yaml), the entry's metadata, with the statements aligned to the Challenge's theorems and every divergence from the paper. Comparator checks that the Solution proves exactly the Challenge's statements: from the repository root, after `lake build`, run [`scripts/check_kernels.sh`](scripts/check_kernels.sh). CI checks that the Challenge's copy of the definitions is the block of [`Gusfield2007/Defs.lean`](Gusfield2007/Defs.lean) (`python3 scripts/sync_challenge_defs.py --check`).
+No submission to Palomar is planned. [`palomar/Gusfield2007/`](palomar/Gusfield2007) has the files of an entry: the Challenge, which imports only Mathlib, the Solution, [`comparator.json`](palomar/Gusfield2007/comparator.json), which names them and the theorems, and [`formalization.yaml`](palomar/Gusfield2007/formalization.yaml), the entry's metadata, with the statements aligned to the Challenge's theorems and every divergence from the paper. Comparator checks that the Solution proves exactly the Challenge's statements: from the repository root, after `lake build`, run [`scripts/check_kernels.sh`](scripts/check_kernels.sh). CI checks that the Challenge's copy of the definitions is the block of [`Gusfield2007/Defs.lean`](Gusfield2007/Defs.lean) (`python3 scripts/sync_challenge_defs.py --check`).
 
 ## Building
 
@@ -162,10 +164,10 @@ How much does full decomposition cost? Theorem 11 says `F¹ − R¹` is unbounde
 
 ## Credits
 
-- Requested and supervised by The-Anh Vu-Le, who chose the paper and decided the layout, the kernels and publication. **No person has reviewed the proofs.**
-- Statements, proofs, audit and documents by Claude (Opus 5.5) in Claude Code, with sub-agents, following the [formalize-math-paper](https://github.com/vltanh/formalize-math-paper) procedure.
-- Made in [lean4-phylo-tree-of-blobs](https://github.com/vltanh/lean4-phylo-tree-of-blobs) from 2026-10-31 to 2026-11-01, in two rounds shared with other papers. [`docs/Gusfield2007/CREDITS.md`](docs/Gusfield2007/CREDITS.md) has the details.
+- Maintainer: The-Anh Vu-Le, who requested and supervised the formalization, chose the paper, and decided the layout, the kernels and publication.
+- Formalization: statements, proofs, audit and documents by Claude (Opus 5.5) in Claude Code, with sub-agents, following the [formalize-math-paper](https://github.com/vltanh/formalize-math-paper) procedure. Made in [lean4-phylo-tree-of-blobs](https://github.com/vltanh/lean4-phylo-tree-of-blobs) from 2026-10-31 to 2026-11-01, in two rounds shared with other papers. [`docs/Gusfield2007/CREDITS.md`](docs/Gusfield2007/CREDITS.md) has the details.
+- Review: no person has reviewed the proofs; Lean's kernel checks them. Independent agents reviewed the statements against the sources, compared the proofs with the paper, and checked the findings and the literature section.
 
 ## License
 
-[Apache-2.0](LICENSE).
+Apache-2.0: [LICENSE](LICENSE).
