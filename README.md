@@ -6,7 +6,7 @@ A Lean 4 formalization of Dan Gusfield, Vikas Bansal, Vineet Bafna and Yun S. So
 
 Every numbered result is proved, as printed or in a corrected form, with no `sorry` and no assumed result of the literature. Theorem 4 is false as printed, and its true form is proved in both directions. One theorem is conditional, and says so in its statement: Theorem 10, with `R(M + S)` read by the definition at line 385, is refuted for multiple crossovers given a finite computation that Lean's kernel hasn't completed. The paper's own use of that symbol suggests `R_S(M)`, and with that Theorem 10 is proved. One statement of the paper, at its line 425, stays open.
 
-This paper is a background formalization of the collection rooted at [lean4-phylogenetics](https://github.com/vltanh/lean4-phylogenetics), outside the hubs' catalogs.
+This paper belongs to the hub [lean4-phylo-combinatorics](https://github.com/vltanh/lean4-phylo-combinatorics), on the combinatorics of phylogenetic trees and networks, in the collection rooted at [lean4-phylogenetics](https://github.com/vltanh/lean4-phylogenetics).
 
 ## Status
 
