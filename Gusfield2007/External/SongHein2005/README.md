@@ -34,4 +34,4 @@ The hypothesis `NoConstantColumn` is needed: a constant column has no compatible
 
 Not formalized, from these papers: the running of the algorithm of (4), (5), that is, computing `min L(P)` by dynamic programming, the modified algorithm of its Section 3.6, the data reduction of its Section 3.7, and its Proposition 4 of 2003. Nothing else uses them.
 
-Imports: `Gusfield2007.TimeOrdered` for the definitions, `Gusfield2007.NetworkOps` for `PreNet` and for trimming.
+Imports: `Gusfield2007.Networks.TimeOrdered` for the definitions, `Gusfield2007.Networks.Operations` for `PreNet` and for trimming.

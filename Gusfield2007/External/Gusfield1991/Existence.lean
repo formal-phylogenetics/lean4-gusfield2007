@@ -1,7 +1,7 @@
 module
 
 public import Gusfield2007.External.Gusfield1991.PerfectPhylogeny
-public import Gusfield2007.InflateNet
+public import Gusfield2007.Networks.Existence
 
 /-!
 # Every set of rows has a network

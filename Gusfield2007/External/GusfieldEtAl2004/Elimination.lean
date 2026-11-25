@@ -1,6 +1,6 @@
 module
 
-public import Gusfield2007.NetworkOps
+public import Gusfield2007.Networks.Operations
 
 /-!
 # The Elimination Algorithm (Gusfield, Eddhu, Langley 2004, Section 8)

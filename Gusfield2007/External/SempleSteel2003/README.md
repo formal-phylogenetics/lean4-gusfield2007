@@ -16,6 +16,6 @@ splits are pairwise compatible (`exists_xTree_iff`), and the `X`-tree is then un
   split system, adjacent nodes are those whose orientations differ in one split, and a labelled node has the orientation given by
   its label.
 
-The library's `Phylogenetics/Tree/XTree.lean` has what's about trees and laminar families, also used by the Perfect Phylogeny Theorem and by `Gusfield2007.TreeFacts`. Both library modules import Mathlib
+The library's `Phylogenetics/Tree/XTree.lean` has what's about trees and laminar families, also used by the Perfect Phylogeny Theorem and by `Gusfield2007.ProofOfDecomposition.TreeFacts`. Both library modules import Mathlib
 only, as `Gusfield2007` does. The library has related results in another representation: `Phylogenetics.isUnrootedTree_iff` is
 the existence half for split families containing all the singletons, and `Phylogenetics.hierarchyNetwork` is the graph of a hierarchy.

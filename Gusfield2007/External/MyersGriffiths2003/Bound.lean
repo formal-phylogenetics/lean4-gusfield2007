@@ -1,7 +1,7 @@
 module
 
 public import Gusfield2007.External.Gusfield1991.Existence
-public import Gusfield2007.NetworkOps
+public import Gusfield2007.Networks.Operations
 
 /-!
 # The haplotype bound of Myers and Griffiths

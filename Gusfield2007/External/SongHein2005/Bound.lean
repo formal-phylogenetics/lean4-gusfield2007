@@ -1,8 +1,8 @@
 module
 
 public import Gusfield2007.Defs
-public import Gusfield2007.TimeOrdered
-public import Gusfield2007.NetworkOps
+public import Gusfield2007.Networks.TimeOrdered
+public import Gusfield2007.Networks.Operations
 public import Mathlib.Data.EReal.Basic
 
 /-!

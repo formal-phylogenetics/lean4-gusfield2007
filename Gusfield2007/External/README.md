@@ -17,7 +17,7 @@ assumed.
 
 The sources on networks state their results on the networks of the paper's library, so their
 modules import the modules of `Gusfield2007/` that define those networks and the facts they use
-(`Gusfield2007.Defs`, `Gusfield2007.NetworkOps`, `Gusfield2007.Decomposition`, …), and the
+(`Gusfield2007.Defs`, `Gusfield2007.Networks.Operations`, `Gusfield2007.ProofOfDecomposition.Decomposition`, …), and the
 paper's library imports them in turn, with no cycle between modules. The modules with no networks
 in them, the Splits Equivalence Theorem, the program of Myers and Griffiths (`Algorithm1`) and the
 algorithm of Hudson and Kaplan (`Algorithm`), import only Mathlib, lean4-phylogenetics and one

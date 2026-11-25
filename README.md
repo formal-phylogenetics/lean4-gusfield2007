@@ -16,11 +16,11 @@ Every numbered result is proved, as printed or in a corrected form, with no `sor
 | §4.2: treeness, line 373 | false as printed (E45, E67); true form proved |
 | §5.1: the Full-Decomposition Optimality Conjectures, `F` and `F_S` | stated; all four refuted (§5.3) |
 | §5.2: Theorems 5–9, Corollaries 2, 3 | proved |
-| §5.2: Theorem 10 | proved with `R_S(M)`; with `R(M + S)` read literally, refuted for single crossovers and, conditionally on [`Gusfield2007.printedMSearch`](Gusfield2007/Theorem10PrintedMultiple.lean#L269), for multiple crossovers (E51) |
+| §5.2: Theorem 10 | proved with `R_S(M)`; with `R(M + S)` read literally, refuted for single crossovers and, conditionally on [`Gusfield2007.printedMSearch`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L269), for multiple crossovers (E51) |
 | §5.3: the refutations, Theorem 11 | proved |
 | §5.4: the simulation study, Table 1 | not formalized |
 | Figures 5–10, Footnote 2 | their numbers proved |
-| Line 425 ([`Gusfield2007.MinDecomposableOfForallS`](Gusfield2007/Conjectures.lean#L87)) | open; proved when `H(M) = R(M)` |
+| Line 425 ([`Gusfield2007.MinDecomposableOfForallS`](Gusfield2007/OptimalityConjectures/Introduction.lean#L87)) | open; proved when `H(M) = R(M)` |
 | What the paper says in passing: lines 135, 156, 180, 299, 329, 381, 403, 411, 418, 420, 554, 559, 590, 608 | proved; lines 156, 180, 403 and 554 in corrected forms |
 | Cited results (Gusfield 1991; Semple, Steel 2003; Gusfield, Eddhu, Langley 2004; Myers, Griffiths 2003; Hudson, Kaplan 1985; Song, Hein 2005) | proved, in [`Gusfield2007/External/`](Gusfield2007/External) |
 
@@ -50,7 +50,7 @@ These are the theorems of the Challenge, [`palomar/Gusfield2007/Challenge.lean`]
 | Theorem 10 | [`gusfield_theorem10`](palomar/Gusfield2007/Challenge.lean#L166) | if `H(M + S) = R_S(M)`, or `R¹_S(M)`, then `M` is S-min, or S-min-1, decomposable, in each crossover model |
 | Theorem 10, unrooted | [`gusfield_theorem10_unrooted`](palomar/Gusfield2007/Challenge.lean#L207) | if `H(M) = R(M)`, then `M` is min decomposable; not in the paper |
 | Theorem 10, literal | [`gusfield_theorem10Printed_single_false`](palomar/Gusfield2007/Challenge.lean#L212) | with `R(M + S)` read by line 385, Theorem 10 is false for single crossovers, on 14 rows and 8 sites |
-| Theorem 10, literal | [`gusfield_theorem10Printed_multiple_false_of_search`](palomar/Gusfield2007/Challenge.lean#L220) | **conditional**: with that reading, it is false for multiple crossovers on 74 rows and 34 sites, given [`Gusfield2007.printedMSearch`](Gusfield2007/Theorem10PrintedMultiple.lean#L269) |
+| Theorem 10, literal | [`gusfield_theorem10Printed_multiple_false_of_search`](palomar/Gusfield2007/Challenge.lean#L220) | **conditional**: with that reading, it is false for multiple crossovers on 74 rows and 34 sites, given [`Gusfield2007.printedMSearch`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L269) |
 | Theorem 11 | [`gusfield_theorem11`](palomar/Gusfield2007/Challenge.lean#L172) | for any positive `d`, some `M` has `F¹(M) − R¹(M) ≥ d` |
 | Line 656 | [`gusfield_Md_R_eq`](palomar/Gusfield2007/Challenge.lean#L242) | `R¹(M_d) = 3d`, where the paper claims the upper bound |
 | Corollary 2 | [`gusfield_corollary2`](palomar/Gusfield2007/Challenge.lean#L177) | if every node of an optimal network for `M` with ancestral sequence `S` is visible, `M` is S-min (or S-min-1) decomposable |
@@ -80,7 +80,7 @@ These are the theorems of the Challenge, [`palomar/Gusfield2007/Challenge.lean`]
 
 ## The conditional theorem
 
-[`gusfield_theorem10Printed_multiple_false_of_search`](palomar/Gusfield2007/Challenge.lean#L220) takes [`Gusfield2007.printedMSearch`](Gusfield2007/Theorem10PrintedMultiple.lean#L269) as a hypothesis: a finite search showing that two extra labels never suffice on the second component of [`printedMRows`](Gusfield2007/Theorem10PrintedMultiple.lean#L51). It is a hypothesis of the theorem rather than an axiom, so the statement shows it; Lean's kernel hasn't completed the computation. Two programs by the same author, not in the repository, and Lean's `#eval` support it; none of these is a proof. Theorem 10 itself, with `R_S(M)`, is unconditional.
+[`gusfield_theorem10Printed_multiple_false_of_search`](palomar/Gusfield2007/Challenge.lean#L220) takes [`Gusfield2007.printedMSearch`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L269) as a hypothesis: a finite search showing that two extra labels never suffice on the second component of [`printedMRows`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L51). It is a hypothesis of the theorem rather than an axiom, so the statement shows it; Lean's kernel hasn't completed the computation. Two programs by the same author, not in the repository, and Lean's `#eval` support it; none of these is a proof. Theorem 10 itself, with `R_S(M)`, is unconditional.
 
 ## What the audit found
 
@@ -153,7 +153,7 @@ From [Section 10 of the report](docs/Gusfield2007/REPORT.md#10-the-paper-in-the-
 
 ## What's next
 
-How much does full decomposition cost? Theorem 11 says `F¹ − R¹` is unbounded for single crossovers, and line 666 says the authors don't know how robust their empirical results are in other ranges of data, for multiple crossovers, or with a fixed ancestral sequence; Gusfield's 2014 book, whose Section 7.4.3 and Chapter 11 are on this, should be read first. Line 425 stays open, and the multiple-crossover case of E51 stays conditional until the kernel completes [`Gusfield2007.printedMSearch`](Gusfield2007/Theorem10PrintedMultiple.lean#L269), or another proof of the same bound exists. [Section 11 of the report](docs/Gusfield2007/REPORT.md#11-whats-next) has these, the simpler arguments that the formalization found, and two routes not built: `T̄` through the Buneman graph of Dress et al. 2011, and line 411 through the cut nodes of the median network. A private `NEXT.md` holds the candidate follow-up papers.
+How much does full decomposition cost? Theorem 11 says `F¹ − R¹` is unbounded for single crossovers, and line 666 says the authors don't know how robust their empirical results are in other ranges of data, for multiple crossovers, or with a fixed ancestral sequence; Gusfield's 2014 book, whose Section 7.4.3 and Chapter 11 are on this, should be read first. Line 425 stays open, and the multiple-crossover case of E51 stays conditional until the kernel completes [`Gusfield2007.printedMSearch`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L269), or another proof of the same bound exists. [Section 11 of the report](docs/Gusfield2007/REPORT.md#11-whats-next) has these, the simpler arguments that the formalization found, and two routes not built: `T̄` through the Buneman graph of Dress et al. 2011, and line 411 through the cut nodes of the median network. A private `NEXT.md` holds the candidate follow-up papers.
 
 ## Credits
 

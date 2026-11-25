@@ -1,7 +1,7 @@
 module
 
 public import Gusfield2007.External.GusfieldEtAl2004.SameBlob
-public import Gusfield2007.ExplicitNetworks
+public import Gusfield2007.Networks.Explicit
 public import Gusfield2007.Basic.Data.List
 
 /-!

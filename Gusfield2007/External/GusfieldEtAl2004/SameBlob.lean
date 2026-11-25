@@ -1,7 +1,7 @@
 module
 
-public import Gusfield2007.Blobs
-public import Gusfield2007.NetworkOps
+public import Gusfield2007.Networks.Blobs
+public import Gusfield2007.Networks.Operations
 
 /-!
 # Sites of one component lie on one blob (Gusfield, Eddhu, Langley 2004)

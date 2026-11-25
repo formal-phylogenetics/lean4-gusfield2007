@@ -14,7 +14,7 @@ number of rows of M, minus the number of distinct columns of M, minus one".
 The hypothesis of distinct columns is an addition. The printed sentence is false without it: see `Gusfield2007.visibleOfTightPrinted_false`. The proof: the labels of `N` are the root's, or new at an arc carrying a site, or
 new at a recombination node, so `|L| <= 1 + m + R(N)`. So `|M + S| <= |L| <= |M + S|` when `R(N) = H(M + S)`.
 
-`Bound.lean` imports `Gusfield2007.Decomposition` for `recombSet_nonempty` and `rootedRecombSet_nonempty`, which say that the minimum `R`, `R_S` is over a nonempty set: without them `sInf` could be `0` by default.
+`Bound.lean` imports `Gusfield2007.ProofOfDecomposition.Decomposition` for `recombSet_nonempty` and `rootedRecombSet_nonempty`, which say that the minimum `R`, `R_S` is over a nonempty set: without them `sInf` could be `0` by default.
 
 `Algorithm1.lean` has the integer program and Algorithm 1 (pp. 377-378, Appendix A), which Gusfield et al. don't use, with no networks in it, and in the source's order: the system (2) (`Feasible`), the vector of Proposition 6 (`rStarVec`), Lemma 7 (`lemma7`), Corollary 8 (`corollary8`), the matrix of Algorithm 1 (`algorithm1`, a computable function) and its proof (`algorithm1_isOptimalValue`), the solution from the top row (`rStarVec_eq_sub`), "as far to the right along the sequence as possible" (`sum_rStarVec_le_of_feasible`), the other from the last column (`isOptimalValue_column`), and the bounds of a best chain, "satisfied in all optimal solutions" (`sum_eq_of_chainSum_eq`). The source's example is `example_values`. In Appendix A, p. 393, "`r_p` or `r_q`" has to be `r_p` or `r_{q-1}`: `B_pq` has no term in `r_q`. The argument holds with it (`exists_feasible_extend`).
 

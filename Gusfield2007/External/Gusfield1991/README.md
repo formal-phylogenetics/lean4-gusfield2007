@@ -22,4 +22,4 @@ recombination node its state can't come back. The standing assumption of the pap
 Line 156 also says that the network with ancestral sequence `S` is unique. That holds only when no arc or node can be suppressed:
 `network_rooted_unique` states it for `IsReducedTree`, and `exists_network_of_no_conflict` gives such a network.
 
-The module imports `SameBlob.lean`, and through it `Gusfield2007.Blobs`, since the statements are about those networks.
+The module imports `SameBlob.lean`, and through it `Gusfield2007.Networks.Blobs`, since the statements are about those networks.

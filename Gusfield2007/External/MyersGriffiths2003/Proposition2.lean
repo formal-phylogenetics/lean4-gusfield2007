@@ -1,7 +1,7 @@
 module
 
 public import Gusfield2007.External.MyersGriffiths2003.SampleHistory
-public import Gusfield2007.ExplicitNetworks
+public import Gusfield2007.Networks.Explicit
 
 /-!
 # Proposition 2 of Myers and Griffiths, and the true minimum of the example

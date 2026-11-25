@@ -1,7 +1,7 @@
 module
 
 public import Gusfield2007.External.GusfieldEtAl2004.Algorithm
-public import Gusfield2007.GalledTreeBuild
+public import Gusfield2007.ProofOfDecomposition.GalledTrees.Build
 public import Gusfield2007.External.GusfieldEtAl2004.BuildCount
 public import Gusfield2007.External.GusfieldEtAl2004.Elimination
 public import Gusfield2007.External.GusfieldEtAl2004.GalledTree
@@ -12,23 +12,23 @@ public import Gusfield2007.External.HudsonKaplan1985.Algorithm
 public import Gusfield2007.External.MyersGriffiths2003.Algorithm1
 public import Gusfield2007.External.MyersGriffiths2003.Composite
 public import Gusfield2007.External.SongHein2005.BinaryPaths
-public import Gusfield2007.CounterexampleNets
-public import Gusfield2007.Counterexamples
-public import Gusfield2007.Decomposition
+public import Gusfield2007.ProofOfDecomposition.CounterexampleNets
+public import Gusfield2007.OptimalityConjectures.Counterexamples
+public import Gusfield2007.ProofOfDecomposition.Decomposition
 public import Gusfield2007.Defs
-public import Gusfield2007.EntryNet
-public import Gusfield2007.Examples
-public import Gusfield2007.HusonKloepper
-public import Gusfield2007.MdLower
-public import Gusfield2007.MergedTreeness
-public import Gusfield2007.NetworkOps
-public import Gusfield2007.OpenStatements
-public import Gusfield2007.Realizability
-public import Gusfield2007.SufficientConditions
-public import Gusfield2007.SuperCharacters
-public import Gusfield2007.Theorem10PrintedMultiple
-public import Gusfield2007.TimeOrdered
-public import Gusfield2007.Uniqueness
+public import Gusfield2007.ProofOfDecomposition.EntryNet
+public import Gusfield2007.OptimalityConjectures.Examples
+public import Gusfield2007.OptimalityConjectures.HusonKloepper
+public import Gusfield2007.OptimalityConjectures.MdLower
+public import Gusfield2007.Applications.MergedTreeness
+public import Gusfield2007.Networks.Operations
+public import Gusfield2007.OptimalityConjectures.OpenStatements
+public import Gusfield2007.ProofOfDecomposition.Realizability
+public import Gusfield2007.OptimalityConjectures.SufficientConditions
+public import Gusfield2007.ProofOfDecomposition.SuperCharacters
+public import Gusfield2007.OptimalityConjectures.Theorem10PrintedMultiple
+public import Gusfield2007.Networks.TimeOrdered
+public import Gusfield2007.ProofOfDecomposition.Uniqueness
 
 /-!
 # Gusfield et al. 2007: the main results

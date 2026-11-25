@@ -8,7 +8,7 @@ line 643 for `M_d`.
 
 `Bound.lean` proves `card_le_R`: pairwise non-overlapping intervals between incompatible sites each need a crossover, so their number is a lower bound on `R¹(M)`. This is the source's argument, in two steps:
 
-- `Gusfield2007.Network.exists_breaksAt_of_incompatible`, in `Gusfield2007/NetworkOps.lean`, the four-gamete test: at most one mutation occurs at each site, so "the only way for all four gametic types to be in the sample is for at least one recombination event to have occurred in the history of the sample between the two sites";
+- `Gusfield2007.Network.exists_breaksAt_of_incompatible`, in `Gusfield2007/Networks/Operations.lean`, the four-gamete test: at most one mutation occurs at each site, so "the only way for all four gametic types to be in the sample is for at least one recombination event to have occurred in the history of the sample between the two sites";
 - "to each interval we must assign at least one recombination event" (Appendix 2): a crossover separates at most one of a set of non-overlapping intervals.
 
 The intervals of the source are open, so that they "are disjoint" when they share an endpoint at most, which is the hypothesis here.
@@ -23,6 +23,6 @@ The intervals of the source are open, so that they "are disjoint" when they shar
 
 `AlgorithmBound.lean` has `rM`, the value on a sample of sequences, and `rM_le_R`, by `card_le_R`. So `R_M` is a lower bound on `R¹`, by the source's argument, and it can be computed: `decide` evaluates it, as in `External.MyersGriffiths2003.exampleSample_values`.
 
-`Bound.lean` imports `Gusfield2007.Decomposition` for `recombSet_nonempty`, which says that the minimum `R¹` is over a nonempty set. `Algorithm.lean` imports only `Gusfield2007.External.MyersGriffiths2003.Algorithm1`, for the program.
+`Bound.lean` imports `Gusfield2007.ProofOfDecomposition.Decomposition` for `recombSet_nonempty`, which says that the minimum `R¹` is over a nonempty set. `Algorithm.lean` imports only `Gusfield2007.External.MyersGriffiths2003.Algorithm1`, for the program.
 
 The PMC page has only a PDF of this article, which blocks scripted downloads. The copy was obtained from the Internet Archive's copy of `genetics.org`.
