@@ -111,7 +111,7 @@ The statements of record are the theorems of the Challenge, [`palomar/Gusfield20
 ## Dependencies
 
 - [Mathlib](https://github.com/leanprover-community/mathlib4), at `v4.37.0-rc1`.
-- [lean4-phylogenetics](https://github.com/vltanh/lean4-phylogenetics), the library of the collection, pinned by commit in [`lakefile.toml`](lakefile.toml): the Splits Equivalence Theorem ([`Phylogenetics.Tree.SplitsEquivalence`](https://github.com/vltanh/lean4-phylogenetics/blob/1d73084b42339bde9271ff4bac9663a36b36607d/Phylogenetics/Tree/SplitsEquivalence.lean)), restated in [`Gusfield2007/External/SempleSteel2003/`](Gusfield2007/External/SempleSteel2003), and what it needs about X-trees ([`Phylogenetics.Tree.XTree`](https://github.com/vltanh/lean4-phylogenetics/blob/1d73084b42339bde9271ff4bac9663a36b36607d/Phylogenetics/Tree/XTree.lean)).
+- [lean4-phylogenetics](https://github.com/vltanh/lean4-phylogenetics), the library of the collection, pinned by commit in [`lakefile.toml`](lakefile.toml): the Splits Equivalence Theorem ([`Phylogenetics.Tree.SplitsEquivalence`](https://github.com/vltanh/lean4-phylogenetics/blob/3fcabfd7d191990dda268b0b3968d945b65eb59a/Phylogenetics/Tree/SplitsEquivalence.lean)), restated in [`Gusfield2007/External/SempleSteel2003/`](Gusfield2007/External/SempleSteel2003), and what it needs about X-trees ([`Phylogenetics.Tree.XTree`](https://github.com/vltanh/lean4-phylogenetics/blob/3fcabfd7d191990dda268b0b3968d945b65eb59a/Phylogenetics/Tree/XTree.lean)).
 
 ## Palomar
 
