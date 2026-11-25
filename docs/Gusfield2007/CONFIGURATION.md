@@ -1,7 +1,7 @@
 # Formalization configuration
 
 The configuration of the collection where this formalization was made is in
-[lean4-phylo-tree-of-blobs's `docs/CONFIGURATION.md`](https://github.com/vltanh/lean4-phylo-tree-of-blobs/blob/47250e1/docs/CONFIGURATION.md), at its last commit before the move; what concerns this paper is below.
+[lean4-phylo-tree-of-blobs's `docs/CONFIGURATION.md`](https://github.com/formal-phylogenetics/lean4-phylo-tree-of-blobs/blob/47250e1/docs/CONFIGURATION.md), at its last commit before the move; what concerns this paper is below.
 
 ## Sources of record
 
@@ -23,7 +23,7 @@ locator only.
 ## Repository and toolchain
 
 - Lean and Mathlib `v4.37.0-rc1`, Mathlib commit `31ce06eaadf4a200c0e1407c5f10953cf606b8f8`.
-- The library [lean4-phylogenetics](https://github.com/vltanh/lean4-phylogenetics), the root of the collection, is required
+- The library [lean4-phylogenetics](https://github.com/formal-phylogenetics/lean4-phylogenetics), the root of the collection, is required
   at the train's commit, for the Splits Equivalence Theorem and what it needs about X-trees
   ([`lakefile.toml`](../../lakefile.toml)).
 - The layout and the names are the collection's: the root and the paper `Gusfield2007`, the library in the namespace

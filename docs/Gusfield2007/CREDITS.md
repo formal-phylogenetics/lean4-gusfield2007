@@ -1,8 +1,8 @@
 # Credits
 
-How this formalization was made. It was made in [lean4-phylo-tree-of-blobs](https://github.com/vltanh/lean4-phylo-tree-of-blobs), a collection of
+How this formalization was made. It was made in [lean4-phylo-tree-of-blobs](https://github.com/formal-phylogenetics/lean4-phylo-tree-of-blobs), a collection of
 formalizations on the tree of blobs of phylogenetic networks, and moved to this repository on 2026-11-04.
-[That repository's credits](https://github.com/vltanh/lean4-phylo-tree-of-blobs/blob/47250e1/docs/CREDITS.md), at its last commit before the move, record every round in full, with the figures
+[That repository's credits](https://github.com/formal-phylogenetics/lean4-phylo-tree-of-blobs/blob/47250e1/docs/CREDITS.md), at its last commit before the move, record every round in full, with the figures
 of each.
 
 ## Who
@@ -32,7 +32,7 @@ of each.
   symbol suggests. The round took 4.61 h elapsed, with 10 sub-agents, for all the papers of the collection.
 - **2026-11-04, the move.** The paper got its own front page, report and Palomar entry, and then this repository. The Splits
   Equivalence Theorem of Semple, Steel 2003, which this paper and Allman et al. 2023 both use, moved to the library
-  [lean4-phylogenetics](https://github.com/vltanh/lean4-phylogenetics), and [`Gusfield2007/External/SempleSteel2003/`](../../Gusfield2007/External/SempleSteel2003) restates it.
+  [lean4-phylogenetics](https://github.com/formal-phylogenetics/lean4-phylogenetics), and [`Gusfield2007/External/SempleSteel2003/`](../../Gusfield2007/External/SempleSteel2003) restates it.
 - **2026-11-24, the collection's layout.** Claude Opus 5.5 in Claude Code, one agent, gave the repository the layout and the
   names of the collection rooted at lean4-phylogenetics, as the maintainer decided: the code under the root [`Gusfield2007/`](../../Gusfield2007),
   the general lemmas in [`Gusfield2007/Basic/`](../../Gusfield2007/Basic) under Mathlib's names, the cited results in [`Gusfield2007/External/`](../../Gusfield2007/External) in the

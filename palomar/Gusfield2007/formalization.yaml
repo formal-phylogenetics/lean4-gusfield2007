@@ -137,14 +137,14 @@ sources:
       Gusfield2007/External/SongHein2005. Read in the authors' copy.
 
 related_formalizations:
-  - id: "https://github.com/vltanh/lean4-phylogenetics"
+  - id: "https://github.com/formal-phylogenetics/lean4-phylogenetics"
     relationship: "adapts"
     note: >-
       The project imports these modules of this library, pinned at commit 3fcabfd:
       Phylogenetics.Tree.SplitsEquivalence, the Splits Equivalence Theorem, and
       Phylogenetics.Tree.XTree, what it needs about X-trees. Both import Mathlib only. The rest of
       the code imports Mathlib only.
-  - id: "https://github.com/vltanh/lean4-camus"
+  - id: "https://github.com/formal-phylogenetics/lean4-camus"
     relationship: "independent"
     note: "Surveyed; no code used."
 

@@ -1,12 +1,12 @@
 # Gusfield et al. 2007: a decomposition theory for phylogenetic networks, in Lean
 
-[![CI](https://github.com/vltanh/lean4-gusfield2007/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/vltanh/lean4-gusfield2007/actions/workflows/lean_action_ci.yml)
+[![CI](https://github.com/formal-phylogenetics/lean4-gusfield2007/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/formal-phylogenetics/lean4-gusfield2007/actions/workflows/lean_action_ci.yml)
 
 A Lean 4 formalization of Dan Gusfield, Vikas Bansal, Vineet Bafna and Yun S. Song (2007), "A decomposition theory for phylogenetic networks and incompatible characters", [J. Comput. Biol. 14 (2007), 1247-1272](https://doi.org/10.1089/cmb.2006.0137), with the results it cites. The paper studies phylogenetic networks with recombination that derive a set `M` of binary sequences. A blob is the set of arcs of a class of recombination cycles under sharing an arc, and contracting the blobs leaves a tree. The Decomposition Theorem (Theorem 1) says that every such `M` has a network in which each blob holds exactly the sites of one non-trivial connected component of the incompatibility graph `G(M)`, with every compatible site on a tree edge. The paper then gives sufficient conditions under which such a fully decomposed network uses the fewest recombinations, and refutes the Full-Decomposition Optimality Conjectures.
 
 Every numbered result is proved, as printed or in a corrected form, with no `sorry` and no assumed result of the literature. Theorem 4 is false as printed, and its true form is proved in both directions. One theorem is conditional, and says so in its statement: Theorem 10, with `R(M + S)` read by the definition at line 385, is refuted for multiple crossovers given a finite computation that Lean's kernel hasn't completed. The paper's own use of that symbol suggests `R_S(M)`, and with that Theorem 10 is proved. One statement of the paper, at its line 425, stays open.
 
-This paper belongs to the hub [lean4-phylo-combinatorics](https://github.com/vltanh/lean4-phylo-combinatorics), on the combinatorics of phylogenetic trees and networks, in the collection rooted at [lean4-phylogenetics](https://github.com/vltanh/lean4-phylogenetics).
+This paper belongs to the hub [lean4-phylo-combinatorics](https://github.com/formal-phylogenetics/lean4-phylo-combinatorics), on the combinatorics of phylogenetic trees and networks, in the collection rooted at [lean4-phylogenetics](https://github.com/formal-phylogenetics/lean4-phylogenetics).
 
 ## Status
 
@@ -100,7 +100,7 @@ The statements of record are the theorems of the Challenge, [`palomar/Gusfield20
 | Gusfield, Eddhu, Langley 2004, Corollary 2.1, is false in one direction | E76 |
 | Misprints in the paper, gaps and a misprint in the sources, and one unchecked point on Klöpper's thesis | E54, E77–E79, E85 |
 
-[Section 3 of the report](docs/Gusfield2007/REPORT.md#3-errors-and-gaps-in-the-paper) gives each finding with its location, the paper's sentence, a Lean counterexample and the repair; [Sections 4 and 5](docs/Gusfield2007/REPORT.md#4-missing-hypotheses) give the missing and the redundant hypotheses. The numbers are those that the findings have across the papers of [lean4-phylo-tree-of-blobs](https://github.com/vltanh/lean4-phylo-tree-of-blobs), where this formalization was made. The proofs follow the paper's arguments, except the departures in [Section 7 of the report](docs/Gusfield2007/REPORT.md#7-departures-from-the-papers-proofs), each with what the paper does, what Lean does and why.
+[Section 3 of the report](docs/Gusfield2007/REPORT.md#3-errors-and-gaps-in-the-paper) gives each finding with its location, the paper's sentence, a Lean counterexample and the repair; [Sections 4 and 5](docs/Gusfield2007/REPORT.md#4-missing-hypotheses) give the missing and the redundant hypotheses. The numbers are those that the findings have across the papers of [lean4-phylo-tree-of-blobs](https://github.com/formal-phylogenetics/lean4-phylo-tree-of-blobs), where this formalization was made. The proofs follow the paper's arguments, except the departures in [Section 7 of the report](docs/Gusfield2007/REPORT.md#7-departures-from-the-papers-proofs), each with what the paper does, what Lean does and why.
 
 ## Trust
 
@@ -113,7 +113,7 @@ The statements of record are the theorems of the Challenge, [`palomar/Gusfield20
 ## Dependencies
 
 - [Mathlib](https://github.com/leanprover-community/mathlib4), at `v4.37.0-rc1`.
-- [lean4-phylogenetics](https://github.com/vltanh/lean4-phylogenetics), the library of the collection, pinned by commit in [`lakefile.toml`](lakefile.toml): the Splits Equivalence Theorem ([`Phylogenetics.Tree.SplitsEquivalence`](https://github.com/vltanh/lean4-phylogenetics/blob/3fcabfd7d191990dda268b0b3968d945b65eb59a/Phylogenetics/Tree/SplitsEquivalence.lean)), restated in [`Gusfield2007/External/SempleSteel2003/`](Gusfield2007/External/SempleSteel2003), and what it needs about X-trees ([`Phylogenetics.Tree.XTree`](https://github.com/vltanh/lean4-phylogenetics/blob/3fcabfd7d191990dda268b0b3968d945b65eb59a/Phylogenetics/Tree/XTree.lean)).
+- [lean4-phylogenetics](https://github.com/formal-phylogenetics/lean4-phylogenetics), the library of the collection, pinned by commit in [`lakefile.toml`](lakefile.toml): the Splits Equivalence Theorem ([`Phylogenetics.Tree.SplitsEquivalence`](https://github.com/formal-phylogenetics/lean4-phylogenetics/blob/3fcabfd7d191990dda268b0b3968d945b65eb59a/Phylogenetics/Tree/SplitsEquivalence.lean)), restated in [`Gusfield2007/External/SempleSteel2003/`](Gusfield2007/External/SempleSteel2003), and what it needs about X-trees ([`Phylogenetics.Tree.XTree`](https://github.com/formal-phylogenetics/lean4-phylogenetics/blob/3fcabfd7d191990dda268b0b3968d945b65eb59a/Phylogenetics/Tree/XTree.lean)).
 
 ## Palomar
 
@@ -165,7 +165,7 @@ How much does full decomposition cost? Theorem 11 says `F¹ − R¹` is unbounde
 ## Credits
 
 - Maintainer: The-Anh Vu-Le, who requested and supervised the formalization, chose the paper, and decided the layout, the kernels and publication.
-- Formalization: statements, proofs, audit and documents by Claude (Opus 5.5) in Claude Code, with sub-agents, following the [formalize-math-paper](https://github.com/vltanh/formalize-math-paper) procedure. Made in [lean4-phylo-tree-of-blobs](https://github.com/vltanh/lean4-phylo-tree-of-blobs) from 2026-10-31 to 2026-11-01, in two rounds shared with other papers. [`docs/Gusfield2007/CREDITS.md`](docs/Gusfield2007/CREDITS.md) has the details.
+- Formalization: statements, proofs, audit and documents by Claude (Opus 5.5) in Claude Code, with sub-agents, following the [formalize-math-paper](https://github.com/vltanh/formalize-math-paper) procedure. Made in [lean4-phylo-tree-of-blobs](https://github.com/formal-phylogenetics/lean4-phylo-tree-of-blobs) from 2026-10-31 to 2026-11-01, in two rounds shared with other papers. [`docs/Gusfield2007/CREDITS.md`](docs/Gusfield2007/CREDITS.md) has the details.
 - Review: no person has reviewed the proofs; Lean's kernel checks them. Independent agents reviewed the statements against the sources, compared the proofs with the paper, and checked the findings and the literature section.
 
 ## License
