@@ -4,6 +4,7 @@ public import Gusfield2007.Structure
 public import Gusfield2007.TreeContract
 public import Gusfield2007.External.SempleSteel2003.SplitsEquivalence
 public import Gusfield2007.External.Gusfield1991.PerfectPhylogeny
+public import Gusfield2007.Basic.Combinatorics.SimpleGraph.Connectivity
 
 /-!
 # Gusfield et al. 2007, Sections 3.2 and 3.3: super-characters, the matrix `B`, the tree `T̄`
@@ -38,23 +39,11 @@ theorem existsUnique_charValue_eq_true {M : Finset (ι → Bool)} (c : (incompat
   obtain rfl : c' = c := h₁
   exact Sigma.eq rfl (Subtype.ext (charValue_mk_iff.1 h₂).symm)
 
-/-- A non-trivial component has an edge. -/
-theorem exists_adj_of_nontrivial {G : SimpleGraph ι} {c : G.ConnectedComponent} (hc : c.supp.Nontrivial) :
-    ∃ i ∈ c.supp, ∃ j ∈ c.supp, G.Adj i j := by
-  obtain ⟨i₀, hi₀, i₁, hi₁, hne⟩ := hc
-  obtain ⟨p⟩ : G.Reachable i₀ i₁ := SimpleGraph.ConnectedComponent.eq.1 (hi₀.trans (Eq.symm hi₁))
-  cases p with
-  | nil => exact absurd rfl hne
-  | @cons _ j _ hj _ =>
-    refine ⟨i₀, hi₀, j, ?_, hj⟩
-    have : G.connectedComponentMk i₀ = G.connectedComponentMk j := SimpleGraph.ConnectedComponent.eq.2 hj.reachable
-    exact this.symm.trans hi₀
-
 /-- **Line 281** (`g:four_chars`). "For any non-trivial connected component `C`, the submatrix `M(C)` contains at least
 four distinct sequences". -/
 theorem four_le_card_restrictRows {M : Finset (ι → Bool)} {c : (incompatGraph M).ConnectedComponent}
     (hc : c.supp.Nontrivial) : 4 ≤ (restrictRows c.supp M).card := by
-  obtain ⟨i, hi, j, hj, hij⟩ := exists_adj_of_nontrivial hc
+  obtain ⟨i, hi, j, hj, hij⟩ := SimpleGraph.ConnectedComponent.exists_adj_of_supp_nontrivial hc
   have hij' : ∀ ab : Bool × Bool, ∃ r ∈ M, r i = ab.1 ∧ r j = ab.2 := fun ab => hij ab.1 ab.2
   choose r hr hri hrj using hij'
   have hcard : (Finset.univ : Finset (Bool × Bool)).card ≤ (restrictRows c.supp M).card := by
@@ -241,7 +230,7 @@ theorem IsTBar.splitSides_subset {W' : Type*} [Finite W'] {T' : SimpleGraph W'} 
     ext z
     change SameSide T _ (φ x) (φ z) ↔ SameSide T' _ (φ' x) (φ' z)
     rw [hs.sameSide_iff hconn hra, hs'.sameSide_iff hconn' hw]
-    exact split_eq_of_single (f := s ∘ φ) (g := s' ∘ φ') hs₁ hs₁' x z
+    exact Bool.apply_eq_apply_iff_of_forall_eq_iff (f := s ∘ φ) (g := s' ∘ φ') hs₁ hs₁' x z
   rintro A ⟨e, he, x, rfl⟩
   induction e with
   | h a b =>
@@ -321,8 +310,8 @@ theorem IsTBar.not_both_one (h : IsTBar M T φ edge) {k k' : SuperChar M} (hne :
       by_contra hcon
       push Not at hcon
       exact hee (h.edge_eq_of_split (h.edge_mem k) (h.edge_mem k') hσ hσ'
-        (split_iff_of_iff (f := σ ∘ φ) (g := σ' ∘ φ) (c := true) (d := false)
-          fun x => bool_iff_of_not_both (hdis x) (hcon x)))
+        (Bool.apply_eq_apply_iff_of_forall_iff (f := σ ∘ φ) (g := σ' ∘ φ) (c := true) (d := false)
+          fun x => Bool.eq_true_iff_eq_false_of_not_and (hdis x) (hcon x)))
     obtain ⟨l, hl₁, hl₂⟩ := hl
     exact IsCut.not_fourth hconn hσ hσ' (h.edge_mem k) (h.edge_mem k') hee (a := false) (b := false)
       (x := φ l) (y := φ r₂) (z := φ r₁) ⟨hl₁, hl₂⟩ ⟨hr₂', hr₂⟩ ⟨hr₁, hr₁'⟩
@@ -504,7 +493,7 @@ theorem IsTBar.edges_incident (h : IsTBar M T φ edge) {k₁ k₂ : SuperChar M}
         revert hx hx'
         cases σ₁ (φ x) <;> cases σ' (φ x) <;> cases A <;> simp
       exact hee₁ (h.edge_eq_of_split (h.edge_mem k₁) (h.edge_mem k') hσ₁ hσ'
-        (split_iff_of_iff (f := σ₁ ∘ φ) (g := σ' ∘ φ) hiff)).symm
+        (Bool.apply_eq_apply_iff_of_forall_iff (f := σ₁ ∘ φ) (g := σ' ∘ φ) hiff)).symm
     -- A leaf beyond `e`.
     obtain ⟨z, hz⟩ := exists_row_side hT (fun v => (h.mem_range_iff v).2) hw.symm (by rwa [Sym2.eq_swap] : IsCut T s(w, a₁) σ')
     rw [hwA] at hz
@@ -598,7 +587,7 @@ theorem IsTBar.edges_incident (h : IsTBar M T φ edge) {k₁ k₂ : SuperChar M}
           rw [hr₂]
           exact charValue_mk_iff.2 ((hbeyond y h₅).trans hS₂.symm)
       exact hee₂ (h.edge_eq_of_split (h.edge_mem _) (h.edge_mem _) hσ₂ hσ'
-        (split_iff_of_iff (f := σ₂ ∘ φ) (g := σ' ∘ φ) hiff)).symm
+        (Bool.apply_eq_apply_iff_of_forall_iff (f := σ₂ ∘ φ) (g := σ' ∘ φ) hiff)).symm
 
 /-- Line 295: "if there are two distinct edges labeled with characters that originate from `C`, then the 1-sides of these edges point away from each other", and so a node on both
 edges is on the 0-side of each. -/

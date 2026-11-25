@@ -8,6 +8,7 @@ public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Algebra.Order.Group.Int
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring
+public import Gusfield2007.Basic.Data.Finset
 
 /-!
 # The integer program and Algorithm 1 of Myers and Griffiths
@@ -394,9 +395,6 @@ theorem exists_feasible_extend {S s t : ℕ} {r : ℕ → ℕ} (hr : ∀ p q, s 
       _ = r' l := hlb.symm
       _ ≤ ∑ l ∈ Ico p q, r' l := single_le_sum (f := r') (fun _ _ => Nat.zero_le _) hl
 
-theorem sum_Ico_shift (r : ℕ → ℕ) (s p q : ℕ) : ∑ l ∈ Ico (s + p) (s + q), r l = ∑ l ∈ Ico p q, r (s + l) := by
-  rw [sum_Ico_add r p q s, add_comm s p, add_comm s q]
-
 /-- **Algorithm 1** (`ext:mg_algorithm1_correct`). The matrix constructed is the matrix of optimal values: for `s ≤ t` among the sites `0, ..., S - 1`, `R_st` is the optimal value of the program "minimize `Σ_{l=s}^{t-1} r_l` over nonnegative integers subject to (3)". The proof is that of Appendix A: the constraints outside the region don't matter, Corollary 8 applies to the system on the region, and the maximum over chains obeys the recursion of the algorithm. -/
 theorem algorithm1_isOptimalValue (B : ℕ → ℕ → ℕ) {S s t : ℕ} (hst : s ≤ t) (ht : t < S) :
     IsOptimalValue S B s t (algorithm1 B S s t) := by
@@ -411,7 +409,7 @@ theorem algorithm1_isOptimalValue (B : ℕ → ℕ → ℕ) {S s t : ℕ} (hst :
       intro p q hp hpq
       obtain ⟨p, rfl⟩ : ∃ p', p = s + p' := ⟨p - s, by omega⟩
       obtain ⟨q, rfl⟩ : ∃ q', q = s + q' := ⟨q - s, by omega⟩
-      rw [sum_Ico_shift]
+      rw [Finset.sum_Ico_add_add]
       simp [hρ]
     obtain ⟨r', hr', hr'in⟩ := exists_feasible_extend (B := B) (S := S) (s := s) (t := s + n) (r := ρ) (by
       intro p q hp hpq hq
@@ -429,11 +427,11 @@ theorem algorithm1_isOptimalValue (B : ℕ → ℕ → ℕ) {S s t : ℕ} (hst :
     have hfeas : Feasible (n + 1) (shiftBounds B s) fun l => r (s + l) := by
       intro p q hpq hq
       have := hr (s + p) (s + q) (by omega) (by omega)
-      rwa [sum_Ico_shift] at this
+      rwa [Finset.sum_Ico_add_add] at this
     have := sum_rStarVec_le hfeas
     change _ ≤ ∑ l ∈ Ico s (s + n), r l
     have hEq : ∑ l ∈ Ico s (s + n), r l = ∑ l ∈ range n, r (s + l) := by
-      have := sum_Ico_shift r s 0 n
+      have := Finset.sum_Ico_add_add r s 0 n
       simpa using this
     rw [hEq]
     exact this

@@ -96,7 +96,7 @@ noncomputable def entryNet (N : Network ι V E) (g : E) (X : Set E) (hX : N.Entr
     obtain ⟨ρ, hρ⟩ := N.exists_rank
     obtain ⟨K', hK'⟩ := (Set.finite_range ρ).bddAbove
     obtain ⟨K, hK⟩ : ∃ K, ∀ v, ρ v < K := ⟨K' + 1, fun v => Nat.lt_succ_of_le (hK' ⟨v, rfl⟩)⟩
-    refine acyclic_of_rank (fun
+    refine Relation.not_transGen_arc_self_of_rank (fun
       | none => K
       | some z => if N.Reach z (N.src g) then ρ z else K + 1 + ρ z) ?_
     have hnot : ¬ N.Reach (N.tgt g) (N.src g) := not_reach_tgt_src g

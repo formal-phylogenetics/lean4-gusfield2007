@@ -2,6 +2,7 @@ module
 
 public import Gusfield2007.External.GusfieldEtAl2004.SameBlob
 public import Gusfield2007.ExplicitNetworks
+public import Gusfield2007.Basic.Data.List
 
 /-!
 # Reduced galled trees are fully decomposed (Gusfield, Eddhu, Langley 2004)
@@ -336,17 +337,6 @@ theorem label_cut (hG : IsGalledTree N) (hc : N.IsCycleOn w x p q) {c d : List E
       rw [hl, hih]
       simp [hsa]
 
-/-- The start `c` of a list has the arcs before its length. -/
-theorem mem_prefix_iff {a : E} {c d : List E} : a ∈ c ↔ (c ++ d).idxOf a < c.length := by
-  constructor
-  · intro h
-    rw [List.idxOf_append_of_mem h]
-    exact List.idxOf_lt_length_iff.2 h
-  · intro h
-    by_contra hc
-    rw [List.idxOf_append_of_notMem hc] at h
-    omega
-
 /-- **Theorem 2.2 of the source**, on one gall: the coordinates of the nodes of the gall. The nodes of one side have negative even coordinates, of the other side positive ones, and the sites odd ones. -/
 theorem exists_threshold_mem (hG : IsGalledTree N) (hc : N.IsCycleOn w x p q) :
     ∃ (kind : ι → Prop) (τ : ι → ℤ), ∀ v ∈ N.blobVerts {e | e ∈ p ∨ e ∈ q}, v = x ∨
@@ -372,7 +362,7 @@ theorem exists_threshold_mem (hG : IsGalledTree N) (hc : N.IsCycleOn w x p q) :
     refine hconv ?_ hne
     rw [label_cut hG hc hp hd hcv hs]
     by_cases hsp : N.site s ∈ p
-    · rw [mem_prefix_iff (d := d), ← hp]
+    · rw [List.mem_iff_idxOf_append_lt_length (d := d), ← hp]
       simp only [τ, hsp, ite_true]
       omega
     · have hnc : N.site s ∉ c := fun h => hsp (by rw [hp]; exact List.mem_append_left _ h)
@@ -389,7 +379,7 @@ theorem exists_threshold_mem (hG : IsGalledTree N) (hc : N.IsCycleOn w x p q) :
     · have hnc : N.site s ∉ c := fun h => hc.notMem hsp (by rw [hq]; exact List.mem_append_left _ h)
       simp only [τ, hsp, ite_true, hnc, false_iff]
       omega
-    · rw [mem_prefix_iff (d := d), ← hq]
+    · rw [List.mem_iff_idxOf_append_lt_length (d := d), ← hq]
       simp only [τ, hsp, ite_false]
       omega
 

@@ -222,7 +222,7 @@ theorem printedM_reachable (i j : Fin 34) : (incompatGraph printedMRows).Reachab
         rw [hif] at this
         exact hadj.reachable.trans this
   have hcross : ∀ i k : Fin 34, i.val < 5 → ¬ k.val < 5 → ∀ x ∈ printedMCodes, (dec x : Fin 34 → Bool) i = false ∨ (dec x : Fin 34 → Bool) k = false := by decide +kernel
-  refine reachable_iff_of_adj _ (fun i k hik => ?_) (a := 0) (b := 5) (fun i hi => ?_) (fun i hi => ?_) i j
+  refine SimpleGraph.reachable_iff_mem_iff_of_adj _ (fun i k hik => ?_) (a := 0) (b := 5) (fun i hi => ?_) (fun i hi => ?_) i j
   · have hno : ∀ i k : Fin 34, i.val < 5 → ¬ k.val < 5 → ¬ Incompatible printedMRows i k := by
       intro i k hi hk hinc
       obtain ⟨r, hr, h₁, h₂⟩ := hinc true true
@@ -282,7 +282,7 @@ theorem le_RS_printedM₂ (hs : printedMSearch) : 39 ≤ RS .multiple (printedMC
 /-- The sum over the components of `G_S(M)`, for the counterexample. -/
 theorem le_sum_printedM (hs : printedMSearch) : 43 ≤ ∑ᶠ C : (conflictGraph printedMRoot printedMRows).ConnectedComponent,
     RS .multiple (C.supp.domRestrict printedMRoot) (restrictRows C.supp printedMRows) := by
-  have e := finsum_connectedComponent_eq_add printedM_conflict_reachable (a := 0) (b := 5) (show (0 : Fin 34).val < 5 by decide) (show ¬ (5 : Fin 34).val < 5 by decide)
+  have e := SimpleGraph.finsum_connectedComponent_supp_eq_add printedM_conflict_reachable (a := 0) (b := 5) (show (0 : Fin 34).val < 5 by decide) (show ¬ (5 : Fin 34).val < 5 by decide)
     fun C => RS .multiple (C.domRestrict printedMRoot) (restrictRows C printedMRows)
   rw [e]
   have h₁ := four_le_RS_printedM₁

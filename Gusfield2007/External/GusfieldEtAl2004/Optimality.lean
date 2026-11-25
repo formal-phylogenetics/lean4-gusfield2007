@@ -3,6 +3,7 @@ module
 public import Gusfield2007.External.GusfieldEtAl2004.Elimination
 public import Gusfield2007.External.GusfieldEtAl2004.GalledTree
 public import Gusfield2007.Decomposition
+public import Gusfield2007.Basic.Combinatorics.SimpleGraph.Connectivity
 
 /-!
 # A reduced galled tree minimizes the number of recombinations (Gusfield, Eddhu, Langley 2004)
@@ -91,12 +92,8 @@ variable {L : Finset (ι → Bool)}
 /-- A non-trivial component has an edge. -/
 theorem Cent.exists_adj {G : SimpleGraph ι} (c : Cent G) : ∃ i j, i ∈ c.1.supp ∧ G.Adj i j := by
   obtain ⟨a, ha, b, hb, hab⟩ := c.2
-  obtain ⟨k, hk⟩ := exists_adj_of_reachable (SimpleGraph.ConnectedComponent.exact (ha.trans hb.symm)) hab
+  obtain ⟨k, hk⟩ := SimpleGraph.Reachable.exists_adj_of_ne (SimpleGraph.ConnectedComponent.exact (ha.trans hb.symm)) hab
   exact ⟨a, k, ha, hk⟩
-
-/-- The component of a site with an edge is non-trivial. -/
-theorem nontrivial_of_adj {G : SimpleGraph ι} {i j : ι} (h : G.Adj i j) : (G.connectedComponentMk i).supp.Nontrivial :=
-  ⟨i, rfl, j, (SimpleGraph.ConnectedComponent.eq.2 h.reachable).symm, h.ne⟩
 
 /-- **Theorem 2.6** (`ext:thm2_6`) of the source. "In any galled-tree `T` for `M`, there is a one-one correspondence between the non-trivial connected components of the conflict graph and the galls in `T` containing conflicted sites. Each such gall in `T` contains all the
 sites of one non-trivial connected component (due to Theorem 2.4), and contains no sites from a different non-trivial connected component (due to Theorem 2.5)." For the rows `L` that label nodes: the conflict graph is `incompatGraph (addRow M S)`, and the
@@ -120,7 +117,7 @@ theorem theorem2_6 (hG : IsGalledTree N) (hL : ∀ r ∈ L, ∃ v, N.label v = r
     have h₁ : i₀ c ∈ c'.1.supp := (hiff c' _ ⟨_, hadj c⟩).1 (heq ▸ hi c)
     exact Subtype.ext ((hi₀ c).symm.trans h₁)
   · rintro ⟨Q', hQ', i, j, hm, hij⟩
-    let c : Cent (incompatGraph L) := ⟨_, nontrivial_of_adj hij⟩
+    let c : Cent (incompatGraph L) := ⟨_, SimpleGraph.Adj.connectedComponentMk_supp_nontrivial hij⟩
     refine ⟨c, Subtype.ext ?_⟩
     have hmem : N.site i ∈ Q c := (hiff c i ⟨j, hij⟩).2 rfl
     exact hG.eq_of_inter hQ' (hQ c) ⟨_, hm, hmem⟩
@@ -419,7 +416,7 @@ theorem card_cent_le_add_one [Finite ι] {G G' : SimpleGraph ι} (hle : G' ≤ G
     by_contra hno
     exact hc ⟨_, _, hrep c, hadj c, hno⟩
   let f : Cent G → Option (Cent G') := fun c =>
-    if hc : ∃ i j, i ∈ c.1.supp ∧ G.Adj i j ∧ ¬ G'.Adj i j then none else some ⟨_, nontrivial_of_adj (hedge c hc)⟩
+    if hc : ∃ i j, i ∈ c.1.supp ∧ G.Adj i j ∧ ¬ G'.Adj i j then none else some ⟨_, SimpleGraph.Adj.connectedComponentMk_supp_nontrivial (hedge c hc)⟩
   have hinj : Function.Injective f := by
     intro c c' hcc
     by_cases hc : ∃ i j, i ∈ c.1.supp ∧ G.Adj i j ∧ ¬ G'.Adj i j <;> by_cases hc' : ∃ i j, i ∈ c'.1.supp ∧ G.Adj i j ∧ ¬ G'.Adj i j
@@ -446,7 +443,7 @@ theorem lemma8_6 [Finite ι] (hG : IsGalledTree N) (hY : RowsOn N T D Y) (r : ι
   -- two non-trivial components after the removal are on two galls, or Lemma 2.3 joins them
   have : Finite (incompatGraph Y).ConnectedComponent := Finite.of_surjective (incompatGraph Y).connectedComponentMk fun c => c.exists_rep
   choose rep nb hrep hadj using fun c : Cent (incompatGraph (Y.erase r)) => Cent.exists_adj c
-  refine Nat.card_le_card_of_injective (fun c => (⟨_, nontrivial_of_adj (hle (hadj c))⟩ : Cent (incompatGraph Y))) fun c c' hcc => ?_
+  refine Nat.card_le_card_of_injective (fun c => (⟨_, SimpleGraph.Adj.connectedComponentMk_supp_nontrivial (hle (hadj c))⟩ : Cent (incompatGraph Y))) fun c c' hcc => ?_
   have hcc' := congrArg Subtype.val hcc
   have hr : (incompatGraph Y).Reachable (rep c) (rep c') := SimpleGraph.ConnectedComponent.exact hcc'
   obtain ⟨Q, hQ, hi, hj⟩ := hY'.exists_isCycle (hadj c)

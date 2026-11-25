@@ -71,7 +71,7 @@ theorem lemma1 (M : Finset (ι → Bool)) {i i' j' : ι} (hi : ¬ (incompatGraph
 theorem exists_incompatible_of_nontrivial {M : Finset (ι → Bool)} {c : (incompatGraph M).ConnectedComponent}
     (hc : c.supp.Nontrivial) {i : ι} (hi : i ∈ c.supp) : ∃ k, Incompatible M i k := by
   obtain ⟨j, hj, hij⟩ := hc.exists_ne i
-  exact exists_adj_of_reachable (SimpleGraph.ConnectedComponent.exact (hi.trans hj.symm)) hij.symm
+  exact SimpleGraph.Reachable.exists_adj_of_ne (SimpleGraph.ConnectedComponent.exact (hi.trans hj.symm)) hij.symm
 
 /-- A column that is incompatible with a column has both states. -/
 theorem Incompatible.exists_ne {M : Finset (ι → Bool)} {i k : ι} (h : Incompatible M i k) :

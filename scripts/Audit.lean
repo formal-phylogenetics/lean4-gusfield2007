@@ -10,6 +10,15 @@ public meta import Lean.DocString
 -- first lines with
 --   { find Gusfield2007 -name '*.lean'; cd palomar && find . -name Solution.lean; } |
 --     sed 's#^\./##; s/\.lean$//; s#/#.#g; s/^/import all /' | sort
+import all Gusfield2007.Basic.Combinatorics.SimpleGraph.Acyclic
+import all Gusfield2007.Basic.Combinatorics.SimpleGraph.Connectivity
+import all Gusfield2007.Basic.Combinatorics.SimpleGraph.Walk
+import all Gusfield2007.Basic.Data.Bool
+import all Gusfield2007.Basic.Data.Finset
+import all Gusfield2007.Basic.Data.List
+import all Gusfield2007.Basic.Data.Nat.Bitwise
+import all Gusfield2007.Basic.Logic.Relation
+import all Gusfield2007.Basic.Order.Fin
 import all Gusfield2007.BlobFacts
 import all Gusfield2007.Blobs
 import all Gusfield2007.Components

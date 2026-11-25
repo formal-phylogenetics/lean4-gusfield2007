@@ -79,7 +79,7 @@ theorem Md_reachable (i j : Fin (6 * d)) : (incompatGraph (Md d)).Reachable i j 
   have hd : 0 < d := by
     have := i.2
     omega
-  refine reachable_iff_of_adj _ (fun i j hij => ?_) (a := firstSite hd 2) (b := firstSite hd 3) (fun i hi => ?_) (fun i hi => ?_) i j
+  refine SimpleGraph.reachable_iff_mem_iff_of_adj _ (fun i j hij => ?_) (a := firstSite hd 2) (b := firstSite hd 3) (fun i hi => ?_) (fun i hi => ?_) i j
   · exact fig6Entry_incompatible _ _ ((incompatible_Md_iff i j).1 hij)
   · have hadj : ∀ i : Fin (6 * d), (i.val % 6 = 1 ∨ i.val % 6 = 4) → (incompatGraph (Md d)).Adj i (firstSite hd 2) := fun i hi => by
       refine (incompatible_Md_iff _ _).2 ?_

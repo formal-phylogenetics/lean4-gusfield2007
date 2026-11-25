@@ -4,6 +4,7 @@ public import Gusfield2007.External.HudsonKaplan1985.AlgorithmBound
 public import Gusfield2007.External.MyersGriffiths2003.Algorithm1
 public import Gusfield2007.External.MyersGriffiths2003.Bound
 public import Gusfield2007.Examples
+public import Gusfield2007.Basic.Order.Fin
 
 /-!
 # The composite bound of Myers and Griffiths
@@ -233,25 +234,12 @@ section Events
 
 variable {S : ℕ} {V : Type v} {E : Type w}
 
-/-- A lower set of sites is an initial segment. So a single crossover is at one point. -/
-theorem exists_cut (L : LowerSet (Fin S)) : ∃ c : ℕ, ∀ a : Fin S, a ∈ L ↔ a.val < c := by
-  classical
-  refine ⟨(Finset.univ.filter (· ∈ L)).sup fun a => a.val + 1, fun a => ⟨fun ha => ?_, fun ha => ?_⟩⟩
-  · exact Nat.lt_of_succ_le (Finset.le_sup (f := fun a : Fin S => a.val + 1) (Finset.mem_filter.2 ⟨Finset.mem_univ _, ha⟩))
-  · by_contra hna
-    have hle : (Finset.univ.filter (· ∈ L)).sup (fun a : Fin S => a.val + 1) ≤ a.val := by
-      refine Finset.sup_le fun b hb => ?_
-      have hbL : b ∈ L := (Finset.mem_filter.1 hb).2
-      by_contra hc
-      exact hna (L.lower (Fin.le_def.2 (by omega)) hbL)
-    omega
-
 /-- A recombination node breaks a region only if its crossover is in that region. -/
 theorem exists_crossover (N : Network (Fin S) V E) (hc : N.Obeys .single) {x : V} (hx : N.IsRecomb x) :
     ∃ c : ℕ, ∀ i j, N.BreaksAt x (region S i j) → i < c ∧ c ≤ j := by
   rw [obeys_iff] at hc
   obtain ⟨e, f, -, he, hf, L, hL⟩ := hc x hx
-  obtain ⟨c, hc⟩ := exists_cut L
+  obtain ⟨c, hc⟩ := Fin.exists_forall_mem_lowerSet_iff_lt L
   refine ⟨c, fun i j hb => ⟨?_, ?_⟩⟩
   · by_contra hi
     refine hb f hf (funext ?_)

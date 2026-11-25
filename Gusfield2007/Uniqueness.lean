@@ -321,7 +321,7 @@ def rootDegreeTwoNet : Network (Fin 1) (Fin 3) (Fin 2) where
   site := fun _ => 1
   label := fun v _ => decide (v = 2)
   simple := by decide
-  acyclic := Network.acyclic_of_rank (fun v : Fin 3 => v.val) (by decide)
+  acyclic := Relation.not_transGen_arc_self_of_rank (fun v : Fin 3 => v.val) (by decide)
   root_iff := by decide
   inDegree_le_two := by decide
   site_not_recomb := by decide
@@ -2161,7 +2161,7 @@ theorem treeness_example₁ (c : Crossover) :
     refine ⟨?_, ?_⟩
     · obtain ⟨f, -⟩ := theorem4 c treenessRows₁ 11 11 treenessNet₁ (treenessNet₁_obeys c) treenessNet₁_derives treenessNet₁_fullyDecomposed treenessNet₁_efficient
         ⟨treenessNet₁_cover.isTreeNormalStructural treenessNet₁_hr treenessNet₁_htop treenessNet₁_hl, treenessNet₁_degree⟩ n T φ edge hT
-      rw [ncard_edgeSet_iso f, ← Network.treeness_eq_ncard_edgeSet, treenessNet₁_cover.treeness_eq, treenessAc₁_card]
+      rw [SimpleGraph.Iso.ncard_edgeSet_eq f, ← Network.treeness_eq_ncard_edgeSet, treenessNet₁_cover.treeness_eq, treenessAc₁_card]
     · rintro ⟨f, hfr⟩
       obtain ⟨h₁, h₂, h₃, h₄⟩ := treenessNet₁'_exit
       obtain ⟨hs, hdeg⟩ := treenessNet₁'.isTreeNormalStructural_of_iso hT treenessNet₁'_derives treenessNet₁'_fullyDecomposed f hfr
@@ -2182,7 +2182,7 @@ theorem treeness_example₂ (c : Crossover) :
   · intro n T φ edge hT
     obtain ⟨f, -⟩ := theorem4 c treenessRows₂ 12 12 treenessNet₂ (treenessNet₂_obeys c) treenessNet₂_derives treenessNet₂_fullyDecomposed treenessNet₂_efficient
       ⟨treenessNet₂_cover.isTreeNormalStructural treenessNet₂_hr treenessNet₂_htop treenessNet₂_hl, treenessNet₂_degree⟩ n T φ edge hT
-    rw [ncard_edgeSet_iso f, ← Network.treeness_eq_ncard_edgeSet, treenessNet₂_cover.treeness_eq, treenessAc₂_card]
+    rw [SimpleGraph.Iso.ncard_edgeSet_eq f, ← Network.treeness_eq_ncard_edgeSet, treenessNet₂_cover.treeness_eq, treenessAc₂_card]
 
 variable {M : Finset (ι → Bool)} {W : Type*} [Finite W] {T : SimpleGraph W} {φ : M → W} {edge : SuperChar M → Sym2 W}
 
@@ -2249,7 +2249,7 @@ theorem treeness_le_of_charSplits (N : Network ι V E) (hd : N.Derives M)
     refine ⟨f, fun v r hr hv hvr => ?_⟩
     rw [← hf' ⟨r, hr⟩, N.rowClass_eq hd hv hvr]
   · rintro ⟨f, -⟩
-    rw [ncard_edgeSet_iso f, N.treeness_eq_ncard_edgeSet]
+    rw [SimpleGraph.Iso.ncard_edgeSet_eq f, N.treeness_eq_ncard_edgeSet]
 
 /-- **Non-pendant arcs at a blob have ports of their own.** An arc crossing a blob that isn't pendant, whether it leaves or enters, is the only arc crossing that blob at a node with the label of its end on the blob. Two pendant arcs can share a label, so this is weaker than `IsEfficientAtEntry`. -/
 def Network.NonPendantPortsDistinct (N : Network ι V E) : Prop :=
@@ -2378,7 +2378,7 @@ theorem treeness_nonFD_example (c : Crossover) {n : ℕ} {T : SimpleGraph (Fin n
     obtain ⟨f, -⟩ := theorem4 c threeRows 4 3 threeNet (Network.obeys_of_tgt_injective threeNet_tgt_injective c) threeNet_derives
       (Network.isFullyDecomposedFor_of_tgt_injective threeNet_tgt_injective _) (Network.isEfficient_of_tgt_injective threeNet_tgt_injective)
       ⟨threeNet_cover.isTreeNormalStructural threeNet_hr (fun k => k.elim) (fun e _ _ _ hg => threeNet_hl e hg), threeNet_degree⟩ n T φ edge hT
-    rw [ncard_edgeSet_iso f, ← Network.treeness_eq_ncard_edgeSet, threeNet_cover.treeness_eq]
+    rw [SimpleGraph.Iso.ncard_edgeSet_eq f, ← Network.treeness_eq_ncard_edgeSet, threeNet_cover.treeness_eq]
     decide +kernel
   have htr : threeBlobNet.treeness = 3 := by
     rw [threeBlobNet_cover.treeness_eq, threeBlobAc_card]
@@ -2397,7 +2397,7 @@ theorem treeness_strict_example (c : Crossover) {n : ℕ} {T : SimpleGraph (Fin 
   · rw [pendantNet_cover.treeness_eq, pendantAc_card]
   · obtain ⟨f, -⟩ := theorem4 c pendantRows 10 10 pendantHubNet (pendantHubNet_obeys c) pendantHubNet_derives pendantHubNet_fullyDecomposed pendantHubNet_efficient
       ⟨pendantHubNet_cover.isTreeNormalStructural pendantHubNet_hr pendantHubNet_htop pendantHubNet_hl, pendantHubNet_degree⟩ n T φ edge hT
-    rw [ncard_edgeSet_iso f, ← Network.treeness_eq_ncard_edgeSet, pendantHubNet_cover.treeness_eq, pendantHubAc_card]
+    rw [SimpleGraph.Iso.ncard_edgeSet_eq f, ← Network.treeness_eq_ncard_edgeSet, pendantHubNet_cover.treeness_eq, pendantHubAc_card]
 
 omit [LinearOrder ι] in
 /-- With at most one arc into each node, the neighbours in `T′` of a node are the neighbours of the node. -/
@@ -2456,7 +2456,7 @@ theorem treeness_positive_needs_root (c : Crossover) (n : ℕ) (T : SimpleGraph 
   · obtain ⟨f, -⟩ := theorem4 c threeRows 4 3 threeNet (Network.obeys_of_tgt_injective threeNet_tgt_injective c) threeNet_derives
       (Network.isFullyDecomposedFor_of_tgt_injective threeNet_tgt_injective _) (Network.isEfficient_of_tgt_injective threeNet_tgt_injective)
       ⟨threeNet_cover.isTreeNormalStructural threeNet_hr (fun k => k.elim) (fun e _ _ _ hg => threeNet_hl e hg), threeNet_degree⟩ n T φ edge hT
-    rw [ncard_edgeSet_iso f, ← Network.treeness_eq_ncard_edgeSet, threeNet_cover.treeness_eq]
+    rw [SimpleGraph.Iso.ncard_edgeSet_eq f, ← Network.treeness_eq_ncard_edgeSet, threeNet_cover.treeness_eq]
     decide +kernel
 
 /-- **Line 156: the undirected tree of a perfect phylogeny is invariant** (`g:pp_invariant`), for networks with no recombination node, with no site-free arc that isn't pendant, and with the degree condition: a reading of "perfect phylogeny" under which line 156 is true, given `perfectPhylogeny_not_invariant`. Any two have the one `T′`, respecting the rows: it's `T̄`, by `theorem4_iff`.
@@ -2481,7 +2481,7 @@ theorem perfectPhylogeny_not_invariant :
     fiveNet.Derives fiveRows ∧ fiveStarNet.Derives fiveRows ∧ Function.Injective fiveNet.tgt ∧ Function.Injective fiveStarNet.tgt ∧ fiveNet.DegreeCond ∧ fiveStarNet.DegreeCond ∧
       IsEmpty (fiveNet.blobbedTree ≃g fiveStarNet.blobbedTree) := by
   refine ⟨fiveNet_derives, fiveStarNet_derives, fiveNet_tgt_injective, fiveStarNet_tgt_injective, fiveNet_degree, fiveStarNet_degree, ⟨fun f => ?_⟩⟩
-  have h := ncard_edgeSet_iso f
+  have h := SimpleGraph.Iso.ncard_edgeSet_eq f
   rw [← Network.treeness_eq_ncard_edgeSet, ← Network.treeness_eq_ncard_edgeSet, fiveNet_treeness, fiveStarNet_treeness] at h
   omega
 

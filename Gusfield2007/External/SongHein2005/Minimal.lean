@@ -647,7 +647,7 @@ theorem exists_choices {V E : Type*} [Fintype V] [Nonempty M] (N : Network (Fin 
   have hdata : ∀ x : {x // N.IsRecomb x}, ∃ (e f : E) (c : ℕ), N.tgt e = x.1 ∧ N.tgt f = x.1 ∧ ∀ i : Fin m, N.label x.1 i = if i.val < c then N.label (N.src e) i else N.label (N.src f) i := by
     intro x
     obtain ⟨e, f, -, he, hf, L, hL⟩ := hc x.1 x.2
-    obtain ⟨c, hcut⟩ := External.MyersGriffiths2003.exists_cut L
+    obtain ⟨c, hcut⟩ := Fin.exists_forall_mem_lowerSet_iff_lt L
     refine ⟨e, f, c, he, hf, fun i => ?_⟩
     rw [hL i]
     by_cases hi : i ∈ L

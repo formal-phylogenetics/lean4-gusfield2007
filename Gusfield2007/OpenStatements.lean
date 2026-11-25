@@ -5,6 +5,7 @@ public import Gusfield2007.ExplicitNetworks
 public import Gusfield2007.Histories
 public import Gusfield2007.SufficientConditions
 public import Gusfield2007.Parsimony
+public import Gusfield2007.Basic.Order.Fin
 
 /-!
 # Gusfield et al. 2007: the statements around Theorem 10 and line 425
@@ -71,7 +72,7 @@ theorem minDecomposable_of_haplotypeBound_eq {c : Crossover} {M : Finset (ι →
     by_contra hne
     exact breaksAt_unique_of_eq_haplotypeBound N hT hH hx hne hb hb'
   obtain ⟨a', b', N', h₁, h₂, h₃, h₄, h₅⟩ := theorem3 c M N.ancestral hM hC
-  rw [finsum_connectedComponent_congr hreach (fun s => RS c (s.domRestrict N.ancestral) (restrictRows s M))] at h₅
+  rw [SimpleGraph.finsum_connectedComponent_supp_congr hreach (fun s => RS c (s.domRestrict N.ancestral) (restrictRows s M))] at h₅
   have hle : R c M ≤ N'.recombCount := Nat.sInf_le ⟨a', b', N', h₁, h₂, rfl⟩
   exact ⟨a', b', N', h₁, h₂, h₄.of_reachable_iff hreach, le_antisymm (by omega) hle⟩
 
@@ -130,21 +131,6 @@ theorem Gen.subset_of_closed {S : κ → Bool} {A : Finset (κ → Bool)} {U : S
 
 variable {m : ℕ}
 
-/-- A lower set of `Fin m` is an initial segment. -/
-theorem exists_prefix_of_lowerSet (L : LowerSet (Fin m)) : ∃ n : Fin (m + 1), ∀ i : Fin m, i ∈ L ↔ i.val < n.val := by
-  by_cases hall : ∀ i : Fin m, i ∈ L
-  · exact ⟨⟨m, Nat.lt_succ_self m⟩, fun i => ⟨fun _ => i.2, fun _ => hall i⟩⟩
-  · push Not at hall
-    have hex : ∃ k, ∃ h : k < m, (⟨k, h⟩ : Fin m) ∉ L := by
-      obtain ⟨i, hi⟩ := hall
-      exact ⟨i.val, i.2, hi⟩
-    obtain ⟨hk, hnot⟩ := Nat.find_spec hex
-    refine ⟨⟨Nat.find hex, Nat.lt_succ_of_lt hk⟩, fun i => ⟨fun hi => ?_, fun hi => ?_⟩⟩
-    · by_contra hlt
-      exact hnot (L.lower (show (⟨Nat.find hex, hk⟩ : Fin m) ≤ i from not_lt.1 hlt) hi)
-    · by_contra hi'
-      exact Nat.find_min hex hi ⟨i.2, hi'⟩
-
 /-- **A lower bound on `R¹_S`, by a closed set of rows.** If `S` is a row, and `M` has `1 + m + b` rows, a network with at most `b` recombination nodes has no other labels, and they are generated from `S` one at a time. If a set `K` of rows contains `S`, is closed under the steps
 of such a history, and misses a row of `M`, there is no such network. -/
 theorem lt_RS_single_of_closed {S : Fin m → Bool} {M K : Finset (Fin m → Bool)} {b : ℕ} (hSM : S ∈ M)
@@ -168,7 +154,7 @@ theorem lt_RS_single_of_closed {S : Fin m → Bool} {M K : Finset (Fin m → Boo
   obtain ⟨r, hr, hrK⟩ := hmiss
   refine hrK (hg.subset_of_closed hS hf (fun p hp p' hp' q hq hrec => ?_) heq.ge (hsub hr))
   obtain ⟨Ls, hLs⟩ := hrec
-  obtain ⟨n, hn⟩ := exists_prefix_of_lowerSet Ls
+  obtain ⟨n, hn⟩ := Fin.exists_fin_forall_mem_lowerSet_iff_lt Ls
   refine hm p hp p' hp' q hq n fun i => ⟨fun hi => ?_, fun hi => ?_⟩
   · rw [hLs i, ite_eq_left ((hn i).2 hi)]
   · rw [hLs i, ite_eq_right fun h => absurd ((hn i).1 h) (not_lt.2 hi)]
@@ -617,7 +603,7 @@ theorem printed_conflictGraph : conflictGraph printedRoot printedRows = incompat
   rw [conflictGraph_eq_incompatGraph_addRow, addRow_printedRows]
 
 theorem printed_reachable (i j : Fin 8) : (incompatGraph printedRows).Reachable i j ↔ (i ∈ printedC₁ ↔ j ∈ printedC₁) := by
-  refine reachable_iff_of_adj _ (fun i j hij => ?_) (a := 1) (b := 2) (fun i hi => reachable_of_two_steps ?_) (fun i hi => reachable_of_two_steps ?_) i j
+  refine SimpleGraph.reachable_iff_mem_iff_of_adj _ (fun i j hij => ?_) (a := 1) (b := 2) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) i j
   · change Incompatible printedRows i j at hij
     change (i = 0 ∨ i = 1 ∨ i = 4 ∨ i = 5) ↔ (j = 0 ∨ j = 1 ∨ j = 4 ∨ j = 5)
     unfold Incompatible at hij
@@ -661,7 +647,7 @@ theorem seven_le_sum_printed : 7 ≤ ∑ᶠ C : (conflictGraph printedRoot print
   have hreach : ∀ i j, (conflictGraph printedRoot printedRows).Reachable i j ↔ (i ∈ printedC₁ ↔ j ∈ printedC₁) := by
     rw [printed_conflictGraph]
     exact printed_reachable
-  have e := finsum_connectedComponent_eq_add hreach (a := 1) (b := 2) (Or.inr (Or.inl rfl)) (by
+  have e := SimpleGraph.finsum_connectedComponent_supp_eq_add hreach (a := 1) (b := 2) (Or.inr (Or.inl rfl)) (by
     change ¬ ((2 : Fin 8) = 0 ∨ (2 : Fin 8) = 1 ∨ (2 : Fin 8) = 4 ∨ (2 : Fin 8) = 5)
     decide) fun C => RS .single (C.domRestrict printedRoot) (restrictRows C printedRows)
   rw [e]

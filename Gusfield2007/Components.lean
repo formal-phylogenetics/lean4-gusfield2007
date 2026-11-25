@@ -4,6 +4,7 @@ public import Gusfield2007.ExplicitNetworks
 public import Gusfield2007.LabelSearch
 public import Mathlib.Algebra.BigOperators.Finprod
 public import Mathlib.Order.Hom.Set
+public import Gusfield2007.Basic.Combinatorics.SimpleGraph.Connectivity
 
 /-!
 # Gusfield et al. 2007: bookkeeping for the numbers of the figures
@@ -60,84 +61,7 @@ section TwoComponents
 
 variable {ι : Type*} (G : SimpleGraph ι)
 
-variable {G} in
-/-- A vertex at distance at most two from `a` reaches `a`. -/
-theorem reachable_of_two_steps {i a : ι} (h : i = a ∨ G.Adj i a ∨ ∃ k, G.Adj i k ∧ G.Adj k a) : G.Reachable i a := by
-  rcases h with rfl | h | ⟨k, h₁, h₂⟩
-  · exact SimpleGraph.Reachable.refl _
-  · exact h.reachable
-  · exact h₁.reachable.trans h₂.reachable
-
-/-- Two connected components, from the fact that adjacent vertices are on the same side, and that each side reaches a vertex of its own. -/
-theorem reachable_iff_of_adj {A : Set ι} (hadj : ∀ i j, G.Adj i j → (i ∈ A ↔ j ∈ A)) {a b : ι}
-    (ha : ∀ i ∈ A, G.Reachable i a) (hb : ∀ i, i ∉ A → G.Reachable i b) (i j : ι) : G.Reachable i j ↔ (i ∈ A ↔ j ∈ A) := by
-  constructor
-  · intro h
-    rw [SimpleGraph.reachable_iff_reflTransGen] at h
-    induction h with
-    | refl => rfl
-    | tail _ huv ih => exact ih.trans (hadj _ _ huv)
-  · intro h
-    by_cases hi : i ∈ A
-    · exact (ha i hi).trans (ha j (h.1 hi)).symm
-    · exact (hb i hi).trans (hb j fun hj => hi (h.2 hj)).symm
-
 variable {G}
-
-/-- A sum over the connected components, when they are two: `A` and its complement. -/
-theorem finsum_connectedComponent_eq_add {A : Set ι} (hA : ∀ i j, G.Reachable i j ↔ (i ∈ A ↔ j ∈ A)) {a b : ι} (ha : a ∈ A) (hb : b ∉ A)
-    (f : Set ι → ℕ) : ∑ᶠ C : G.ConnectedComponent, f C.supp = f A + f Aᶜ := by
-  have hsuppa : (G.connectedComponentMk a).supp = A := by
-    ext i
-    rw [SimpleGraph.ConnectedComponent.mem_supp_iff, SimpleGraph.ConnectedComponent.eq, hA]
-    exact ⟨fun h => h.2 ha, fun h => ⟨fun _ => ha, fun _ => h⟩⟩
-  have hsuppb : (G.connectedComponentMk b).supp = Aᶜ := by
-    ext i
-    rw [SimpleGraph.ConnectedComponent.mem_supp_iff, SimpleGraph.ConnectedComponent.eq, hA]
-    exact ⟨fun h hi => hb (h.1 hi), fun h => ⟨fun hi => absurd hi h, fun hb' => absurd hb' hb⟩⟩
-  have hne : G.connectedComponentMk a ≠ G.connectedComponentMk b := by
-    intro h
-    have := SimpleGraph.ConnectedComponent.eq.1 h
-    rw [hA] at this
-    exact hb (this.1 ha)
-  have hsub : (Function.support fun C : G.ConnectedComponent => f C.supp) ⊆
-      ↑({G.connectedComponentMk a, G.connectedComponentMk b} : Finset G.ConnectedComponent) := by
-    intro C _
-    induction C using SimpleGraph.ConnectedComponent.ind with
-    | _ i =>
-      by_cases hi : i ∈ A
-      · have : G.connectedComponentMk i = G.connectedComponentMk a :=
-          SimpleGraph.ConnectedComponent.eq.2 ((hA i a).2 ⟨fun _ => ha, fun _ => hi⟩)
-        simp [this]
-      · have : G.connectedComponentMk i = G.connectedComponentMk b :=
-          SimpleGraph.ConnectedComponent.eq.2 ((hA i b).2 ⟨fun h => absurd h hi, fun h => absurd h hb⟩)
-        simp [this]
-  rw [finsum_eq_sum_of_support_subset _ hsub, Finset.sum_pair hne, hsuppa, hsuppb]
-
-/-- The number of connected components, when they are two: `A` and its complement. -/
-theorem card_connectedComponent_eq_two {A : Set ι} (hA : ∀ i j, G.Reachable i j ↔ (i ∈ A ↔ j ∈ A)) {a b : ι} (ha : a ∈ A) (hb : b ∉ A) :
-    Nat.card G.ConnectedComponent = 2 := by
-  rw [Nat.card_eq_two_iff]
-  refine ⟨G.connectedComponentMk a, G.connectedComponentMk b, fun h => ?_, ?_⟩
-  · have := SimpleGraph.ConnectedComponent.eq.1 h
-    rw [hA] at this
-    exact hb (this.1 ha)
-  · ext C
-    simp only [Set.mem_insert_iff, Set.mem_singleton_iff, Set.mem_univ, iff_true]
-    induction C using SimpleGraph.ConnectedComponent.ind with
-    | _ i =>
-      by_cases hi : i ∈ A
-      · exact Or.inl (SimpleGraph.ConnectedComponent.eq.2 ((hA i a).2 ⟨fun _ => ha, fun _ => hi⟩))
-      · exact Or.inr (SimpleGraph.ConnectedComponent.eq.2 ((hA i b).2 ⟨fun h => absurd h hi, fun h => absurd h hb⟩))
-
-/-- A graph all of whose vertices reach one another has one connected component. -/
-theorem card_connectedComponent_eq_one [Nonempty ι] (h : ∀ i j, G.Reachable i j) : Nat.card G.ConnectedComponent = 1 := by
-  rw [Nat.card_eq_one_iff_unique]
-  refine ⟨⟨fun C C' => ?_⟩, ⟨G.connectedComponentMk (Classical.arbitrary ι)⟩⟩
-  induction C using SimpleGraph.ConnectedComponent.ind with
-  | _ i =>
-    induction C' using SimpleGraph.ConnectedComponent.ind with
-    | _ j => exact SimpleGraph.ConnectedComponent.eq.2 (h i j)
 
 end TwoComponents
 

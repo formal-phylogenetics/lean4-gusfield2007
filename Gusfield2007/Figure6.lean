@@ -2,6 +2,7 @@ module
 
 public import Gusfield2007.Components
 public import Gusfield2007.External.HudsonKaplan1985.Bound
+public import Gusfield2007.Basic.Data.Finset
 
 /-!
 # Gusfield et al. 2007, Figures 6 and 7: the numbers
@@ -206,13 +207,6 @@ theorem fig6Left_check : LabelSearch.check 4 fig6LeftCodes 1 = false := by decid
 
 theorem fig6Right_check : LabelSearch.check 3 fig6RightCodes 0 = false := by decide +kernel
 
-/-- `Finset.image_subset_image` with two instances. -/
-theorem image_subset_image_of_inst {α β : Type*} (i₁ i₂ : DecidableEq β) (f : α → β) {M A : Finset α} (h : M ⊆ A) :
-    @Finset.image _ _ i₁ f M ⊆ @Finset.image _ _ i₂ f A := by
-  intro r hr
-  obtain ⟨x, hx, rfl⟩ := (@Finset.mem_image _ _ i₁ _ _ _).1 hr
-  exact (@Finset.mem_image _ _ i₂ _ _ _).2 ⟨x, h hx, rfl⟩
-
 /-- The labels of a network deriving `M` contain `M`. -/
 theorem rows_subset_of_derives {ι V E : Type*} {N : Network ι V E} {M A : Finset (ι → Bool)} (hd : N.Derives M) (hlab : ∀ v, N.label v ∈ A) : M ⊆ A := fun r hr => by
   obtain ⟨v, -, rfl⟩ := hd.surjOn hr
@@ -226,8 +220,8 @@ theorem fig6_three_le_of_labels {a b : ℕ} (N : Network (Fin 6) (Fin a) (Fin b)
   have hsub : fig6 ⊆ A := fun r hr => by
     obtain ⟨v, rfl⟩ := hl r hr
     exact hlab v
-  have hl := h₁.lt_of_check (M := fig6.image fun r => r ∘ fig6Left) (image_subset_image_of_inst _ _ _ hsub) fig6LeftCodes_codesOf fig6Left_check
-  have hr := h₂.lt_of_check (M := fig6.image fun r => r ∘ fig6Right) (image_subset_image_of_inst _ _ _ hsub) fig6RightCodes_codesOf fig6Right_check
+  have hl := h₁.lt_of_check (M := fig6.image fun r => r ∘ fig6Left) (Finset.image_subset_image_of_decidableEq _ _ _ hsub) fig6LeftCodes_codesOf fig6Left_check
+  have hr := h₂.lt_of_check (M := fig6.image fun r => r ∘ fig6Right) (Finset.image_subset_image_of_decidableEq _ _ _ hsub) fig6RightCodes_codesOf fig6Right_check
   omega
 
 /-- A network for Figure 6 in the single-crossover model has at least three recombination nodes. -/
@@ -243,7 +237,7 @@ theorem fig6_two_le_recombCount {a b : ℕ} {c : Crossover} (N : Network (Fin 6)
   obtain ⟨A, U, hg, hlab⟩ := N.exists_gen hc
   obtain ⟨r', hle, h₁⟩ := hg.toMultiple.restrict fig6Left_strictMono.injective
   have hsub := rows_subset_of_derives hd hlab
-  have hl := h₁.lt_of_check (M := fig6.image fun r => r ∘ fig6Left) (image_subset_image_of_inst _ _ _ hsub) fig6LeftCodes_codesOf fig6Left_check
+  have hl := h₁.lt_of_check (M := fig6.image fun r => r ∘ fig6Left) (Finset.image_subset_image_of_decidableEq _ _ _ hsub) fig6LeftCodes_codesOf fig6Left_check
   omega
 
 /-- `R¹(M) = 3`. The paper needs `≤` only (line 594). -/

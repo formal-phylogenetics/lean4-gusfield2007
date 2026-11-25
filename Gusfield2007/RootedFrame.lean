@@ -44,7 +44,7 @@ def dropRoot (N : Network ι V E) (a : E) (ha : N.DropCond a) : Network ι {v //
   simple e f h₁ h₂ := Subtype.ext (N.simple e.1 f.1 (congrArg Subtype.val h₁) (congrArg Subtype.val h₂))
   acyclic := by
     obtain ⟨ρ, hρ⟩ := N.exists_rank
-    exact acyclic_of_rank (fun v => ρ v.1) fun e => hρ e.1
+    exact Relation.not_transGen_arc_self_of_rank (fun v => ρ v.1) fun e => hρ e.1
   root_iff v := by
     constructor
     · intro h

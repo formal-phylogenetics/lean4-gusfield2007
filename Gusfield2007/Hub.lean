@@ -101,7 +101,7 @@ noncomputable def hubNet (N : Network ι V E) (X : Set E) (v₁ : V) (hX : N.Hub
     obtain ⟨ρ, hρ⟩ := N.exists_rank
     obtain ⟨K', hK'⟩ := (Set.finite_range ρ).bddAbove
     obtain ⟨K, hK⟩ : ∃ K, ∀ v, ρ v < K := ⟨K' + 1, fun v => Nat.lt_succ_of_le (hK' ⟨v, rfl⟩)⟩
-    refine acyclic_of_rank (fun
+    refine Relation.not_transGen_arc_self_of_rank (fun
       | none => K
       | some z => if N.Reach z v₁ then ρ z else K + 1 + ρ z) ?_
     rintro (_ | e)
@@ -386,7 +386,7 @@ noncomputable def rerootNet (N : Network ι V E) (a : E) (ha : N.RerootCond a) :
     obtain ⟨ρ, hρ⟩ := N.exists_rank
     obtain ⟨K, hK⟩ := (Set.finite_range ρ).bddAbove
     have hlt : ∀ v, ρ v < K + 1 := fun v => Nat.lt_succ_of_le (hK ⟨v, rfl⟩)
-    refine acyclic_of_rank (fun v => if v = N.root then K + 1 else ρ v) fun e => ?_
+    refine Relation.not_transGen_arc_self_of_rank (fun v => if v = N.root then K + 1 else ρ v) fun e => ?_
     by_cases he : e = a
     · simp only [he, ite_true, N.tgt_ne_root a, ite_false]
       exact hlt _

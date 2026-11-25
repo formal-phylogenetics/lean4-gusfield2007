@@ -56,7 +56,7 @@ def turnRoot (P : Network κ V' E') (a : E') (h₁ : P.src a = P.root) (h₂ : �
         exact P.simple e f h₃ h₄
   acyclic := by
     obtain ⟨ρ, hρ⟩ := P.exists_rank
-    refine acyclic_of_rank (fun v => if v = P.tgt a then 0 else if v = P.root then 1 else ρ v + 2) fun e => ?_
+    refine Relation.not_transGen_arc_self_of_rank (fun v => if v = P.tgt a then 0 else if v = P.root then 1 else ρ v + 2) fun e => ?_
     have hrootne : P.root ≠ P.tgt a := (tgt_ne_root' P a).symm
     by_cases he : e = a
     · simp only [he, ite_true, hrootne, ite_false]

@@ -87,7 +87,7 @@ theorem starRows_edgeSet {W : Type*} [Finite W] {T : SimpleGraph W} {φ : starRo
   obtain ⟨f, -⟩ := starNet.exists_iso_of_isTreeNormalStructural starNet_derives (Network.isFullyDecomposedFor_of_tgt_injective starNet_tgt_injective _)
     (Network.isEfficient_of_tgt_injective starNet_tgt_injective).perBlob
     (starNet_cover.isTreeNormalStructural starNet_hr (fun k => k.elim) (fun e _ _ _ hg => starNet_hl e hg)) starNet_degree hT
-  rw [ncard_edgeSet_iso f, ← Network.treeness_eq_ncard_edgeSet, starNet_cover.treeness_eq]
+  rw [SimpleGraph.Iso.ncard_edgeSet_eq f, ← Network.treeness_eq_ncard_edgeSet, starNet_cover.treeness_eq]
   decide +kernel
 
 /-- **The treeness inequality fails for a blob that merges two components** (`g:treeness_merged_false`). `mergedNet` derives the compatible rows `1000, 0100, 0010, 0001`, in any crossover model. It has every condition of `treeness_le_and_eq_iff` except that its one blob has the two sites `0, 1`, which are two components of `G(M)`, each of one site. Its treeness is `5`, and `T̄` has `4` edges. The split `{0010, 0001} | {1000, 0100}` is in `T′` and not in `T̄`. -/
@@ -999,7 +999,7 @@ theorem treeness_merged_tie (c : Crossover) (hT : IsTBar tieRows T φ edge) :
     obtain rfl : k = 0 := Subsingleton.elim _ _
     exact Or.inl ⟨0, 1, by decide +kernel, hinc⟩
   · rw [tieNet_cover.treeness_eq, tieAc_card]
-  · rw [ncard_edgeSet_iso g, ← Network.treeness_eq_ncard_edgeSet, tieStarNet_cover.treeness_eq, tieStarAc_card]
+  · rw [SimpleGraph.Iso.ncard_edgeSet_eq g, ← Network.treeness_eq_ncard_edgeSet, tieStarNet_cover.treeness_eq, tieStarAc_card]
   · rintro ⟨f, hf⟩
     have hA₁ : tieNet.blobbedTree.Adj (tieNet.toBlobNode 6) (tieNet.toBlobNode 0) := by
       have h₁ := Network.blobbedTree_adj (tieNet_cover.tree 6 (by decide +kernel))

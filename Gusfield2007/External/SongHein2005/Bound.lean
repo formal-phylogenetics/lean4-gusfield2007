@@ -414,7 +414,7 @@ def insertAbove {v u : V} (hu : P.par v = some u) (y : V) (q : Option V) (hq : (
       · simp only [Option.map_eq_some_iff] at hab
         obtain ⟨p₀, hp₀, rfl⟩ := hab
         exact ht₂ _ _ hp₀
-    exact acyclic_of_strict (timeOpt t τ) hstrict
+    exact Relation.not_transGen_self_of_forall_lt (timeOpt t τ) hstrict
   site_tree := by
     intro i w hw
     simp only [Option.map_eq_some_iff] at hw
@@ -1215,7 +1215,7 @@ theorem hasState_init (S : ι → Bool) (A : X → ι → Bool) : HasState T S �
           split_ifs <;> simp
       par₂_root := rfl
       par₂_ne := by simp
-      acyclic := acyclic_of_strict t (fun a b hab => by
+      acyclic := Relation.not_transGen_self_of_forall_lt t (fun a b hab => by
         rcases hab with hab | hab
         · exact hpar_lt _ _ hab
         · simp at hab)

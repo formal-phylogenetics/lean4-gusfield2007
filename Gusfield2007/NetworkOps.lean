@@ -2,6 +2,7 @@ module
 
 public import Gusfield2007.Preliminaries
 public import Mathlib.Basic.Finite.Sum
+public import Gusfield2007.Basic.Logic.Relation
 
 /-!
 # Gusfield et al. 2007: operations on phylogenetic networks
@@ -202,7 +203,7 @@ def trim [Finite V] (hM : M.Nonempty) (hanchor : ∀ r : M, N.label (anchor r) =
     · simpa using h₂
   acyclic := by
     obtain ⟨ρ, hρ⟩ := N.exists_rank
-    refine acyclic_of_rank (Sum.elim (fun v => ρ v.1) (fun r => ρ (anchor r) + 1)) ?_
+    refine Relation.not_transGen_arc_self_of_rank (Sum.elim (fun v => ρ v.1) (fun r => ρ (anchor r) + 1)) ?_
     rintro (e | r)
     · exact hρ e.1
     · exact Nat.lt_succ_self _
@@ -423,31 +424,6 @@ section Reattach
 
 variable {ι : Type u} {V : Type v} {E : Type w}
 
-/-- A relation with one more arc is acyclic, if the arc closes no cycle. -/
-theorem acyclic_of_add_arc {α : Type*} {r r' : α → α → Prop} {y x : α} (hr : ∀ a, ¬ Relation.TransGen r a a)
-    (hle : ∀ a b, r' a b → r a b ∨ (a = y ∧ b = x)) (hxy : ¬ Relation.ReflTransGen r x y) (a : α) :
-    ¬ Relation.TransGen r' a a := by
-  have key : ∀ a b, Relation.TransGen r' a b →
-      Relation.TransGen r a b ∨ (Relation.ReflTransGen r x b ∧ Relation.ReflTransGen r a y) := by
-    intro a b h
-    induction h with
-    | single hab =>
-      rcases hle _ _ hab with h | ⟨rfl, rfl⟩
-      · exact Or.inl (Relation.TransGen.single h)
-      · exact Or.inr ⟨Relation.ReflTransGen.refl, Relation.ReflTransGen.refl⟩
-    | tail _ hbc ih =>
-      rcases hle _ _ hbc with h | ⟨rfl, rfl⟩
-      · rcases ih with ih | ⟨ih₁, ih₂⟩
-        · exact Or.inl (ih.tail h)
-        · exact Or.inr ⟨ih₁.tail h, ih₂⟩
-      · rcases ih with ih | ⟨ih₁, ih₂⟩
-        · exact Or.inr ⟨Relation.ReflTransGen.refl, ih.to_reflTransGen⟩
-        · exact absurd ih₁ hxy
-  intro h
-  rcases key a a h with h | ⟨h₁, h₂⟩
-  · exact hr a h
-  · exact hxy (h₁.trans h₂)
-
 /-- The recombination node `x`, with arcs `e`, `f` in, moved under a node `y` with its label and not below it: `f` is removed and `e` starts at `y`. "We can modify `N`, while maintaining the
 conditions of the theorem, so that `N` does not contain two recombination nodes labeled by the same sequence" (line 576). -/
 def reattach (N : Network ι V E) {e f : E} (hef : e ≠ f) (he : N.tgt e = N.tgt f) {y : V} (hl : N.label y = N.label (N.tgt e))
@@ -473,7 +449,7 @@ def reattach (N : Network ι V E) {e f : E} (hef : e ≠ f) (he : N.tgt e = N.tg
       rw [ite_eq_right h₁', ite_eq_right h₂'] at h₁
       exact N.simple _ _ h₁ h₂
   acyclic := by
-    refine acyclic_of_add_arc (r := N.Arc) (y := y) (x := N.tgt e) N.acyclic ?_ hy
+    refine Relation.not_transGen_self_of_le_or_eq (r := N.Arc) (y := y) (x := N.tgt e) N.acyclic ?_ hy
     rintro a b ⟨⟨g, hg⟩, rfl, rfl⟩
     simp only
     by_cases hge : g = e

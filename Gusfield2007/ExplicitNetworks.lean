@@ -34,7 +34,7 @@ def mkNet {m a b : ℕ} (src tgt : Fin b → Fin a) (root : Fin a) (site : Fin m
   site := site
   label := label
   simple := h₁
-  acyclic := acyclic_of_rank (fun v => v.val) h₂
+  acyclic := Relation.not_transGen_arc_self_of_rank (fun v => v.val) h₂
   root_iff := h₃
   inDegree_le_two := h₄
   site_not_recomb := h₅

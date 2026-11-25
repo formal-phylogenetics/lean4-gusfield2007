@@ -452,7 +452,7 @@ def chainNet : Network (Fin 2) (Fin 4) (Fin 3) where
   site := Fin.castSucc
   label := fun v i => decide (v = 2 ∨ (v = 1 ∧ i = 0))
   simple := by decide
-  acyclic := Network.acyclic_of_rank (fun v : Fin 4 => v.val) (by decide)
+  acyclic := Relation.not_transGen_arc_self_of_rank (fun v : Fin 4 => v.val) (by decide)
   root_iff := by decide
   inDegree_le_two := by decide
   site_not_recomb := by decide
@@ -632,7 +632,7 @@ omit [LinearOrder ι] [Finite ι] in
 /-- Two sites with one column, one in a non-trivial component, are in that component. -/
 theorem reachable_of_columnOf_eq {T : Finset (ι → Bool)} {i j k : ι} (hik : (incompatGraph T).Reachable i k) (hne : i ≠ k)
     (hij : columnOf T i = columnOf T j) : (incompatGraph T).Reachable i j := by
-  obtain ⟨l, hl⟩ := exists_adj_of_reachable hik hne
+  obtain ⟨l, hl⟩ := SimpleGraph.Reachable.exists_adj_of_ne hik hne
   have hval : ∀ r ∈ T, r i = r j := fun r hr => congrFun hij ⟨r, hr⟩
   have hjl : (incompatGraph T).Adj j l := fun a b => by
     obtain ⟨r, hr, h₁, h₂⟩ := hl a b

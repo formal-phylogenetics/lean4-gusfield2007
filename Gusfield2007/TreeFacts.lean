@@ -3,6 +3,7 @@ module
 public import Gusfield2007.Defs
 public import Phylogenetics.Tree.XTree
 public import Mathlib.Combinatorics.SimpleGraph.Metric
+public import Gusfield2007.Basic.Combinatorics.SimpleGraph.Acyclic
 
 /-!
 # Trees, sides of edges, and labelled nodes
@@ -92,11 +93,6 @@ theorem sameSide_iff_mem_edgeSide (hT : T.Connected) {φ : X → W} (e : Sym2 W)
     · exact hx.symm.trans (h.1 hx)
     · exact sameSide_of_not_sameSide hT (fun h' => hx h'.symm) (fun h' => hx (h.2 h'.symm))
 
-/-- An isomorphism of graphs preserves the number of edges. -/
-theorem ncard_edgeSet_iso {W' : Type*} {T' : SimpleGraph W'} (f : T ≃g T') : T'.edgeSet.ncard = T.edgeSet.ncard := by
-  rw [← Nat.card_coe_set_eq, ← Nat.card_coe_set_eq]
-  exact Nat.card_congr f.mapEdgeSet.symm
-
 /-- At a node with one neighbour, nothing else is on the node's side of that edge. -/
 theorem sameSide_pendant {a b z : W} (ha : ∀ c, T.Adj a c → c = b) (h : SameSide T s(a, b) a z) : z = a := by
   obtain ⟨p⟩ := h
@@ -114,38 +110,6 @@ variable [Finite W]
 theorem eq_of_sameSide_of_ncard_le_one {a u c : W} (hdeg : (T.neighborSet a).ncard ≤ 1) (hu : T.Adj a u) (h : SameSide T s(a, u) a c) :
     c = a :=
   sameSide_pendant (fun _ hk => Set.ncard_le_one_iff_subsingleton.1 hdeg hk hu) h
-
-/-- In a finite acyclic graph, the farthest node from `v` in its component has at most one neighbour, and if it's `v`, then none. -/
-theorem exists_far {G : SimpleGraph W} (hG : G.IsAcyclic) (v : W) :
-    ∃ y, G.Reachable v y ∧ (G.neighborSet y).Subsingleton ∧ (y = v → ∀ z, ¬ G.Adj v z) := by
-  obtain ⟨y, hy, hmax⟩ := (Set.toFinite {y | G.Reachable v y}).exists_maximalFor (G.dist v) _
-    ⟨v, SimpleGraph.Reachable.refl _⟩ |> fun ⟨y, hy⟩ => (⟨y, hy.1, fun z hz => not_lt.1 fun hlt => absurd (hy.2 hz hlt.le) (not_le.2 hlt)⟩ :
-      ∃ y, G.Reachable v y ∧ ∀ z, G.Reachable v z → G.dist v z ≤ G.dist v y)
-  have hd : ∀ z, G.Adj y z → G.dist v z + 1 = G.dist v y := by
-    intro z hz
-    rcases hG.dist_eq_dist_add_one_of_adj_of_reachable v hz hy with h | h
-    · exact h.symm
-    · have := hmax z (SimpleGraph.Reachable.trans hy hz.reachable)
-      omega
-  refine ⟨y, hy, ?_, ?_⟩
-  · obtain ⟨p, hp, hpl⟩ := SimpleGraph.Reachable.exists_path_of_dist hy
-    have hkey : ∀ z, G.Adj y z → z = p.penultimate := by
-      intro z hz
-      have hzr : G.Reachable v z := SimpleGraph.Reachable.trans hy hz.reachable
-      obtain ⟨q, hq, hql⟩ := SimpleGraph.Reachable.exists_path_of_dist hzr
-      have hy' : y ∉ q.support := by
-        intro hmem
-        have h₁ : G.dist v y ≤ (q.takeUntil y hmem).length := SimpleGraph.dist_le _
-        have h₂ := q.length_takeUntil_le_length hmem
-        have h₃ := hd z hz
-        omega
-      exact hG.eq_penultimate_of_adj_end hp hz (hG.mem_support_of_ne_mem_support_of_adj_of_isPath hp hq hz hy')
-    intro z₁ h₁ z₂ h₂
-    exact (hkey z₁ h₁).trans (hkey z₂ h₂).symm
-  · rintro rfl z hz
-    have := hd z hz
-    rw [SimpleGraph.dist_self] at this
-    omega
 
 /-- **The labels in a part of a tree.** If each node of degree at most two is labelled, then for two edges and a node `v`, some label is on the side of `v` of both. Taking the
 two edges equal, both sides of each edge have a label. It's the reason that a middle part of a tree, between two edges, has a label: otherwise every node in it has degree at least three, and two of its nodes meet both edges. -/
@@ -197,11 +161,11 @@ theorem exists_label_sameSide (hT : T.IsTree) {φ : X → W} (hφ : ∀ v, (T.ne
     have hu₃ := Set.ncard_union_le (G.neighborSet y) {z | s(y, z) = e₁}
     have hle'' := Set.ncard_le_ncard hcover (Set.toFinite _)
     omega
-  obtain ⟨y₁, hy₁, hs₁, hv₁⟩ := exists_far hac v
+  obtain ⟨y₁, hy₁, hs₁, hv₁⟩ := SimpleGraph.IsAcyclic.exists_reachable_neighborSet_subsingleton hac v
   by_cases hl₁ : y₁ ∈ Set.range φ
   · exact hdone y₁ hy₁ hl₁
   · obtain ⟨⟨z₁, hz₁⟩, ⟨z₂, hz₂⟩, hne, hnon⟩ := hdeg y₁ hs₁ hl₁
-    obtain ⟨y₂, hy₂, hs₂, hv₂⟩ := exists_far hac y₁
+    obtain ⟨y₂, hy₂, hs₂, hv₂⟩ := SimpleGraph.IsAcyclic.exists_reachable_neighborSet_subsingleton hac y₁
     by_cases hl₂ : y₂ ∈ Set.range φ
     · exact hdone y₂ (SimpleGraph.Reachable.trans hy₁ hy₂) hl₂
     · exfalso

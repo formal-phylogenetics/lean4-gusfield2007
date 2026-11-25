@@ -24,7 +24,7 @@ theorem fig1_incompatible_side (i j : Fin 5) (h : Incompatible fig1 i j) : i ∈
 
 /-- The two components of Figure 3: `C`, with the sites 1, 3, 4 of the paper, and `C′`, with the sites 2, 5. -/
 theorem fig1_reachable (i j : Fin 5) : (incompatGraph fig1).Reachable i j ↔ (i ∈ fig1C ↔ j ∈ fig1C) := by
-  refine reachable_iff_of_adj _ (fun i j hij => fig1_incompatible_side i j hij) (a := 0) (b := 1) (fun i hi => reachable_of_two_steps ?_) (fun i hi => reachable_of_two_steps ?_) i j
+  refine SimpleGraph.reachable_iff_mem_iff_of_adj _ (fun i j hij => fig1_incompatible_side i j hij) (a := 0) (b := 1) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) i j
   · change i = 0 ∨ i = 2 ∨ i = 3 at hi
     change i = 0 ∨ Incompatible fig1 i 0 ∨ ∃ k, Incompatible fig1 i k ∧ Incompatible fig1 k 0
     unfold Incompatible
@@ -75,7 +75,7 @@ def fig1State (k : Fin 2) (v : Fin 10) : Bool :=
 theorem fig1T_isTree : fig1T.IsTree := by
   rw [SimpleGraph.isTree_iff_connected_and_card]
   refine ⟨⟨fun i j => ?_⟩, ?_⟩
-  · have key : ∀ i, fig1T.Reachable i 0 := fun i => reachable_of_two_steps (by revert i; decide +kernel)
+  · have key : ∀ i, fig1T.Reachable i 0 := fun i => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj (by revert i; decide +kernel)
     exact (key i).trans (key j).symm
   · rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
     decide +kernel
@@ -99,7 +99,7 @@ theorem fig1T_perfect : IsPerfectPhylogeny fig1T fig1Phi fig1A fig1Edge where
           v = rep ∨ (fig1T.Adj v rep ∧ s(v, rep) ≠ fig1Edge k) ∨ ∃ w, (fig1T.Adj v w ∧ s(v, w) ≠ fig1Edge k) ∧ (fig1T.Adj w rep ∧ s(w, rep) ≠ fig1Edge k)) := by
         decide +kernel
       have hreach : ∀ v : Fin 10, (fig1T.deleteEdges {fig1Edge k}).Reachable v (if fig1State k v then (if k = 0 then 1 else 2) else 0) := fun v => by
-        refine reachable_of_two_steps ?_
+        refine SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_
         simp only [SimpleGraph.deleteEdges_adj, Set.mem_singleton_iff]
         exact hrep k v
       have hx := hreach (fig1Phi x)

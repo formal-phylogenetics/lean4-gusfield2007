@@ -149,7 +149,7 @@ def splitOut (e f : E) (he : N.src e = N.src f) : Network ι (Option V) (Option 
           exact Option.some.inj h₁
   acyclic := by
     obtain ⟨t, ht⟩ := exists_rank N
-    refine Network.acyclic_of_rank (fun w : Option V => match w with
+    refine Relation.not_transGen_arc_self_of_rank (fun w : Option V => match w with
       | none => 2 * t (N.src e) + 1
       | some u => 2 * t u) ?_
     rintro (- | k)

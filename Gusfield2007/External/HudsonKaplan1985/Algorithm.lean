@@ -5,6 +5,7 @@ public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Dedup
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Data.List.Range
+public import Gusfield2007.Basic.Data.List
 
 /-!
 # The algorithm of Hudson and Kaplan for `R_M`
@@ -365,26 +366,8 @@ def countUpTo (S : ℕ) (d : ℕ → ℕ → Bool) (k : ℕ) : ℕ := (finalList
 /-- The placement of events: one just before the right end point of each final interval. -/
 def eventVector (S : ℕ) (d : ℕ → ℕ → Bool) (l : ℕ) : ℕ := (finalList S d).countP fun p => decide (p.2 - 1 = l)
 
-/-- The events of `eventVector` before `k`. -/
-theorem sum_countP (F : List (ℕ × ℕ)) (hF : ∀ p ∈ F, 1 ≤ p.2) (k : ℕ) :
-    ∑ l ∈ range k, F.countP (fun p => decide (p.2 - 1 = l)) = F.countP fun p => decide (p.2 ≤ k) := by
-  induction F with
-  | nil => simp
-  | cons a F ih =>
-    have ih' := ih fun p hp => hF p (List.mem_cons_of_mem _ hp)
-    have ha := hF a List.mem_cons_self
-    simp only [List.countP_cons, sum_add_distrib, ih', add_right_inj]
-    have hsum : ∑ l ∈ range k, (if decide (a.2 - 1 = l) = true then 1 else 0) = if a.2 - 1 ∈ range k then 1 else 0 := by
-      simp only [decide_eq_true_eq]
-      exact sum_ite_eq (range k) (a.2 - 1) fun _ => 1
-    rw [hsum]
-    simp only [mem_range, decide_eq_true_eq]
-    congr 1
-    apply propext
-    omega
-
 theorem sum_eventVector (k : ℕ) : ∑ l ∈ range k, eventVector S d l = countUpTo S d k :=
-  sum_countP _ (fun p hp => by have := (mem_intervalList.1 (finalList_subset p hp)).1; omega) k
+  List.sum_range_countP_snd_sub_one_eq _ (fun p hp => by have := (mem_intervalList.1 (finalList_subset p hp)).1; omega) k
 
 /-- The placement satisfies the four-gamete bounds. -/
 theorem eventVector_feasible : Feasible S (incompatBounds d) (eventVector S d) := by

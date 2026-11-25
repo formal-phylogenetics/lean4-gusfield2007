@@ -1,6 +1,7 @@
 module
 
 public import Gusfield2007.Uniqueness
+public import Gusfield2007.Basic.Combinatorics.SimpleGraph.Connectivity
 
 /-!
 # Gusfield et al. 2007, Section 5.1: the Full-Decomposition Optimality Conjectures
@@ -18,38 +19,6 @@ namespace Gusfield2007
 universe u
 
 variable {ι : Type u} [LinearOrder ι] [Finite ι]
-
-omit [LinearOrder ι] [Finite ι] in
-/-- The components of two graphs with the same reachability are the same sets of sites. -/
-def ccEquiv {G G' : SimpleGraph ι} (h : ∀ i j, G.Reachable i j ↔ G'.Reachable i j) :
-    G.ConnectedComponent ≃ G'.ConnectedComponent where
-  toFun C := C.lift (fun i => G'.connectedComponentMk i) fun _ _ p _ =>
-    SimpleGraph.ConnectedComponent.eq.2 ((h _ _).1 p.reachable)
-  invFun C := C.lift (fun i => G.connectedComponentMk i) fun _ _ p _ =>
-    SimpleGraph.ConnectedComponent.eq.2 ((h _ _).2 p.reachable)
-  left_inv C := by
-    induction C using SimpleGraph.ConnectedComponent.ind
-    rfl
-  right_inv C := by
-    induction C using SimpleGraph.ConnectedComponent.ind
-    rfl
-
-omit [LinearOrder ι] [Finite ι] in
-theorem ccEquiv_supp {G G' : SimpleGraph ι} (h : ∀ i j, G.Reachable i j ↔ G'.Reachable i j) (C : G.ConnectedComponent) :
-    (ccEquiv h C).supp = C.supp := by
-  induction C using SimpleGraph.ConnectedComponent.ind with
-  | _ i₀ =>
-    ext i
-    change i ∈ (G'.connectedComponentMk i₀).supp ↔ i ∈ (G.connectedComponentMk i₀).supp
-    simp only [SimpleGraph.ConnectedComponent.mem_supp_iff, SimpleGraph.ConnectedComponent.eq]
-    exact (h i i₀).symm
-
-omit [LinearOrder ι] [Finite ι] in
-/-- A sum over the components of a graph depends only on the components, as sets of sites. -/
-theorem finsum_connectedComponent_congr {G G' : SimpleGraph ι} (h : ∀ i j, G.Reachable i j ↔ G'.Reachable i j) (g : Set ι → ℕ) :
-    ∑ᶠ C : G.ConnectedComponent, g C.supp = ∑ᶠ C : G'.ConnectedComponent, g C.supp := by
-  rw [← finsum_comp_equiv (ccEquiv h)]
-  exact finsum_congr fun C => by rw [ccEquiv_supp]
 
 /-- **Line 413** (`g:compute_FS`). "Even if `M` is not S-min or S-min-1 decomposable, this method will find the minimum number of
 recombination nodes, denoted `F_S(M)` and `F¹_S(M)`, used in any fully decomposed network for `M` with ancestral sequence `S`". The bound `≤` is Theorem 3. The bound `≥` is Lemma 5: in a fully decomposed network each recombination node is a 0 or 1-component recombination. -/
@@ -92,7 +61,7 @@ theorem sum_R_le_F (c : Crossover) (M : Finset (ι → Bool)) (hM : M.Nonempty) 
   have hreach := reachable_conflictGraph_iff h₂' h₃'
   have hfS := h₃'.of_reachable_iff fun i j => (hreach i j).symm
   have h5 := lemma5 hC N' h₁' h₂' rfl fun x hx => hfS.isZero_or_isOne hx
-  rw [finsum_connectedComponent_congr hreach (fun s => RS c (s.domRestrict N'.ancestral) (restrictRows s M))] at h5
+  rw [SimpleGraph.finsum_connectedComponent_supp_congr hreach (fun s => RS c (s.domRestrict N'.ancestral) (restrictRows s M))] at h5
   refine le_trans ?_ h5
   have : Fintype (incompatGraph M).ConnectedComponent := Fintype.ofFinite _
   rw [finsum_eq_sum_of_fintype, finsum_eq_sum_of_fintype]
@@ -318,7 +287,7 @@ theorem IsTBar.exists_row_of_center [Finite W] (hT : IsTBar M T φ edge) {C : (i
     · exact ⟨q, hq, fun h => hpq (hpi.trans h.symm)⟩
     · exact ⟨p, hp, hpi⟩
   have hreach : (incompatGraph M).Reachable i j := SimpleGraph.ConnectedComponent.eq.1 (hi.trans (Eq.symm hj))
-  obtain ⟨i₂, hi₂⟩ := exists_adj_of_reachable hreach (Ne.symm hij)
+  obtain ⟨i₂, hi₂⟩ := SimpleGraph.Reachable.exists_adj_of_ne hreach (Ne.symm hij)
   have hi₂C : i₂ ∈ C.supp := by
     rw [SimpleGraph.ConnectedComponent.mem_supp_iff] at hi ⊢
     rw [← hi]
@@ -642,7 +611,7 @@ theorem F_le_sum_rootCost (c : Crossover) (hM : M.Nonempty) (hC : NoConstantColu
   obtain ⟨a, b, N, h₁, h₂, -, h₄, h₅⟩ := theorem3 c M S hM hC
   have hF : F c M ≤ N.recombCount := Nat.sInf_le ⟨a, b, N, h₁, h₂, h₄.of_reachable_iff hreach, rfl⟩
   refine hF.trans (le_of_eq ?_)
-  rw [h₅, finsum_connectedComponent_congr hreach (fun s => RS c (s.domRestrict S) (restrictRows s M))]
+  rw [h₅, SimpleGraph.finsum_connectedComponent_supp_congr hreach (fun s => RS c (s.domRestrict S) (restrictRows s M))]
   exact finsum_congr hS
 
 /-- **Line 418's second fact** (`g:root_interior`). "Placing the root of `T̄` at a leaf or on the interior of an edge will not reduce the number of required recombinations." A root anywhere on `T̄` is a sequence `S` that doesn't merge components, and it costs `Σ R_{S(C)}(M(C))`. This is no less than the cost of an interior node. If there's a non-trivial
@@ -707,7 +676,7 @@ theorem F_eq_sInf_interior (c : Crossover) (M : Finset (ι → Bool)) (hM : M.No
       ⟨_, N.ancestral, reachable_conflictGraph_iff h₂ h₃, rfl⟩
     rw [← F_eq_sInf_roots c M hM hC] at hmem
     obtain ⟨S, hS, hF⟩ := hmem
-    rw [finsum_connectedComponent_congr hS (fun s => RS c (s.domRestrict S) (restrictRows s M))] at hF
+    rw [SimpleGraph.finsum_connectedComponent_supp_congr hS (fun s => RS c (s.domRestrict S) (restrictRows s M))] at hF
     obtain ⟨C₀, hC₀⟩ := hnon
     obtain ⟨v₀, hv₀, hv₀', -⟩ := lemma4 hT C₀
     obtain ⟨v, hint, hsum⟩ := exists_interior_sum_rootCost_le c hM hC hT ⟨v₀, hT.two_le_ncard_center hC₀ hv₀ (hv₀' hC₀)⟩ hS

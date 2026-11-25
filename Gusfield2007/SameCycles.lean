@@ -115,7 +115,7 @@ theorem isCycleOn {w x : V} {p q : List E} (hc : N.IsCycleOn w x p q) : N'.IsCyc
 
 theorem isCycle_image {Q : Set E} (hQ : N.IsCycle Q) : N'.IsCycle (g '' Q) := by
   obtain ⟨w, x, p, q, hc, rfl⟩ := hQ
-  exact ⟨f w, f x, p.map g, q.map g, h.isCycleOn hc, image_setOf_mem_or_mem g p q⟩
+  exact ⟨f w, f x, p.map g, q.map g, h.isCycleOn hc, List.image_setOf_mem_or_mem g p q⟩
 
 theorem onCycle_image {e : E} (he : N.OnCycle e) : N'.OnCycle (g e) := by
   obtain ⟨Q, hQ, heQ⟩ := he
@@ -208,7 +208,7 @@ theorem isCycle_iff (Q' : Set E') : N'.IsCycle Q' ↔ ∃ Q, N.IsCycle Q ∧ Q' 
   constructor
   · rintro ⟨w', x', p', q', hc, rfl⟩
     obtain ⟨w, x, p, q, rfl, rfl, hc₀⟩ := h.isCycleOn_back hc
-    exact ⟨_, ⟨w, x, p, q, hc₀, rfl⟩, (image_setOf_mem_or_mem g p q).symm⟩
+    exact ⟨_, ⟨w, x, p, q, hc₀, rfl⟩, (List.image_setOf_mem_or_mem g p q).symm⟩
   · rintro ⟨Q, hQ, rfl⟩
     exact h.isCycle_image hQ
 

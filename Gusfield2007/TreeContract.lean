@@ -1,6 +1,7 @@
 module
 
 public import Gusfield2007.TreeCuts
+public import Gusfield2007.Basic.Data.Bool
 
 /-!
 # Gusfield et al. 2007: a perfect phylogeny with every internal edge labelled
@@ -19,18 +20,6 @@ namespace Gusfield2007
 universe u v w
 
 variable {W : Type u} {X : Type v} {κ : Type w}
-
-/-- Two maps that separate `x` from everything else have the same fibres. -/
-theorem split_eq_of_single {f g : X → Bool} {x : X} (hf : ∀ z, f z = f x ↔ z = x) (hg : ∀ z, g z = g x ↔ z = x)
-    (a b : X) : f a = f b ↔ g a = g b := by
-  have nb : ∀ {α β γ : Bool}, α ≠ γ → β ≠ γ → α = β := by decide
-  by_cases ha : a = x <;> by_cases hb : b = x
-  · simp [ha, hb]
-  · subst ha
-    exact ⟨fun h => absurd h.symm (mt (hf b).1 hb), fun h => absurd h.symm (mt (hg b).1 hb)⟩
-  · subst hb
-    exact ⟨fun h => absurd h (mt (hf a).1 ha), fun h => absurd h (mt (hg a).1 ha)⟩
-  · exact ⟨fun _ => nb (mt (hg a).1 ha) (mt (hg b).1 hb), fun _ => nb (mt (hf a).1 ha) (mt (hf b).1 hb)⟩
 
 /-- What the contraction provides, on a tree `T` with labels `φ` and edges `edge`. Each side of an edge has a label; distinct
 edges have distinct splits; the split of each label from the others is the split of an edge; and each edge is labelled by a
@@ -70,7 +59,7 @@ theorem degree_aux {x : X} {u : W} (hu : T.Adj (φ x) u) {p : Sym2 W} (hp : p �
     by_contra hcon
     push Not at hcon
     refine hne (h.split_inj hu hp c c' hc hc' ?_)
-    refine split_eq_of_single (x := x) (f := c ∘ φ) (g := c' ∘ φ) (fun z => ?_) hz
+    refine Bool.apply_eq_apply_iff_of_forall_eq_iff (x := x) (f := c ∘ φ) (g := c' ∘ φ) (fun z => ?_) hz
     refine ⟨fun hzx => ?_, fun hzx => by rw [hzx]⟩
     by_contra hzne
     exact hcon z hzne hzx
@@ -140,7 +129,7 @@ theorem degree_ne_two [Finite W] [Nonempty X] (v : W) : (T.neighborSet v).ncard 
   -- The node `v` is alone in its corner.
   have hZ : ∀ w, w ≠ v → ¬ (c₁ w = c₁ v ∧ c₂ w = c₂ v) := by
     intro w hw hz
-    have hall := forall_of_adj_closed hconn (P := fun x => x ≠ v ∧ c₁ x = c₁ v ∧ c₂ x = c₂ v) (w := w) ?_ ⟨hw, hz⟩ v
+    have hall := SimpleGraph.Preconnected.forall_of_forall_adj hconn (P := fun x => x ≠ v ∧ c₁ x = c₁ v ∧ c₂ x = c₂ v) (w := w) ?_ ⟨hw, hz⟩ v
     · exact hall.1 rfl
     · rintro x y hxy ⟨hx, hx₁, hx₂⟩
       have hyv : y ≠ v := by
@@ -217,7 +206,7 @@ theorem not_single_of_not_range [Finite W] [Nonempty X] {a b : W} (hab : T.Adj a
       exact nb (Ne.symm (mt (hz z).1 hzne))
     rw [← hyx, hy, nb h₂] at hzx
     exact hfar (φ z) ⟨h₅, hzx⟩
-  have := h.split_inj hab hw c c' hc hc' (split_eq_of_single (f := c ∘ φ) (g := c' ∘ φ) hz hz')
+  have := h.split_inj hab hw c c' hc hc' (Bool.apply_eq_apply_iff_of_forall_eq_iff (f := c ∘ φ) (g := c' ∘ φ) hz hz')
   exact hne' this.symm
 
 theorem labelled [Finite W] [Nonempty X] {a b : W} (hab : T.Adj a b) (ha : a ∉ Set.range φ) (hb : b ∉ Set.range φ) :
@@ -292,7 +281,7 @@ theorem contractGraph_isTree (hT : T.IsTree) (hK : K ⊆ T.edgeSet) : (contractG
     | mk u =>
     induction y using Quot.ind with
     | mk v =>
-    refine forall_of_adj_closed hT.connected.preconnected
+    refine SimpleGraph.Preconnected.forall_of_forall_adj hT.connected.preconnected
       (P := fun z => (contractGraph T K).Reachable (Quot.mk _ u) (Quot.mk _ z)) ?_ (SimpleGraph.Reachable.refl _) v
     intro a b hab ha
     by_cases hK' : s(a, b) ∈ K
@@ -399,7 +388,7 @@ theorem IsPerfectPhylogeny.exists_normal {T : SimpleGraph W} {φ : X → W} {A :
         refine ⟨hw, Or.inr ⟨x, fun y z => ?_⟩⟩
         change SameSide T s(φ x, w) (φ y) (φ z) ↔ _
         rw [hs.sameSide_iff hconnT hw]
-        exact split_eq_of_single (f := s ∘ φ) (g := fun t => decide (t = x)) hs₁ (by simp) y z |>.trans (by
+        exact Bool.apply_eq_apply_iff_of_forall_eq_iff (f := s ∘ φ) (g := fun t => decide (t = x)) hs₁ (by simp) y z |>.trans (by
           by_cases h₁ : y = x <;> by_cases h₂ : z = x <;> simp [h₁, h₂])
       obtain ⟨g, hg, hgsp⟩ := hK3 _ hgood
       obtain ⟨c', hc'₁, hc'⟩ := (Classical.choose_spec (exists_isCut hT (hKe hg))).contract hg (hKe hg)

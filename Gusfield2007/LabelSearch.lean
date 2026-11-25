@@ -2,6 +2,7 @@ module
 
 public import Gusfield2007.Histories
 public import Mathlib.Data.Nat.Init
+public import Gusfield2007.Basic.Data.Nat.Bitwise
 
 /-!
 # Gusfield et al. 2007: a verified search for lower bounds on `R`
@@ -80,10 +81,6 @@ theorem memN_iff {x : ℕ} {l : List ℕ} : memN x l = true ↔ x ∈ l := by
 theorem memN_eq_false_iff {x : ℕ} {l : List ℕ} : memN x l = false ↔ x ∉ l := by
   rw [← memN_iff, Bool.not_eq_true]
 
-theorem beq_eq_false_of_ne {x y : ℕ} (h : x ≠ y) : Nat.beq x y = false := by
-  rw [← Bool.not_eq_true]
-  exact fun h' => h (Nat.eq_of_beq_eq_true h')
-
 section Code
 
 variable {m : ℕ}
@@ -135,7 +132,7 @@ theorem oneStep_of_isFlip {i : Fin m} {p q : Fin m → Bool} (h : IsFlip i p q) 
     change (2 ^ i.val) &&& (2 ^ i.val - 1) = 0
     rw [Nat.and_two_pow_sub_one_eq_mod, Nat.mod_self]
   unfold oneStep
-  rw [hx, h₀, beq_eq_false_of_ne (Nat.two_pow_pos i.val).ne']
+  rw [hx, h₀, Nat.beq_eq_false_of_ne (Nat.two_pow_pos i.val).ne']
   rfl
 
 theorem isMix_of_isMix {p p' q : Fin m → Bool} (h : Recombinant .multiple p p' q) : isMix (code q) (code p) (code p') = true := by
@@ -236,14 +233,14 @@ theorem good_of_gen (h : Gen .multiple S A U r) (hMc : ∀ x ∈ Mc, ∃ a ∈ A
       omega
     by_cases hS : code a = code S
     · exact Or.inl (List.mem_singleton.2 hS)
-    · exact Or.inr (List.mem_filter.2 ⟨hmem, by rw [beq_eq_false_of_ne hS]; rfl⟩)
+    · exact Or.inr (List.mem_filter.2 ⟨hmem, by rw [Nat.beq_eq_false_of_ne hS]; rfl⟩)
   | succ k ih =>
     rw [good, Bool.or_eq_true]
     by_cases hall : ∀ a ∈ A, code a ∈ L
     · refine Or.inl (covers_of_gen h hMc (List.mem_singleton.2 rfl) fun a ha => ?_)
       by_cases hS : code a = code S
       · exact Or.inl (List.mem_singleton.2 hS)
-      · exact Or.inr (List.mem_filter.2 ⟨hall a ha, by rw [beq_eq_false_of_ne hS]; rfl⟩)
+      · exact Or.inr (List.mem_filter.2 ⟨hall a ha, by rw [Nat.beq_eq_false_of_ne hS]; rfl⟩)
     · push Not at hall
       obtain ⟨a, ha, haL⟩ := hall
       refine Or.inr (List.any_eq_true.2 ⟨code a, List.mem_range.2 (code_lt a), ?_⟩)

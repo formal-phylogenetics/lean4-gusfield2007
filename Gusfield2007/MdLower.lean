@@ -100,8 +100,8 @@ end GenSingle
 /-- A single-crossover history with the rows of Figure 6 among its labels has at least three recombinations: `fig6_three_le_of_labels`, on histories. -/
 theorem Gen.fig6_three_le {S : Fin 6 → Bool} {A : Finset (Fin 6 → Bool)} {U : Set (Fin 6)} {r : ℕ} (hg : Gen .single S A U r) (hsub : fig6 ⊆ A) : 3 ≤ r := by
   obtain ⟨r₁, r₂, hle, h₁, h₂⟩ := hg.split fig6Left_strictMono fig6Right_strictMono fig6Left_le_right
-  have hl := h₁.lt_of_check (M := fig6.image fun r => r ∘ fig6Left) (image_subset_image_of_inst _ _ _ hsub) fig6LeftCodes_codesOf fig6Left_check
-  have hr := h₂.lt_of_check (M := fig6.image fun r => r ∘ fig6Right) (image_subset_image_of_inst _ _ _ hsub) fig6RightCodes_codesOf fig6Right_check
+  have hl := h₁.lt_of_check (M := fig6.image fun r => r ∘ fig6Left) (Finset.image_subset_image_of_decidableEq _ _ _ hsub) fig6LeftCodes_codesOf fig6Left_check
+  have hr := h₂.lt_of_check (M := fig6.image fun r => r ∘ fig6Right) (Finset.image_subset_image_of_decidableEq _ _ _ hsub) fig6RightCodes_codesOf fig6Right_check
   omega
 
 /-- The sites of the first `d` copies in `M_{d+1}`. -/

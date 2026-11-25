@@ -4,6 +4,7 @@ public import Gusfield2007.DecompNet
 public import Mathlib.Data.Fintype.Sort
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Basic.Finite.Sum
+public import Gusfield2007.Basic.Order.Fin
 
 /-!
 # Gusfield et al. 2007: a network deriving any sequences from any ancestral sequence
@@ -132,24 +133,15 @@ def lab : Node n {t // t ∈ T} → κ → Bool
 
 variable {T S₀}
 
-theorem e_symm_val {l : Fin (n + 1)} {i : κ} : i = e.symm l ↔ (e i).1 = l.1 := by
-  constructor
-  · rintro rfl
-    simp
-  · intro h
-    have : e i = l := Fin.ext h
-    rw [← this]
-    simp
-
 theorem chain_flip_eq (t : {t // t ∈ T}) (l : Fin (n + 1)) (h : Flips e S₀ t.1 l) {i : κ} (hi : (e i).1 = l.1) : t.1 i = !S₀ i := by
-  have : i = e.symm l := (e_symm_val e).2 hi
+  have : i = e.symm l := (OrderIso.eq_symm_iff_val_eq e).2 hi
   subst this
   revert h
   unfold Flips
   cases t.1 _ <;> cases S₀ _ <;> simp
 
 theorem chain_noflip_eq (t : {t // t ∈ T}) (l : Fin (n + 1)) (h : ¬ Flips e S₀ t.1 l) {i : κ} (hi : (e i).1 = l.1) : t.1 i = S₀ i := by
-  have : i = e.symm l := (e_symm_val e).2 hi
+  have : i = e.symm l := (OrderIso.eq_symm_iff_val_eq e).2 hi
   subst this
   revert h
   unfold Flips
@@ -160,7 +152,7 @@ theorem lab_chain_pointwise (t : {t // t ∈ T}) (l : Fin (n + 1)) (i : κ) :
     lab e T S₀ (.chain t l) i = if i = e.symm l then lab e T S₀ (sideSrc e T S₀ t l) i else lab e T S₀ (upSrc T t l) i := by
   have hl := l.2
   by_cases hi : (e i).1 = l.1
-  · rw [ite_eq_left ((e_symm_val e).2 hi)]
+  · rw [ite_eq_left ((OrderIso.eq_symm_iff_val_eq e).2 hi)]
     by_cases hf : Flips e S₀ t.1 l
     · have ht := chain_flip_eq e t l hf hi
       unfold sideSrc
@@ -173,7 +165,7 @@ theorem lab_chain_pointwise (t : {t // t ∈ T}) (l : Fin (n + 1)) (i : κ) :
       by_cases hn : l.1 < n
       · simp [lab, hn, hf, hi, ht]
       · simp [lab, hn, hf, hi, ht]
-  · have hne : i ≠ e.symm l := fun h' => hi ((e_symm_val e).1 h')
+  · have hne : i ≠ e.symm l := fun h' => hi ((OrderIso.eq_symm_iff_val_eq e).1 h')
     rw [ite_eq_right hne]
     unfold upSrc
     by_cases hn : l.1 < n
@@ -189,7 +181,7 @@ theorem lab_chain_single (t : {t // t ∈ T}) (l : Fin (n + 1)) (i : κ) :
     lab e T S₀ (.chain t l) i = if (¬ l.1 < n ∧ Flips e S₀ t.1 l) ∨ l.1 < (e i).1 then lab e T S₀ (upSrc T t l) i else lab e T S₀ (sideSrc e T S₀ t l) i := by
   rw [lab_chain_pointwise]
   by_cases hi : (e i).1 = l.1
-  · rw [ite_eq_left ((e_symm_val e).2 hi)]
+  · rw [ite_eq_left ((OrderIso.eq_symm_iff_val_eq e).2 hi)]
     by_cases hc : ¬ l.1 < n ∧ Flips e S₀ t.1 l
     · have ht := chain_flip_eq e t l hc.2 hi
       have hn : (e i).1 = n := by have := l.2; omega
@@ -199,7 +191,7 @@ theorem lab_chain_single (t : {t // t ∈ T}) (l : Fin (n + 1)) (i : κ) :
     · have hlt : ¬ l.1 < (e i).1 := by omega
       have hcond : ¬ ((¬ l.1 < n ∧ Flips e S₀ t.1 l) ∨ l.1 < (e i).1) := fun h => h.elim hc hlt
       rw [ite_eq_right hcond]
-  · have hne : i ≠ e.symm l := fun h' => hi ((e_symm_val e).1 h')
+  · have hne : i ≠ e.symm l := fun h' => hi ((OrderIso.eq_symm_iff_val_eq e).1 h')
     rw [ite_eq_right hne]
     by_cases hlt : l.1 < (e i).1
     · simp [hlt]
@@ -256,7 +248,7 @@ noncomputable def net : Network κ (Node n {t // t ∈ T}) (Arc n {t // t ∈ T}
         exfalso
         simp only [src, other, upSrc, sideSrc] at h₁
         split_ifs at h₁
-  acyclic := Network.acyclic_of_rank (rank T) (rank_src_lt e)
+  acyclic := Relation.not_transGen_arc_self_of_rank (rank T) (rank_src_lt e)
   root_iff v := by
     constructor
     · intro hv
@@ -418,7 +410,7 @@ theorem net_obeys (c : Crossover) : (net e (T := T) (S₀ := S₀)).Obeys c := b
           rw [h]
           simp
         simp [h, lab]
-      · have : (e i).1 ≠ n := fun h' => h ((e_symm_val e).2 h')
+      · have : (e i).1 ≠ n := fun h' => h ((OrderIso.eq_symm_iff_val_eq e).2 h')
         have h₂ : (e i).1 < n := by
           have := (e i).2
           omega

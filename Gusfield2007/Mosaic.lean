@@ -157,7 +157,7 @@ def net : Network ι (MosaicV n) (MosaicE n) where
     · exact h
     · exact absurd h₁ (main_ne_other j)
     · exact absurd h₁.symm (main_ne_other j)
-  acyclic := Network.acyclic_of_rank rank rank_lt
+  acyclic := Relation.not_transGen_arc_self_of_rank rank rank_lt
   root_iff v := by
     constructor
     · intro h
@@ -380,7 +380,7 @@ theorem R_eq_zero_of_isEmpty {ι : Type} [LinearOrder ι] [IsEmpty ι] (c : Cros
       site := fun i => isEmptyElim i
       label := fun _ i => isEmptyElim i
       simple := fun e => e.elim0
-      acyclic := Network.acyclic_of_rank (fun v => v.val) fun e => e.elim0
+      acyclic := Relation.not_transGen_arc_self_of_rank (fun v => v.val) fun e => e.elim0
       root_iff := fun v => ⟨fun _ => Subsingleton.elim _ _, fun _ e => e.elim0⟩
       inDegree_le_two := fun e => e.elim0
       site_not_recomb := fun i => isEmptyElim i

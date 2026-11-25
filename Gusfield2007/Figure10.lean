@@ -1,6 +1,7 @@
 module
 
 public import Gusfield2007.External.SongHein2005.Bound
+public import Gusfield2007.Basic.Data.Finset
 
 /-!
 # Gusfield et al. 2007, Figure 10 and `R¹(M_d) ≤ 3d`
@@ -50,35 +51,19 @@ variable {T T' : TimeOrderedTree X} {e : X ≃ Y}
 theorem mem_clusters_mapEquiv {D : Finset Y} : D ∈ (T.mapEquiv e).clusters ↔ (Equiv.finsetCongr e).symm D ∈ T.clusters :=
   Finset.mem_map_equiv
 
-omit [Fintype X] [Fintype Y] in
-theorem symm_sdiff (e : X ≃ Y) (A B : Finset Y) : (Equiv.finsetCongr e).symm (A \ B) = (Equiv.finsetCongr e).symm A \ (Equiv.finsetCongr e).symm B := by
-  simp [Equiv.finsetCongr_symm, Equiv.finsetCongr_apply, Finset.map_sdiff]
-
-omit [Fintype X] [Fintype Y] in
-theorem symm_union (e : X ≃ Y) (A B : Finset Y) : (Equiv.finsetCongr e).symm (A ∪ B) = (Equiv.finsetCongr e).symm A ∪ (Equiv.finsetCongr e).symm B := by
-  simp [Equiv.finsetCongr_symm, Equiv.finsetCongr_apply, Finset.map_union]
-
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
-theorem symm_subset (e : X ≃ Y) (A B : Finset Y) : (Equiv.finsetCongr e).symm A ⊆ (Equiv.finsetCongr e).symm B ↔ A ⊆ B := by
-  simp [Equiv.finsetCongr_symm, Equiv.finsetCongr_apply]
-
-omit [Fintype X] [DecidableEq X] [Fintype Y] [DecidableEq Y] in
-theorem symm_card (e : X ≃ Y) (A : Finset Y) : ((Equiv.finsetCongr e).symm A).card = A.card := by
-  simp [Equiv.finsetCongr_symm, Equiv.finsetCongr_apply]
-
 theorem mem_prunedClusters_mapEquiv {A G : Finset Y} :
     G ∈ (T.mapEquiv e).prunedClusters A ↔ (Equiv.finsetCongr e).symm G ∈ T.prunedClusters ((Equiv.finsetCongr e).symm A) := by
   simp only [prunedClusters, Finset.mem_image, Finset.mem_filter]
   constructor
   · rintro ⟨B, ⟨hB, hBA⟩, rfl⟩
-    exact ⟨_, ⟨mem_clusters_mapEquiv.1 hB, by rwa [symm_subset]⟩, (symm_sdiff e B A).symm⟩
+    exact ⟨_, ⟨mem_clusters_mapEquiv.1 hB, by rwa [Equiv.finsetCongr_symm_subset_iff]⟩, (Equiv.finsetCongr_symm_sdiff e B A).symm⟩
   · rintro ⟨B, ⟨hB, hBA⟩, h⟩
     have hsym : (Equiv.finsetCongr e).symm (Equiv.finsetCongr e B) = B := Equiv.symm_apply_apply _ _
     refine ⟨Equiv.finsetCongr e B, ⟨mem_clusters_mapEquiv.2 (by rwa [hsym]), fun h' => hBA ?_⟩, ?_⟩
-    · have := (symm_subset e _ _).2 h'
+    · have := (Equiv.finsetCongr_symm_subset_iff e _ _).2 h'
       rwa [hsym] at this
     · apply (Equiv.finsetCongr e).symm.injective
-      rw [symm_sdiff, ← h, hsym]
+      rw [Equiv.finsetCongr_symm_sdiff, ← h, hsym]
 
 theorem prunedTime_mapEquiv (A D : Finset Y) :
     (T.mapEquiv e).prunedTime A D = T.prunedTime ((Equiv.finsetCongr e).symm A) ((Equiv.finsetCongr e).symm D) := by
@@ -88,7 +73,7 @@ theorem prunedTime_mapEquiv (A D : Finset Y) :
     rfl
   · rw [ite_eq_right fun h' => h (mem_clusters_mapEquiv.1 h'), ite_eq_right h]
     change T.time _ = _
-    rw [symm_union]
+    rw [Equiv.finsetCongr_symm_union]
 
 /-- An ordered-SPR operation with the leaves renamed. -/
 theorem IsOrderedSPR.mapEquiv (h : T.IsOrderedSPR T') : (T.mapEquiv e).IsOrderedSPR (T'.mapEquiv e) := by
@@ -102,16 +87,16 @@ theorem IsOrderedSPR.mapEquiv (h : T.IsOrderedSPR T') : (T.mapEquiv e).IsOrdered
     rw [mem_clusters_mapEquiv, mem_clusters_mapEquiv]
     refine hsub _ ?_
     rw [← hsym]
-    exact (symm_subset e _ _).2 hB
+    exact (Equiv.finsetCongr_symm_subset_iff e _ _).2 hB
   · intro B hB hBT hc
-    refine htime _ ?_ (mem_clusters_mapEquiv.1 hBT) (by rwa [symm_card])
+    refine htime _ ?_ (mem_clusters_mapEquiv.1 hBT) (by rwa [Equiv.card_finsetCongr_symm])
     rw [← hsym]
-    exact (symm_subset e _ _).2 hB
+    exact (Equiv.finsetCongr_symm_subset_iff e _ _).2 hB
   · ext G
     rw [mem_prunedClusters_mapEquiv, mem_prunedClusters_mapEquiv, hsym, hpr]
   · intro D hD hc
     rw [prunedTime_mapEquiv, prunedTime_mapEquiv, hsym]
-    refine hprt _ ?_ (by rwa [symm_card])
+    refine hprt _ ?_ (by rwa [Equiv.card_finsetCongr_symm])
     rw [← hsym]
     exact mem_prunedClusters_mapEquiv.1 hD
 

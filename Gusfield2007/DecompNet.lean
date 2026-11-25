@@ -488,7 +488,7 @@ theorem exists_copy_of_siteFree [Finite V] {B : Set E} (hB : N.IsBlob B) (hs : �
       · exact hq.reach_tgt_of_mem ha
     obtain hrefl | ⟨c, hc₁, hc₂⟩ := Relation.ReflTransGen.cases_head hreach
     · exact hax hrefl
-    · have := lt_of_transGen (r := N.Arc) ρ (by rintro a b ⟨e, rfl, rfl⟩; exact hρ e) (Relation.TransGen.head' hc₁ hc₂)
+    · have := Relation.TransGen.lt_of_forall_lt (r := N.Arc) ρ (by rintro a b ⟨e, rfl, rfl⟩; exact hρ e) (Relation.TransGen.head' hc₁ hc₂)
       omega
   -- The arcs of a path of the cycle keep the label of the start.
   have hkeep : ∀ {l : List E} {u : V}, N.IsPath u x l → (∀ a ∈ l, a ∈ p ∨ a ∈ q) → N.label u = N.label w →

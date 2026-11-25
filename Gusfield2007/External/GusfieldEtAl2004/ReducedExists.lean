@@ -266,7 +266,7 @@ def gallNet (hG : IsGalledTree N) (hc : N.IsCycleOn w x p q) (κ : Set ι) (hκ 
   simple e f h₁ h₂ := Subtype.ext (N.simple _ _ (congrArg Subtype.val h₁) (congrArg Subtype.val h₂))
   acyclic := by
     obtain ⟨ρ, hρ⟩ := N.exists_rank
-    exact acyclic_of_rank (fun v => ρ v.1) fun e => hρ e.1
+    exact Relation.not_transGen_arc_self_of_rank (fun v => ρ v.1) fun e => hρ e.1
   root_iff := by
     rintro ⟨v, hv⟩
     constructor
@@ -494,7 +494,7 @@ theorem isReducedGalledTree_of_isFullyDecomposedFor {G : SimpleGraph ι} (hG : I
   no_unconflicted Q hQ i hi := by
     obtain ⟨c, hnt, hc⟩ := hfd.blob_component Q (hG.isBlob_of_isCycle hQ)
     obtain ⟨j, hj, hij⟩ := hnt.exists_ne i
-    exact exists_adj_of_reachable (SimpleGraph.ConnectedComponent.exact (((hc i).1 hi).trans hj.symm)) hij.symm
+    exact SimpleGraph.Reachable.exists_adj_of_ne (SimpleGraph.ConnectedComponent.exact (((hc i).1 hi).trans hj.symm)) hij.symm
 
 omit [LinearOrder ι] [Finite V] in
 /-- The two facts on a network deriving `M`, fully decomposed, with as few recombination nodes as non-trivial components: it is a reduced galled tree. -/

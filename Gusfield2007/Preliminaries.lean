@@ -2,6 +2,10 @@ module
 
 public import Gusfield2007.Defs
 public import Mathlib.Data.Fintype.Card
+public import Gusfield2007.Basic.Combinatorics.SimpleGraph.Connectivity
+public import Gusfield2007.Basic.Data.List
+public import Gusfield2007.Basic.Logic.Relation
+public import Gusfield2007.Basic.Order.Fin
 
 /-!
 # Gusfield et al. 2007: basic facts
@@ -77,30 +81,6 @@ theorem conflictGraph_eq_incompatGraph_addRow (S : ι → Bool) (M : Finset (ι 
 theorem conflictGraph_eq_of_mem {S : ι → Bool} {M : Finset (ι → Bool)} (hS : S ∈ M) :
     conflictGraph S M = incompatGraph M := by
   rw [conflictGraph_eq_incompatGraph_addRow, addRow, Finset.insert_eq_of_mem hS]
-
-/-- A function that increases along a relation increases along its paths. -/
-theorem lt_of_transGen {α β : Type*} [Preorder β] {r : α → α → Prop} (f : α → β) (h : ∀ a b, r a b → f a < f b) {a b : α} (hab : Relation.TransGen r a b) : f a < f b := by
-  induction hab with
-  | single hb => exact h _ _ hb
-  | tail _ hb ih => exact ih.trans (h _ _ hb)
-
-/-- A relation along which a function increases is acyclic. -/
-theorem acyclic_of_strict {α β : Type*} [Preorder β] {r : α → α → Prop} (f : α → β) (h : ∀ a b, r a b → f a < f b) (x : α) : ¬ Relation.TransGen r x x :=
-  fun hx => lt_irrefl _ (lt_of_transGen f h hx)
-
-/-- A node reached from another, other than it, has a neighbour. -/
-theorem exists_adj_of_reachable {G : SimpleGraph ι} {i j : ι} (h : G.Reachable i j) (hij : i ≠ j) : ∃ k, G.Adj i k := by
-  obtain ⟨p⟩ := h
-  cases p with
-  | nil => exact absurd rfl hij
-  | @cons _ k _ hk _ => exact ⟨k, hk⟩
-
-/-- A strictly increasing rank exists on a finite acyclic relation. -/
-theorem exists_rank {α : Type*} [Finite α] (r : α → α → Prop) (hr : ∀ a, ¬ Relation.TransGen r a a) :
-    ∃ f : α → ℕ, ∀ a b, r a b → f a < f b := by
-  refine ⟨fun b => {u | Relation.TransGen r u b}.ncard, fun a b hab => Set.ncard_lt_ncard ?_ (Set.toFinite _)⟩
-  refine ⟨fun u hu => Relation.TransGen.tail hu hab, fun h => ?_⟩
-  exact hr a (h (Relation.TransGen.single hab))
 
 end Graphs
 
@@ -212,7 +192,7 @@ theorem arc_induction {P : V → Prop} (h : ∀ v, (∀ e, N.tgt e = v → P (N.
 
 /-- A rank that increases along the arcs. -/
 theorem exists_rank : ∃ ρ : V → ℕ, ∀ e, ρ (N.src e) < ρ (N.tgt e) := by
-  obtain ⟨f, hf⟩ := _root_.Gusfield2007.exists_rank N.Arc N.acyclic
+  obtain ⟨f, hf⟩ := Relation.exists_forall_lt_of_not_transGen_self N.Arc N.acyclic
   exact ⟨f, fun e => hf _ _ (arc_src_tgt e)⟩
 
 /-- Every node is reachable from the root: "exactly one node (the root) with no incoming edges" (line 94), and `N` is
@@ -294,19 +274,6 @@ theorem exists_fin_iso [Finite V] [Finite E] :
   obtain ⟨b, ⟨eE⟩⟩ := Finite.exists_equiv_fin E
   exact ⟨a, b, N.map eV eE, eV, eE, N.isIso_map eV eE⟩
 
-/-- The arcs of a recombination cycle under a map of arcs. -/
-theorem image_setOf_mem_or_mem {α β : Type*} (g : α → β) (p q : List α) :
-    g '' {e | e ∈ p ∨ e ∈ q} = {a | a ∈ p.map g ∨ a ∈ q.map g} := by
-  ext a
-  simp only [Set.mem_image, Set.mem_ofPred_eq, List.mem_map]
-  constructor
-  · rintro ⟨e, he | he, rfl⟩
-    · exact Or.inl ⟨e, he, rfl⟩
-    · exact Or.inr ⟨e, he, rfl⟩
-  · rintro (⟨e, he, rfl⟩ | ⟨e, he, rfl⟩)
-    · exact ⟨e, Or.inl he, rfl⟩
-    · exact ⟨e, Or.inr he, rfl⟩
-
 /-! ### Embeddings -/
 
 section Emb
@@ -349,7 +316,7 @@ theorem Emb.isCycleOn (h : Emb N N' f g) {w x : V} {p q : List E} (hc : N.IsCycl
 
 theorem Emb.isCycle_image (h : Emb N N' f g) {Q : Set E} (hQ : N.IsCycle Q) : N'.IsCycle (g '' Q) := by
   obtain ⟨w, x, p, q, hc, rfl⟩ := hQ
-  exact ⟨f w, f x, p.map g, q.map g, h.isCycleOn hc, image_setOf_mem_or_mem g p q⟩
+  exact ⟨f w, f x, p.map g, q.map g, h.isCycleOn hc, List.image_setOf_mem_or_mem g p q⟩
 
 /-- A cycle of `N'` with all its arcs in `N` is a cycle of `N`. -/
 theorem Emb.cycle_back (h : Emb N N' f g) (hrec : ∀ x, N'.IsRecomb (f x) → N.IsRecomb x) {Q' : Set E'} (hQ' : N'.IsCycle Q')
@@ -378,7 +345,7 @@ theorem Emb.cycle_back (h : Emb N N' f g) (hrec : ∀ x, N'.IsRecomb (f x) → N
     rw [← h.tgt]
     refine hd (g a) (List.mem_map_of_mem ha) (g b) (List.mem_map_of_mem hb) ?_
     rw [h.tgt, h.tgt, hab]
-  · exact (image_setOf_mem_or_mem g p q).symm
+  · exact (List.image_setOf_mem_or_mem g p q).symm
 
 /-- The blob of a cycle of `N`, in `N'`, when each cycle of `N'` with an arc in `N` is a cycle of `N`. -/
 theorem Emb.class_image (h : Emb N N' f g)
@@ -590,11 +557,6 @@ theorem invariants (h : N.IsIso N' eV eE) [LinearOrder ι] :
 
 end IsIso
 
-/-- A rank function that increases along arcs shows a graph is acyclic. -/
-theorem acyclic_of_rank {src tgt : E → V} (f : V → ℕ) (h : ∀ e, f (src e) < f (tgt e)) (v : V) :
-    ¬ Relation.TransGen (fun a b => ∃ e, src e = a ∧ tgt e = b) v v :=
-  acyclic_of_strict f (by rintro a b ⟨e, rfl, rfl⟩; exact h e) v
-
 section Tree
 
 variable {N}
@@ -755,19 +717,6 @@ theorem Network.renameSites_derives {ι' : Type*} [LinearOrder ι'] (e : ι ≃o
     exact hinj.injOn.bijOn_image
   exact hb.comp h
 
-theorem comp_symm_comp {ι' : Type*} [LinearOrder ι'] (e : ι ≃o ι') (r : ι → Bool) : (r ∘ e.symm) ∘ e = r :=
-  funext fun i => by simp
-
-/-- `(M.image (· ∘ e.symm)).image (· ∘ e) = M`. -/
-theorem image_comp_symm_image {ι' : Type*} [LinearOrder ι'] (e : ι ≃o ι') (M : Finset (ι → Bool)) :
-    (M.image fun r => r ∘ e.symm).image (fun r => r ∘ e) = M := by
-  ext r
-  simp only [Finset.mem_image]
-  constructor
-  · rintro ⟨_, ⟨a, ha, rfl⟩, rfl⟩
-    rwa [comp_symm_comp]
-  · exact fun hr => ⟨r ∘ e.symm, ⟨r, hr, rfl⟩, comp_symm_comp e r⟩
-
 end Rename
 
 section Counts
@@ -803,7 +752,7 @@ theorem R_map_orderIso {ι' : Type u} [LinearOrder ι'] (e : ι ≃o ι') (c : C
   congr 1
   refine Set.Subset.antisymm ?_ (R_map_orderIso_le e c M)
   have := R_map_orderIso_le e.symm c (M.image fun r => r ∘ e.symm)
-  rwa [OrderIso.symm_symm, image_comp_symm_image] at this
+  rwa [OrderIso.symm_symm, OrderIso.image_comp_image_comp_symm] at this
 
 theorem RS_map_orderIso_le {ι' : Type u} [LinearOrder ι'] (e : ι ≃o ι') (c : Crossover) (S : ι → Bool)
     (M : Finset (ι → Bool)) :
@@ -821,7 +770,7 @@ theorem RS_map_orderIso {ι' : Type u} [LinearOrder ι'] (e : ι ≃o ι') (c : 
   congr 1
   refine Set.Subset.antisymm ?_ (RS_map_orderIso_le e c S M)
   have := RS_map_orderIso_le e.symm c (S ∘ e.symm) (M.image fun r => r ∘ e.symm)
-  rwa [OrderIso.symm_symm, image_comp_symm_image, comp_symm_comp] at this
+  rwa [OrderIso.symm_symm, OrderIso.image_comp_image_comp_symm, OrderIso.comp_symm_comp] at this
 
 end Counts
 

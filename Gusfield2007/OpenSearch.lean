@@ -2,6 +2,7 @@ module
 
 public import Gusfield2007.LabelSearch
 public import Gusfield2007.OpenStatements
+public import Gusfield2007.Basic.Data.Nat.Bitwise
 
 /-!
 # Gusfield et al. 2007: a verified search on two extra labels, and histories from lists
@@ -361,18 +362,6 @@ theorem mem_of_mem_coverPairs {P : List (ℕ × ℕ)} {b : ℕ × ℕ} (h : b �
   · exact (List.mem_filter.1 h).1
   · exact (List.mem_filter.1 h).1
 
-/-- A number's top bit. -/
-theorem testBit_log2 {d : ℕ} (hd : d ≠ 0) : d.testBit (Nat.log2 d) = true := by
-  have hlo := Nat.log2_self_le hd
-  have hhi := Nat.lt_log2_self (n := d)
-  rw [Nat.testBit_eq_decide_div_mod_eq, decide_eq_true_iff]
-  have hdiv : d / 2 ^ Nat.log2 d = 1 := by
-    apply Nat.div_eq_of_lt_le
-    · simpa using hlo
-    · rw [Nat.pow_succ] at hhi
-      omega
-  rw [hdiv]
-
 /-- A number with `oneBit` is a power of two. -/
 theorem exists_two_pow_of_oneBit {d : ℕ} (h : oneBit d = true) : ∃ j, d = 2 ^ j := by
   rw [oneBit, Bool.and_eq_true] at h
@@ -396,7 +385,7 @@ theorem exists_two_pow_of_oneBit {d : ℕ} (h : oneBit d = true) : ∃ j, d = 2 
     rw [hdiv]
   have hz : (d &&& (d - 1)).testBit (Nat.log2 d) = false := by
     rw [show d &&& (d - 1) = 0 from h₀, Nat.zero_testBit]
-  rw [Nat.testBit_and, testBit_log2 hd, hb] at hz
+  rw [Nat.testBit_and, Nat.testBit_log2_self hd, hb] at hz
   simp at hz
 
 theorem oneBit_two_pow (j : ℕ) : oneBit (2 ^ j) = true := by
@@ -404,7 +393,7 @@ theorem oneBit_two_pow (j : ℕ) : oneBit (2 ^ j) = true := by
     change (2 ^ j) &&& (2 ^ j - 1) = 0
     rw [Nat.and_two_pow_sub_one_eq_mod, Nat.mod_self]
   unfold oneBit
-  rw [h₀, beq_eq_false_of_ne (Nat.two_pow_pos j).ne']
+  rw [h₀, Nat.beq_eq_false_of_ne (Nat.two_pow_pos j).ne']
   rfl
 
 /-- A nonzero number with at most the bit `j` is `2 ^ j`. -/
@@ -423,19 +412,6 @@ theorem eq_two_pow_of_testBit {e j : ℕ} (hne : e ≠ 0) (h : ∀ k, k ≠ j �
     simpa using hi
   · rw [h k hk]
     simp [Ne.symm hk]
-
-theorem testBit_xor' (a b k : ℕ) : (Nat.xor a b).testBit k = (a.testBit k ^^ b.testBit k) := Nat.testBit_xor a b k
-
-theorem testBit_land' (a b k : ℕ) : (Nat.land a b).testBit k = (a.testBit k && b.testBit k) := Nat.testBit_and a b k
-
-theorem land_eq_zero_iff {a b : ℕ} : Nat.land a b = 0 ↔ ∀ k, (a.testBit k && b.testBit k) = false := by
-  constructor
-  · intro h k
-    rw [← testBit_land', h, Nat.zero_testBit]
-  · intro h
-    apply Nat.eq_of_testBit_eq
-    intro k
-    rw [testBit_land', h k, Nat.zero_testBit]
 
 /-- **Which sequences give a row in one step.** If `z` is one step from `X`, and with `X` it gives in one step a row that `X` doesn't give, then `progAll` lists it. The pairs `W` cover the mixes of `X`. -/
 theorem mem_progAll {m : ℕ} {X : List ℕ} {T : List (ℕ × List ℕ)} {W : List (ℕ × ℕ)} {z r : ℕ} {Ms : List ℕ} (hr : (r, Ms) ∈ T) (hrX : r ∉ X) (hzr : z ≠ r) (hclosed : derivable X r = false)
@@ -471,9 +447,9 @@ theorem mem_progAll {m : ℕ} {X : List ℕ} {T : List (ℕ × List ℕ)} {W : L
     refine ⟨M, hM, hform M hM, fun k hk => ?_⟩
     have hbit : (Nat.xor r p).testBit k = true := by
       have := congrArg (fun x => Nat.testBit x k) hMD
-      simp only [testBit_land', hk, Bool.true_and] at this
+      simp only [Nat.testBit_land', hk, Bool.true_and] at this
       exact this
-    rw [testBit_xor'] at hbit
+    rw [Nat.testBit_xor'] at hbit
     rcases isMix_iff.1 hm k with h | h
     · exact h
     · rw [h] at hbit
@@ -485,7 +461,7 @@ theorem mem_progAll {m : ℕ} {X : List ℕ} {T : List (ℕ × List ℕ)} {W : L
     have hxr : Nat.xor r x ≠ 0 := fun h => hrX (by
       have : r = x := Nat.eq_of_testBit_eq fun k => by
         have := congrArg (fun y => Nat.testBit y k) h
-        simp only [testBit_xor', Nat.zero_testBit] at this
+        simp only [Nat.testBit_xor', Nat.zero_testBit] at this
         cases hr' : r.testBit k <;> cases hx' : x.testBit k <;> simp_all
       rwa [this])
     rcases hcases with hone | ⟨p, hp, hm⟩
@@ -493,8 +469,8 @@ theorem mem_progAll {m : ℕ} {X : List ℕ} {T : List (ℕ × List ℕ)} {W : L
       obtain ⟨j, hj⟩ := exists_two_pow_of_oneBit hone
       have hdbit : ∀ k, (Nat.xor r x).testBit k = ((2 ^ j).testBit k ^^ (2 ^ i).testBit k) := fun k => by
         have h₁ := congrArg (fun y => Nat.testBit y k) hj
-        simp only [testBit_xor'] at h₁
-        rw [testBit_xor']
+        simp only [Nat.testBit_xor'] at h₁
+        rw [Nat.testBit_xor']
         generalize r.testBit k = a at h₁ ⊢
         generalize x.testBit k = b at h₁ ⊢
         generalize (2 ^ i).testBit k = c at h₁ ⊢
@@ -502,7 +478,7 @@ theorem mem_progAll {m : ℕ} {X : List ℕ} {T : List (ℕ × List ℕ)} {W : L
         revert h₁
         revert a b c e
         decide
-      have hlog := testBit_log2 hxr
+      have hlog := Nat.testBit_log2_self hxr
       rw [hdbit, Nat.testBit_two_pow, Nat.testBit_two_pow] at hlog
       have hcase : Nat.log2 (Nat.xor r x) = i ∨ Nat.log2 (Nat.xor r x) = j := by
         by_cases h₁ : i = Nat.log2 (Nat.xor r x)
@@ -514,7 +490,7 @@ theorem mem_progAll {m : ℕ} {X : List ℕ} {T : List (ℕ × List ℕ)} {W : L
       have hremi : Nat.xor (Nat.xor r x) (2 ^ i) = 2 ^ j := by
         apply Nat.eq_of_testBit_eq
         intro k
-        rw [testBit_xor', hdbit]
+        rw [Nat.testBit_xor', hdbit]
         generalize (2 ^ i).testBit k = c
         generalize (2 ^ j).testBit k = e
         revert c e
@@ -522,7 +498,7 @@ theorem mem_progAll {m : ℕ} {X : List ℕ} {T : List (ℕ × List ℕ)} {W : L
       have hremj : Nat.xor (Nat.xor r x) (2 ^ j) = 2 ^ i := by
         apply Nat.eq_of_testBit_eq
         intro k
-        rw [testBit_xor', hdbit]
+        rw [Nat.testBit_xor', hdbit]
         generalize (2 ^ i).testBit k = c
         generalize (2 ^ j).testBit k = e
         revert c e
@@ -542,11 +518,11 @@ theorem mem_progAll {m : ℕ} {X : List ℕ} {T : List (ℕ × List ℕ)} {W : L
         rw [h]
         rfl
       have he : Nat.land (Nat.xor r x) M = 2 ^ i := eq_two_pow_of_testBit hene fun k hk => by
-        rw [testBit_land']
+        rw [Nat.testBit_land']
         by_cases hMk : M.testBit k = true
         · have := hag k hMk
-          rw [testBit_xor'] at this
-          rw [testBit_xor', this]
+          rw [Nat.testBit_xor'] at this
+          rw [Nat.testBit_xor', this]
           simp [Ne.symm hk]
         · simp [hMk]
       simp only [he, oneBit_two_pow, Bool.cond_true]
@@ -571,20 +547,20 @@ theorem mem_progAll {m : ℕ} {X : List ℕ} {T : List (ℕ × List ℕ)} {W : L
       obtain ⟨j, hj⟩ := exists_two_pow_of_oneBit hone
       have hrz : ∀ k, k ≠ j → r.testBit k = z.testBit k := fun k hk => by
         have h₁ := congrArg (fun y => Nat.testBit y k) hj
-        simp only [testBit_xor', Nat.testBit_two_pow, Ne.symm hk, decide_false] at h₁
+        simp only [Nat.testBit_xor', Nat.testBit_two_pow, Ne.symm hk, decide_false] at h₁
         cases hr' : r.testBit k <;> cases hz' : z.testBit k <;> simp_all
       have hD : Nat.land (Nat.xor r c.1) (Nat.xor r c.2) = 2 ^ j := eq_two_pow_of_testBit hDne fun k hk => by
-        rw [testBit_land', testBit_xor', testBit_xor', hrz k hk]
+        rw [Nat.testBit_land', Nat.testBit_xor', Nat.testBit_xor', hrz k hk]
         rcases hzc k with h | h <;> rw [h] <;> simp
       simp only [hD, oneBit_two_pow, Bool.cond_true]
       rw [← hj]
       refine List.mem_singleton.2 (Nat.eq_of_testBit_eq fun k => ?_)
-      simp only [testBit_xor']
+      simp only [Nat.testBit_xor']
       cases hr' : r.testBit k <;> cases hz' : z.testBit k <;> rfl
     · obtain ⟨M, hM, -, hag⟩ := hmask p hp hm
       refine List.mem_append_right _ (List.mem_flatMap.2 ⟨M, hM, ?_⟩)
-      have hfeas : Nat.land (Nat.land (Nat.xor r c.1) (Nat.xor r c.2)) M = 0 := land_eq_zero_iff.2 fun k => by
-        rw [testBit_land', testBit_xor', testBit_xor']
+      have hfeas : Nat.land (Nat.land (Nat.xor r c.1) (Nat.xor r c.2)) M = 0 := Nat.land_eq_zero_iff.2 fun k => by
+        rw [Nat.testBit_land', Nat.testBit_xor', Nat.testBit_xor']
         by_cases hMk : M.testBit k = true
         · rw [hag k hMk]
           rcases hzc k with h | h <;> rw [h] <;> simp
@@ -592,7 +568,7 @@ theorem mem_progAll {m : ℕ} {X : List ℕ} {T : List (ℕ × List ℕ)} {W : L
       rw [hfeas]
       change z ∈ sub _ _ m
       refine mem_sub m z hzm fun k _ => ?_
-      simp only [testBit_xor', testBit_land']
+      simp only [Nat.testBit_xor', Nat.testBit_land']
       by_cases hMk : M.testBit k = true
       · left
         rw [hMk, ← hag k hMk]
@@ -930,9 +906,6 @@ theorem isFlip_dec {p i : ℕ} (hi : i < m) : IsFlip (⟨i, hi⟩ : Fin m) (dec 
 theorem recombinant_dec {p p' q : ℕ} (h : isMix q p p' = true) : Recombinant .multiple (dec p : Fin m → Bool) (dec p') (dec q) :=
   fun i => isMix_iff.1 h i.val
 
-theorem xor_lt_two_pow {p i : ℕ} (hp : p < 2 ^ m) (hi : i < m) : Nat.xor p (2 ^ i) < 2 ^ m :=
-  Nat.xor_lt_two_pow hp (Nat.pow_lt_pow_right (by decide) hi)
-
 /-- A list of steps that can be carried out is a history. -/
 theorem exists_gen_of_run {S : Fin m → Bool} : ∀ (l : List Step) (done used : List ℕ) (A : Finset (Fin m → Bool)) (U : Set (Fin m)) (r : ℕ), Gen .multiple S A U r →
     (∀ x ∈ done, x < 2 ^ m ∧ (dec x : Fin m → Bool) ∈ A) → (∀ i : Fin m, i ∈ U → i.val ∈ used) → runOK m done used l = true →
@@ -957,7 +930,7 @@ theorem exists_gen_of_run {S : Fin m → Bool} : ∀ (l : List Step) (done used 
       obtain ⟨A₁, hg', hsub, hmem⟩ := Gen.exists_flip hg hp'.2 hiU (isFlip_dec him')
       obtain ⟨A', U', h₁, h₂, h₃⟩ := ih (Nat.xor p (2 ^ i) :: done) (i :: used) _ _ r hg' (fun x hx => by
         rcases List.mem_cons.1 hx with rfl | hx
-        · exact ⟨xor_lt_two_pow hp'.1 him', hmem⟩
+        · exact ⟨Nat.xor_two_pow_lt_two_pow hp'.1 him', hmem⟩
         · exact ⟨(hdone x hx).1, hsub (hdone x hx).2⟩) (fun j hj => by
         rcases hj with rfl | hj
         · exact List.mem_cons_self ..

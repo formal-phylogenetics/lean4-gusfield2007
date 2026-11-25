@@ -3,6 +3,7 @@ module
 public import Gusfield2007.Counterexamples
 public import Gusfield2007.External.GusfieldEtAl2004.SameBlob
 public import Gusfield2007.External.MyersGriffiths2003.Composite
+public import Gusfield2007.Basic.Combinatorics.SimpleGraph.Walk
 
 /-!
 # Gusfield et al. 2007, line 590: the conjecture of Huson and Klöpper
@@ -43,98 +44,6 @@ open SimpleGraph
 
 variable {V : Type*} {G : SimpleGraph V}
 
-/-- Two paths between two nodes, with no other node and no edge in common, make a cycle. -/
-theorem isCycle_append_of_isPath {u v : V} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath) (huv : u ≠ v)
-    (hsupp : ∀ w ∈ p.support, w ∈ q.support → w = u ∨ w = v) (hedges : ∀ g ∈ p.edges, g ∉ q.edges) : (p.append q).IsCycle := by
-  rw [Walk.isCycle_def]
-  have hpn := hp.support_nodup
-  have hqn := hq.support_nodup
-  rw [← Walk.cons_tail_support, List.nodup_cons] at hpn hqn
-  refine ⟨?_, ?_, ?_⟩
-  · rw [Walk.isTrail_def, Walk.edges_append, List.nodup_append]
-    exact ⟨hp.isTrail.edges_nodup, hq.isTrail.edges_nodup, fun a ha b hb hab => hedges a ha (hab ▸ hb)⟩
-  · intro h
-    have := congrArg Walk.length h
-    rw [Walk.length_append, Walk.length_nil] at this
-    exact huv (Walk.eq_of_length_eq_zero (by omega : p.length = 0))
-  · rw [Walk.tail_support_append, List.nodup_append]
-    refine ⟨hpn.2, hqn.2, fun a ha b hb hab => ?_⟩
-    subst hab
-    have ha' : a ∈ p.support := List.mem_of_mem_tail ha
-    have hb' : a ∈ q.support := List.mem_of_mem_tail hb
-    rcases hsupp a ha' hb' with rfl | rfl
-    · exact hpn.1 ha
-    · exact hqn.1 hb
-
-/-- The first node of a walk in a set. -/
-theorem Walk.exists_first_hit {u v : V} (p : G.Walk u v) (A : Set V) (h : ∃ w ∈ p.support, w ∈ A) :
-    ∃ (c : V) (_ : c ∈ A) (p₁ : G.Walk u c) (p₂ : G.Walk c v), p = p₁.append p₂ ∧ ∀ w ∈ p₁.support, w ∈ A → w = c := by
-  induction p with
-  | nil =>
-    obtain ⟨w, hw, hA⟩ := h
-    rw [Walk.support_nil, List.mem_singleton] at hw
-    subst hw
-    exact ⟨_, hA, Walk.nil, Walk.nil, rfl, by simp⟩
-  | @cons a b c hadj p ih =>
-    by_cases ha : a ∈ A
-    · exact ⟨a, ha, Walk.nil, Walk.cons hadj p, rfl, by simp⟩
-    · have h' : ∃ w ∈ p.support, w ∈ A := by
-        obtain ⟨w, hw, hA⟩ := h
-        rw [Walk.support_cons, List.mem_cons] at hw
-        rcases hw with rfl | hw
-        · exact absurd hA ha
-        · exact ⟨w, hw, hA⟩
-      obtain ⟨d, hd, p₁, p₂, rfl, hp₁⟩ := ih h'
-      refine ⟨d, hd, Walk.cons hadj p₁, p₂, rfl, fun w hw hA => ?_⟩
-      rw [Walk.support_cons, List.mem_cons] at hw
-      rcases hw with rfl | hw
-      · exact absurd hA ha
-      · exact hp₁ w hw hA
-
-/-- A walk splits at an edge on it. -/
-theorem Walk.exists_split_of_mem_edges {u v : V} (p : G.Walk u v) {b : Sym2 V} (hb : b ∈ p.edges) :
-    ∃ (x y : V) (h : G.Adj x y) (p₁ : G.Walk u x) (p₂ : G.Walk y v), s(x, y) = b ∧ p = p₁.append (Walk.cons h p₂) := by
-  induction p with
-  | nil => simp at hb
-  | @cons a c d hadj p ih =>
-    rw [Walk.edges_cons, List.mem_cons] at hb
-    rcases hb with rfl | hb
-    · exact ⟨a, c, hadj, Walk.nil, p, rfl, rfl⟩
-    · obtain ⟨x, y, h, p₁, p₂, hxy, rfl⟩ := ih hb
-      exact ⟨x, y, h, Walk.cons hadj p₁, p₂, hxy, rfl⟩
-
-/-- A cycle through an edge is that edge and a path between its ends. -/
-theorem Walk.IsCycle.exists_path_of_mem_edges {u : V} {c : G.Walk u u} (hc : c.IsCycle) {b : Sym2 V} (hb : b ∈ c.edges) :
-    ∃ (x y : V) (_ : G.Adj x y) (R : G.Walk y x), s(x, y) = b ∧ R.IsPath ∧ b ∉ R.edges ∧ (∀ z ∈ c.edges, z = b ∨ z ∈ R.edges) := by
-  obtain ⟨x, y, h, p₁, p₂, hxy, rfl⟩ := Walk.exists_split_of_mem_edges c hb
-  refine ⟨x, y, h, p₂.append p₁, hxy, ?_, ?_, ?_⟩
-  · have htail := hc.support_nodup
-    rw [Walk.tail_support_append, Walk.support_cons, List.tail_cons] at htail
-    rw [Walk.isPath_def, Walk.support_append]
-    exact (List.perm_append_comm.nodup_iff).1 htail
-  · have hnd := hc.isTrail.edges_nodup
-    rw [Walk.edges_append, Walk.edges_cons, List.nodup_append] at hnd
-    rw [Walk.edges_append, List.mem_append]
-    rintro (h₁ | h₁)
-    · exact (List.nodup_cons.1 hnd.2.1).1 (hxy ▸ h₁)
-    · exact hnd.2.2 b h₁ b (hxy ▸ List.mem_cons_self) rfl
-  · intro z hz
-    rw [Walk.edges_append, List.mem_append, Walk.edges_cons, List.mem_cons] at hz
-    rw [Walk.edges_append, List.mem_append]
-    rcases hz with hz | rfl | hz
-    · exact Or.inr (Or.inr hz)
-    · exact Or.inl hxy
-    · exact Or.inr (Or.inl hz)
-
-/-- An edge with both ends in a set isn't on a path having only its last node in the set. -/
-theorem notMem_edges_of_last_hit {u c : V} {p : G.Walk u c} {A : Set V} (hp : ∀ w ∈ p.support, w ∈ A → w = c) {g : Sym2 V} (hg : g ∈ p.edges)
-    (hA : ∀ w ∈ g, w ∈ A) : False := by
-  induction g using Sym2.ind with
-  | _ a b =>
-    have ha := hp a (p.fst_mem_support_of_mem_edges hg) (hA a (Sym2.mem_mk_left a b))
-    have hb := hp b (p.snd_mem_support_of_mem_edges hg) (hA b (Sym2.mem_mk_right a b))
-    exact G.ne_of_adj (p.adj_of_mem_edges hg) (ha.trans hb.symm)
-
 /-- **Two cycles sharing an edge** (`g:cycle_transitive`). If two cycles have an edge in common, then an edge of one and an edge of the other are on a common cycle. The other cycle, from the edge `b`, runs into the first at two different nodes, which gives a path with only its ends on the first cycle; these ends cut the first cycle into two paths, and the one with `a` closes up with it. -/
 theorem exists_isCycle_of_share_edge {u₁ u₂ : V} {C₁ : G.Walk u₁ u₁} {C₂ : G.Walk u₂ u₂} (h₁ : C₁.IsCycle) (h₂ : C₂.IsCycle) {z a b : Sym2 V}
     (hz₁ : z ∈ C₁.edges) (hz₂ : z ∈ C₂.edges) (ha : a ∈ C₁.edges) (hb : b ∈ C₂.edges) :
@@ -143,7 +52,7 @@ theorem exists_isCycle_of_share_edge {u₁ u₂ : V} {C₁ : G.Walk u₁ u₁} {
   · exact ⟨u₁, C₁, h₁, ha, hbC⟩
   set A : Set V := {w | w ∈ C₁.support} with hA
   have hedgeA : ∀ g ∈ C₁.edges, ∀ w ∈ g, w ∈ A := fun g hg w hw => C₁.mem_support_of_mem_edges hg hw
-  obtain ⟨x, y, hxy, R, hb', hRp, hbR, hRall⟩ := Walk.IsCycle.exists_path_of_mem_edges h₂ hb
+  obtain ⟨x, y, hxy, R, hb', hRp, hbR, hRall⟩ := SimpleGraph.Walk.IsCycle.exists_isPath_of_mem_edges h₂ hb
   -- The shared edge is on `R`, so `R` has two different nodes on the first cycle.
   have hzb : z ≠ b := fun h => hbC (h ▸ hz₁)
   have hzR : z ∈ R.edges := (hRall z hz₂).resolve_left hzb
@@ -154,8 +63,8 @@ theorem exists_isCycle_of_share_edge {u₁ u₂ : V} {C₁ : G.Walk u₁ u₁} {
   have hdA : d ∈ A := hedgeA _ hz₁ d (Sym2.mem_mk_right c d)
   have hcR : c ∈ R.support := R.fst_mem_support_of_mem_edges hzR
   have hdR : d ∈ R.support := R.snd_mem_support_of_mem_edges hzR
-  obtain ⟨c₁, hc₁, R₁, R', hsplit, hR₁⟩ := Walk.exists_first_hit R A ⟨c, hcR, hcA⟩
-  obtain ⟨c₂, hc₂, R₃, R₄, hsplit', hR₃⟩ := Walk.exists_first_hit R'.reverse A ⟨c₁, by simp, hc₁⟩
+  obtain ⟨c₁, hc₁, R₁, R', hsplit, hR₁⟩ := SimpleGraph.Walk.exists_eq_append_forall_mem_support R A ⟨c, hcR, hcA⟩
+  obtain ⟨c₂, hc₂, R₃, R₄, hsplit', hR₃⟩ := SimpleGraph.Walk.exists_eq_append_forall_mem_support R'.reverse A ⟨c₁, by simp, hc₁⟩
   subst hsplit
   have hR'p : R'.IsPath := hRp.of_append_right
   have hR'r : R'.reverse = R₃.append R₄ := hsplit'
@@ -206,11 +115,11 @@ theorem exists_isCycle_of_share_edge {u₁ u₂ : V} {C₁ : G.Walk u₁ u₁} {
     intro g hg hgC
     rw [hP, Walk.edges_append, List.mem_append, Walk.edges_reverse, List.mem_reverse, Walk.edges_cons, List.mem_cons] at hg
     rcases hg with hg | hg | hg
-    · exact notMem_edges_of_last_hit hR₁ hg (hedgeA g hgC)
+    · exact SimpleGraph.Walk.false_of_mem_edges_of_forall_mem_support hR₁ hg (hedgeA g hgC)
     · refine hbC ?_
       rw [← hb', Sym2.eq_swap]
       exact hg ▸ hgC
-    · exact notMem_edges_of_last_hit hR₃ hg (hedgeA g hgC)
+    · exact SimpleGraph.Walk.false_of_mem_edges_of_forall_mem_support hR₃ hg (hedgeA g hgC)
   have hbP : b ∈ P.edges := by
     rw [hP, Walk.edges_append, List.mem_append, Walk.edges_cons, List.mem_cons]
     refine Or.inr (Or.inl ?_)
@@ -244,7 +153,7 @@ theorem exists_isCycle_of_share_edge {u₁ u₂ : V} {C₁ : G.Walk u₁ u₁} {
       exact (C₁.rotate_edges c₁ hc₁C).mem_iff.2 ha
     rwa [Walk.edges_append, List.mem_append] at this
   rcases haA with haA | haA
-  · refine ⟨c₁, A₁.append P.reverse, isCycle_append_of_isPath hA₁p hPp.reverse hne ?_ ?_, ?_, ?_⟩
+  · refine ⟨c₁, A₁.append P.reverse, SimpleGraph.Walk.IsPath.isCycle_append_of_edges_disjoint hA₁p hPp.reverse hne ?_ ?_, ?_, ?_⟩
     · intro w hw₁ hw₂
       exact hPA w (by simpa using hw₂) (hsuppA w (Or.inl hw₁))
     · intro g hg hg'
@@ -254,7 +163,7 @@ theorem exists_isCycle_of_share_edge {u₁ u₂ : V} {C₁ : G.Walk u₁ u₁} {
       exact Or.inl haA
     · rw [Walk.edges_append, List.mem_append, Walk.edges_reverse, List.mem_reverse]
       exact Or.inr hbP
-  · refine ⟨c₁, P.append A₂, isCycle_append_of_isPath hPp hA₂p hne ?_ ?_, ?_, ?_⟩
+  · refine ⟨c₁, P.append A₂, SimpleGraph.Walk.IsPath.isCycle_append_of_edges_disjoint hPp hA₂p hne ?_ ?_, ?_, ?_⟩
     · intro w hw₁ hw₂
       exact hPA w hw₁ (hsuppA w (Or.inr hw₂))
     · intro g hg hg'
@@ -355,7 +264,7 @@ theorem IsCycle.exists_walk [Finite V] {Q : Set E} (hQ : N.IsCycle Q) :
       have heq := hmeet g₁ (List.mem_append_left _ hg₁) g₂ (List.mem_append_left _ hg₂) (hg₁t.trans hg₂t.symm)
       rw [hg₁t] at heq
       exact not_reach_tgt_src g (by rw [heq, hgx]; exact Relation.ReflTransGen.refl)
-  refine ⟨w, wp.append wq.reverse, isCycle_append_of_isPath hpp hqp.reverse hwx ?_ ?_, ?_⟩
+  refine ⟨w, wp.append wq.reverse, SimpleGraph.Walk.IsPath.isCycle_append_of_edges_disjoint hpp hqp.reverse hwx ?_ ?_, ?_⟩
   · intro y hy₁ hy₂
     rw [SimpleGraph.Walk.support_reverse, List.mem_reverse, hwq₂] at hy₂
     rw [hwp₂] at hy₁

@@ -1030,7 +1030,7 @@ theorem IsCycle.sep {Q : Set E} (hQ : N.IsCycle Q) : N.separate.IsCycle (Sum.inl
     obtain ⟨f, hf, rfl⟩ := List.mem_map.1 hb
     simp only [separate_tgt_inl, Sum.inl.injEq] at hab ⊢
     exact hc.2.2.2.2 e he f hf hab
-  · exact image_setOf_mem_or_mem _ _ _
+  · exact List.image_setOf_mem_or_mem _ _ _
 
 /-- A recombination cycle of the separated network is the image of one of `N`. -/
 theorem exists_eq_image_of_isCycle {Q' : Set (E ⊕ N.SepTop)} (hQ : N.separate.IsCycle Q') :

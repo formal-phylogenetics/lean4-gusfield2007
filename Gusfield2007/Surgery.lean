@@ -61,7 +61,7 @@ def restrictNet [Finite V] : Network C V {e // N.KeptArc C e} where
   simple e f h₁ h₂ := Subtype.ext (N.simple _ _ h₁ h₂)
   acyclic := by
     obtain ⟨ρ, hρ⟩ := N.exists_rank
-    exact acyclic_of_rank ρ fun e => hρ e.1
+    exact Relation.not_transGen_arc_self_of_rank ρ fun e => hρ e.1
   root_iff v := by
     constructor
     · intro h
@@ -239,7 +239,7 @@ theorem IsFullyDecomposedFor.of_reachable_iff {G G' : SimpleGraph ι} (h : ∀ i
       rw [hs]
       exact hi i
   isolated_treeArc i hi := hf.isolated_treeArc i fun j hj => by
-    obtain ⟨k, hk⟩ := exists_adj_of_reachable ((h i j).1 hj.reachable) hj.ne
+    obtain ⟨k, hk⟩ := SimpleGraph.Reachable.exists_adj_of_ne ((h i j).1 hj.reachable) hj.ne
     exact hi k hk
   nodeDisjoint := hf.nodeDisjoint
 

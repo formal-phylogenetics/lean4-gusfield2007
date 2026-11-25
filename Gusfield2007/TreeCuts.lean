@@ -1,6 +1,8 @@
 module
 
 public import Gusfield2007.TreeFacts
+public import Gusfield2007.Basic.Combinatorics.SimpleGraph.Connectivity
+public import Gusfield2007.Basic.Data.Bool
 
 /-!
 # Gusfield et al. 2007: the sides of an edge of a tree
@@ -22,14 +24,6 @@ variable {W : Type*} {T : SimpleGraph W} {e f g h : Sym2 W} {s t : W → Bool}
 /-- `s` is a cut function of the edge `e` of `T`: it changes across `e`, and across no other edge. -/
 def IsCut (T : SimpleGraph W) (e : Sym2 W) (s : W → Bool) : Prop :=
   ∀ ⦃u v⦄, T.Adj u v → (s u ≠ s v ↔ s(u, v) = e)
-
-/-- A set closed under adjacency in a connected graph is everything. -/
-theorem forall_of_adj_closed (hT : T.Preconnected) {P : W → Prop} (hP : ∀ ⦃u v⦄, T.Adj u v → P u → P v) {w : W}
-    (hw : P w) (x : W) : P x := by
-  obtain ⟨p⟩ := hT w x
-  induction p with
-  | nil => exact hw
-  | cons h _ ih => exact ih (hP h hw)
 
 theorem IsCut.eq_of_ne (hs : IsCut T e s) {u v : W} (huv : T.Adj u v) (h : s(u, v) ≠ e) : s u = s v := by
   by_contra hne
@@ -112,7 +106,7 @@ theorem IsCut.not_fourth (hT : T.Preconnected) (hs : IsCut T e s) (ht : IsCut T 
   have hall : ∀ α β : Bool, α ≠ s f₁ → β ≠ t e₁ → ∀ v, ¬ (s v = α ∧ t v = β) := by
     intro α β hα hβ v hv
     have hclosed : ∀ x, s x = α ∧ t x = β := by
-      refine forall_of_adj_closed hT (P := fun x => s x = α ∧ t x = β) ?_ hv
+      refine SimpleGraph.Preconnected.forall_of_forall_adj hT (P := fun x => s x = α ∧ t x = β) ?_ hv
       rintro u v huv ⟨hu₁, hu₂⟩
       have h₁ : s(u, v) ≠ s(e₁, e₂) := by
         intro heq
@@ -248,18 +242,6 @@ theorem exists_common_of_pairwise_incident (hT : T.IsTree) {F : Set (Sym2 W)} (h
 section Rows
 
 variable {X : Type*} {φ : X → W}
-
-/-- Two maps to `Bool` with one partition. -/
-theorem split_iff_of_iff {f g : X → Bool} {c d : Bool} (h : ∀ x, f x = c ↔ g x = d) (x y : X) : f x = f y ↔ g x = g y := by
-  have hx := h x
-  have hy := h y
-  revert hx hy
-  cases f x <;> cases f y <;> cases g x <;> cases g y <;> cases c <;> cases d <;> simp
-
-theorem bool_iff_of_not_both {a b : Bool} (h₁ : ¬ (a = true ∧ b = true)) (h₂ : a = false → b ≠ false) :
-    a = true ↔ b = false := by
-  revert h₁ h₂
-  cases a <;> cases b <;> simp
 
 /-- Each side of an edge of a tree with its leaves labelled has a label (the paper's "a leaf reachable", line 285). -/
 theorem exists_row_side [Finite W] (hT : T.IsTree) (hφ : ∀ v, (T.neighborSet v).ncard ≤ 1 → v ∈ Set.range φ) {a b : W}

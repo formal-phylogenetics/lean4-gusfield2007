@@ -40,7 +40,7 @@ theorem add_R_le_F (c : Crossover) {M : Finset (ι → Bool)} (hM : M.Nonempty) 
     (hA : ∀ i j, (incompatGraph M).Reachable i j ↔ (i ∈ A ↔ j ∈ A)) {a b : ι} (ha : a ∈ A) (hb : b ∉ A) :
     R c (restrictRows A M) + R c (restrictRows Aᶜ M) ≤ F c M := by
   have h := sum_R_le_F c M hM hC
-  have e := finsum_connectedComponent_eq_add hA ha hb fun C => R c (restrictRows C M)
+  have e := SimpleGraph.finsum_connectedComponent_supp_eq_add hA ha hb fun C => R c (restrictRows C M)
   exact e ▸ h
 
 /-- A fully decomposed network from Theorem 3, for two components, when `S` doesn't change the graph (for example, `S` is a row). -/
@@ -49,7 +49,7 @@ theorem F_le_add_RS (c : Crossover) {M : Finset (ι → Bool)} {S : ι → Bool}
     F c M ≤ RS c (A.domRestrict S) (restrictRows A M) + RS c (Aᶜ.domRestrict S) (restrictRows Aᶜ M) := by
   obtain ⟨n, n', N, h₁, h₂, -, h₄, h₅⟩ := theorem3 c M S hM hC
   rw [hG] at h₄ h₅
-  have e := finsum_connectedComponent_eq_add hA ha hb fun C => RS c (C.domRestrict S) (restrictRows C M)
+  have e := SimpleGraph.finsum_connectedComponent_supp_eq_add hA ha hb fun C => RS c (C.domRestrict S) (restrictRows C M)
   have hle : F c M ≤ N.recombCount := Nat.sInf_le ⟨n, n', N, h₁, h₂, h₄, rfl⟩
   rw [h₅] at hle
   exact e ▸ hle
@@ -84,7 +84,7 @@ theorem fig5_incompatible (i j : Fin 8) :
 
 /-- The two components of Figure 5: "component `C₁` containing the first four sites of `M`, and component `C₂` containing the last four sites" (line 404). -/
 theorem fig5_reachable (i j : Fin 8) : (incompatGraph fig5).Reachable i j ↔ (i ∈ fig5C₁ ↔ j ∈ fig5C₁) := by
-  refine reachable_iff_of_adj _ (fun i j hij => ?_) (a := 0) (b := 4) (fun i hi => reachable_of_two_steps ?_) (fun i hi => reachable_of_two_steps ?_) i j
+  refine SimpleGraph.reachable_iff_mem_iff_of_adj _ (fun i j hij => ?_) (a := 0) (b := 4) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) i j
   · change Incompatible fig5 i j at hij
     rw [fig5_incompatible] at hij
     change i.val < 4 ↔ j.val < 4
@@ -128,7 +128,7 @@ theorem fig6_incompatible (i j : Fin 6) :
 
 /-- The two components of Figure 6. -/
 theorem fig6_reachable (i j : Fin 6) : (incompatGraph fig6).Reachable i j ↔ (i ∈ fig6C₁ ↔ j ∈ fig6C₁) := by
-  refine reachable_iff_of_adj _ (fun i j hij => ?_) (a := 2) (b := 3) (fun i hi => reachable_of_two_steps ?_) (fun i hi => reachable_of_two_steps ?_) i j
+  refine SimpleGraph.reachable_iff_mem_iff_of_adj _ (fun i j hij => ?_) (a := 2) (b := 3) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) i j
   · change Incompatible fig6 i j at hij
     rw [fig6_incompatible] at hij
     change (i = 1 ∨ i = 2 ∨ i = 4) ↔ (j = 1 ∨ j = 2 ∨ j = 4)
@@ -263,7 +263,7 @@ theorem fig6_hG_necessary :
   refine ⟨fig6_RS_rerooted.trans fig6_R_single.symm, fig6Root_reachable, ?_, fig6_F_single, ?_⟩
   · refine theorem5 fig6_noConstantColumn (NetSpec.toNetwork hval) ⟨NetSpec.obeys_single_toNetwork _ figure7RerootedSpec_single, NetSpec.derives_toNetwork _ figure7RerootedSpec_derives, figure7RerootedSpec_root, ?_⟩ ?_
     · rw [NetSpec.recombCount_toNetwork, figure7RerootedSpec_recombs, fig6_RS_rerooted]
-    · rw [card_connectedComponent_eq_one hconn, card_connectedComponent_eq_one fig6Root_reachable]
+    · rw [SimpleGraph.card_connectedComponent_eq_one_of_reachable hconn, SimpleGraph.card_connectedComponent_eq_one_of_reachable fig6Root_reachable]
   · exact not_minDecomposable_of_lt (by rw [fig6_R_single, fig6_F_single]; omega)
 
 /-! ### Line 608 -/
@@ -305,10 +305,10 @@ theorem fig6_line608_incompatible :
     obtain ⟨v, -, rfl⟩ := (NetSpec.derives_toNetwork hval figure7Spec_derives).surjOn hr
     exact Network.label_mem_labelSet _ v
   have hlab : (fig6Recomb : Fin 6 → Bool) ∈ (NetSpec.toNetwork hval).labelSet := figure7Spec_first_recomb.2.1 ▸ Network.label_mem_labelSet (NetSpec.toNetwork hval) 5
-  refine ⟨⟨figure7Spec_first_recomb.1, figure7Spec_first_recomb.2.1⟩, ⟨by unfold Incompatible; decide +kernel, hinc⟩, ?_, card_connectedComponent_eq_one (hconnect _ (fun r hr => mem_addRow.2 (Or.inr hr)) hinc), ?_, ?_⟩
+  refine ⟨⟨figure7Spec_first_recomb.1, figure7Spec_first_recomb.2.1⟩, ⟨by unfold Incompatible; decide +kernel, hinc⟩, ?_, SimpleGraph.card_connectedComponent_eq_one_of_reachable (hconnect _ (fun r hr => mem_addRow.2 (Or.inr hr)) hinc), ?_, ?_⟩
   · rw [fig6_conflictGraph]
-    exact card_connectedComponent_eq_two fig6_reachable (a := 1) (b := 0) (Or.inl rfl) fig6C₁_zero
-  · refine card_connectedComponent_eq_one (hconnect _ hrow fun x y => ?_)
+    exact SimpleGraph.card_connectedComponent_eq_two_of_reachable_iff fig6_reachable (a := 1) (b := 0) (Or.inl rfl) fig6C₁_zero
+  · refine SimpleGraph.card_connectedComponent_eq_one_of_reachable (hconnect _ hrow fun x y => ?_)
     obtain ⟨r, hr, h₁, h₂⟩ := hinc x y
     rcases mem_addRow.1 hr with rfl | hr
     · exact ⟨_, hlab, h₁, h₂⟩
@@ -386,7 +386,7 @@ theorem fig8_incompatible (i j : Fin 10) :
 
 /-- The two components of Figure 8: "one component contains sites 1 through 5, and the other contains sites 6 through 10" (line 618). -/
 theorem fig8_reachable (i j : Fin 10) : (incompatGraph fig8).Reachable i j ↔ (i ∈ fig8C₁ ↔ j ∈ fig8C₁) := by
-  refine reachable_iff_of_adj _ (fun i j hij => ?_) (a := 0) (b := 5) (fun i hi => reachable_of_two_steps ?_) (fun i hi => reachable_of_two_steps ?_) i j
+  refine SimpleGraph.reachable_iff_mem_iff_of_adj _ (fun i j hij => ?_) (a := 0) (b := 5) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) i j
   · change Incompatible fig8 i j at hij
     rw [fig8_incompatible] at hij
     change i.val < 5 ↔ j.val < 5
@@ -487,7 +487,7 @@ theorem rootedConjecture_multiple_false : ¬ RootedConjecture .multiple := by
 /-! ### A smaller counterexample, not in the paper -/
 
 theorem even_reachable (i j : Fin 6) : (incompatGraph evenRows).Reachable i j ↔ (i ∈ evenC₁ ↔ j ∈ evenC₁) := by
-  refine reachable_iff_of_adj _ (fun i j hij => ?_) (a := 0) (b := 3) (fun i hi => reachable_of_two_steps ?_) (fun i hi => reachable_of_two_steps ?_) i j
+  refine SimpleGraph.reachable_iff_mem_iff_of_adj _ (fun i j hij => ?_) (a := 0) (b := 3) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) (fun i hi => SimpleGraph.reachable_of_eq_or_adj_or_adj_adj ?_) i j
   · change Incompatible evenRows i j at hij
     change i.val < 3 ↔ j.val < 3
     unfold Incompatible at hij

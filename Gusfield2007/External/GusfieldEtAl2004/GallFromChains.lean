@@ -254,7 +254,7 @@ theorem IsArrangement.exists_network (h : IsArrangement S₀ s A B c) :
       acyclic := by
         let ρ : V → ℕ := fun v => if v.1 = s then Nat.card κ + 1 else (fl S₀ v.1).ncard
         have hle : ∀ v : V, (fl S₀ v.1).ncard ≤ Nat.card κ := fun v => Set.ncard_le_card _
-        refine acyclic_of_strict ρ ?_
+        refine Relation.not_transGen_self_of_forall_lt ρ ?_
         rintro a b (hab | hab)
         · by_cases hbS : b.1 = S₀
           · simp [hbS] at hab

@@ -227,7 +227,7 @@ def galledNet : Network (Fin 4) (Fin 9) (Fin 9) where
   site := ![0, 1, 3, 5]
   label := fun v => ofBits (galledLabels.getD v.val [])
   simple := by decide +kernel
-  acyclic := Network.acyclic_of_rank (fun v : Fin 9 => v.val) (by decide +kernel)
+  acyclic := Relation.not_transGen_arc_self_of_rank (fun v : Fin 9 => v.val) (by decide +kernel)
   root_iff := by decide +kernel
   inDegree_le_two := by decide +kernel
   site_not_recomb := by decide +kernel

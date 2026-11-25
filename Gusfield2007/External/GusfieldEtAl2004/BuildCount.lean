@@ -1,6 +1,7 @@
 module
 
 public import Gusfield2007.External.GusfieldEtAl2004.Build
+public import Gusfield2007.Basic.Data.Nat.Bitwise
 
 /-!
 # The count of the computed reduced galled tree (Gusfield, Eddhu, Langley 2004)
@@ -159,10 +160,6 @@ section Bounds
 
 variable {S : Row m} {M : List (Row m)} {f : Fin m → Fin m} {ar : Fin m → Arr m} {X : ℕ}
 
-theorem powers_le (h : 1 ≤ X) : X ≤ X ^ 2 ∧ X ^ 2 ≤ X ^ 3 ∧ X ^ 3 ≤ X ^ 4 ∧ X ^ 4 ≤ X ^ 5 ∧ X ^ 5 ≤ X ^ 6 := by
-  refine ⟨?_, Nat.pow_le_pow_right h (by omega), Nat.pow_le_pow_right h (by omega), Nat.pow_le_pow_right h (by omega), Nat.pow_le_pow_right h (by omega)⟩
-  simpa using Nat.pow_le_pow_right h (show 1 ≤ 2 by omega)
-
 theorem reps_length_le (f : Fin m → Fin m) : (reps f).length ≤ m := by
   have h := List.Sublist.length_le (List.dedup_sublist ((List.finRange m).map f))
   rw [List.length_map, List.length_finRange] at h
@@ -177,7 +174,7 @@ theorem rowsOf_length_le (c : Fin m) : (rowsOf S M f c).length ≤ M.length := b
 theorem cands_length_le : (cands S M f).length ≤ 1 + m + m * M.length := by
   have hflat : (((reps f).filter (isNT f)).flatMap fun c => (rowsOf S M f c).map (GNode.part c)).length ≤ ((reps f).filter (isNT f)).length * M.length := by
     rw [List.length_flatMap]
-    refine sum_map_le ?_
+    refine List.sum_map_le_length_mul ?_
     intro c _
     simpa using rowsOf_length_le c
   have hfl : ((reps f).filter (isNT f)).length ≤ m := (List.length_filter_le _ _).trans (reps_length_le f)
@@ -202,7 +199,7 @@ theorem arrOf_chains_le (c : Fin m) : (arrOf S M f c).2.1.length ≤ M.length �
       · exact ⟨filterOps_length_le.trans hlen, filterOps_length_le.trans hlen⟩
 
 theorem upOps_le (hX : M.length + m + 1 = X) (u v : GNode m) : (upOps S M f u v).2 ≤ 12 * X ^ 2 := by
-  obtain ⟨p, -⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, -⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   have hb : ∀ a b : GNode m, (allOps M fun r => (!(clOps S f a r).1 || (clOps S f b r).1, (clOps S f a r).2 + (clOps S f b r).2)).2 ≤ M.length * (4 * m) := fun a b =>
     allOps_le fun _ _ => by
       simp only [clOps]
@@ -221,7 +218,7 @@ theorem keyOps_snd_le (u : GNode m) : (keyOps S M f u).2 ≤ M.length * (2 * m) 
   simpa only [keyOps, rankOps, add_le_add_iff_right] using h
 
 theorem rowsOfOps_le (hX : M.length + m + 1 = X) (c : Fin m) : (rowsOfOps S M f c).2 ≤ 4 * X ^ 3 := by
-  obtain ⟨p, q, -⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, q, -⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   have h₁ : M.length * (M.length * (2 * m)) ≤ 2 * X ^ 3 := by
     calc M.length * (M.length * (2 * m)) ≤ X * (X * (2 * X)) := Nat.mul_le_mul (by omega) (Nat.mul_le_mul (by omega) (by omega))
       _ = 2 * X ^ 3 := by ring
@@ -232,7 +229,7 @@ theorem rowsOfOps_le (hX : M.length + m + 1 = X) (c : Fin m) : (rowsOfOps S M f 
   omega
 
 theorem candsOps_le (hX : M.length + m + 1 = X) : (candsOps S M f).2 ≤ 6 * X ^ 4 := by
-  obtain ⟨p, q, r, -⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, q, r, -⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   have hm : m ≤ X := by omega
   have hmm : m * m ≤ X ^ 2 := by
     calc m * m ≤ X * X := Nat.mul_le_mul hm hm
@@ -241,7 +238,7 @@ theorem candsOps_le (hX : M.length + m + 1 = X) : (candsOps S M f).2 ≤ 6 * X ^
     have h : (filterOps (reps f) fun c => (isNT f c, m)).2 ≤ (reps f).length * m := filterOps_le fun _ _ => le_rfl
     exact h.trans ((Nat.mul_le_mul_right _ (reps_length_le f)).trans hmm)
   have hsum : (((filterOps (reps f) fun c => (isNT f c, m)).1).map fun c => (rowsOfOps S M f c).2).sum ≤ 4 * X ^ 4 := by
-    refine (sum_map_le fun c _ => rowsOfOps_le hX c).trans ?_
+    refine (List.sum_map_le_length_mul fun c _ => rowsOfOps_le hX c).trans ?_
     calc _ ≤ X * (4 * X ^ 3) := Nat.mul_le_mul_right _ ((filterOps_length_le.trans (reps_length_le f)).trans hm)
       _ = 4 * X ^ 4 := by ring
   simp only [candsOps]
@@ -253,7 +250,7 @@ theorem cands_length_le_sq (hX : M.length + m + 1 = X) : (cands S M f).length �
   nlinarith [Nat.zero_le M.length, Nat.zero_le m]
 
 theorem treeParOps_le (hX : M.length + m + 1 = X) (v : GNode m) : (treeParOps S M f v).2 ≤ 25 * X ^ 4 := by
-  obtain ⟨p, q, r, -⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, q, r, -⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   have hL : (candsOps S M f).1.length ≤ X ^ 2 := cands_length_le_sq hX
   have hab : (filterOps (candsOps S M f).1 fun u => upOps S M f u v).2 ≤ 12 * X ^ 4 := by
     refine (filterOps_le fun u _ => upOps_le hX u v).trans ?_
@@ -286,7 +283,7 @@ theorem predNodeOps_le (hX : M.length + m + 1 = X) (c : Fin m) {Y : List (Row m)
   omega
 
 theorem parOps_le (hX : M.length + m + 1 = X) (har : ∀ c, (ar c).2.1.length ≤ M.length ∧ (ar c).2.2.length ≤ M.length) (v : GNode m) : (parOps S M f ar v).2 ≤ 25 * X ^ 4 := by
-  obtain ⟨p, q, r, -⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, q, r, -⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   cases v with
   | root => simp [parOps]
   | top c => exact treeParOps_le hX _
@@ -302,7 +299,7 @@ theorem parOps_le (hX : M.length + m + 1 = X) (har : ∀ c, (ar c).2.1.length �
     split_ifs <;> simp only <;> omega
 
 theorem par₂Ops_le (hX : M.length + m + 1 = X) (har : ∀ c, (ar c).2.1.length ≤ M.length ∧ (ar c).2.2.length ≤ M.length) (v : GNode m) : (par₂Ops S ar v).2 ≤ 3 * X ^ 2 := by
-  obtain ⟨p, -⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, -⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   cases v with
   | root => simp [par₂Ops]
   | top c => simp [par₂Ops]
@@ -313,13 +310,13 @@ theorem par₂Ops_le (hX : M.length + m + 1 = X) (har : ∀ c, (ar c).2.1.length
     split_ifs <;> simp only <;> omega
 
 theorem labelOps_le (hX : M.length + m + 1 = X) (v : GNode m) (i : Fin m) : (labelOps S M f v i).2 ≤ 32 * X ^ 3 := by
-  obtain ⟨p, q, -⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, q, -⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   have hi : 1 ≤ m := by
     have := i.isLt
     omega
   have h₁ := rowsOfOps_le (S := S) (M := M) (f := f) hX (f i)
   have h₂ : ((rowsOfOps S M f (f i)).1.map fun τ => (upOps S M f (.part (f i) τ) v).2).sum ≤ 12 * X ^ 3 := by
-    refine (sum_map_le fun τ _ => upOps_le hX _ v).trans ?_
+    refine (List.sum_map_le_length_mul fun τ _ => upOps_le hX _ v).trans ?_
     calc _ ≤ X * (12 * X ^ 2) := Nat.mul_le_mul_right _ ((rowsOf_length_le (f i)).trans (by omega))
       _ = 12 * X ^ 3 := by ring
   have h₃ := upOps_le (S := S) (M := M) (f := f) hX (.top (f i)) v
@@ -327,12 +324,12 @@ theorem labelOps_le (hX : M.length + m + 1 = X) (v : GNode m) (i : Fin m) : (lab
   omega
 
 theorem gTableOps_le (hX : M.length + m + 1 = X) (har : ∀ c, (ar c).2.1.length ≤ M.length ∧ (ar c).2.2.length ≤ M.length) : (gTableOps S M f ar).2 ≤ 128 * X ^ 6 := by
-  obtain ⟨p, q, r, s, t⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, q, r, s, t⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   have hnode : ∀ v : GNode m, (parOps S M f ar v).2 + (par₂Ops S ar v).2 + ((List.finRange m).map fun i => (labelOps S M f v i).2).sum ≤ 61 * X ^ 4 := fun v => by
     have h₁ := parOps_le (S := S) (M := M) (f := f) hX har v
     have h₂ := par₂Ops_le (S := S) (M := M) hX har v
     have h₃ : ((List.finRange m).map fun i => (labelOps S M f v i).2).sum ≤ 32 * X ^ 4 := by
-      refine (sum_map_le fun i _ => labelOps_le hX v i).trans ?_
+      refine (List.sum_map_le_length_mul fun i _ => labelOps_le hX v i).trans ?_
       rw [List.length_finRange]
       calc _ ≤ X * (32 * X ^ 3) := Nat.mul_le_mul_right _ (by omega)
         _ = 32 * X ^ 4 := by ring
@@ -342,7 +339,7 @@ theorem gTableOps_le (hX : M.length + m + 1 = X) (har : ∀ c, (ar c).2.1.length
     simp only [List.length_append, List.length_map]
     omega
   have hsum : (((candsOps S M f).1 ++ M.map GNode.leaf).map fun v => (parOps S M f ar v).2 + (par₂Ops S ar v).2 + ((List.finRange m).map fun i => (labelOps S M f v i).2).sum).sum ≤ 122 * X ^ 6 := by
-    refine (sum_map_le fun v _ => hnode v).trans ?_
+    refine (List.sum_map_le_length_mul fun v _ => hnode v).trans ?_
     calc _ ≤ (2 * X ^ 2) * (61 * X ^ 4) := Nat.mul_le_mul_right _ hlen
       _ = 122 * X ^ 6 := by ring
   have hc := candsOps_le (S := S) (M := M) (f := f) hX
@@ -350,7 +347,7 @@ theorem gTableOps_le (hX : M.length + m + 1 = X) (har : ∀ c, (ar c).2.1.length
   omega
 
 theorem candidate_le_cube (hX : M.length + m + 1 = X) (S : Row m) {C : List (Fin m)} (hC : C.length ≤ m) {rows : List (Row m)} (hrows : rows.length ≤ M.length) (s : Row m) : (candidate S C rows s).2 ≤ 21 * X ^ 3 := by
-  obtain ⟨p, q, -⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, q, -⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   have hn : M.length ≤ X := by omega
   have hm : m ≤ X := by omega
   have h := candidate_le S hC rows s hrows
@@ -369,7 +366,7 @@ theorem candidate_le_cube (hX : M.length + m + 1 = X) (S : Row m) {C : List (Fin
   omega
 
 theorem arrOps_le (hX : M.length + m + 1 = X) (c : Fin m) : (arrOps S M f c).2 ≤ 47 * X ^ 4 := by
-  obtain ⟨p, q, r, -⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, q, r, -⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   have hC : (sitesOf f c).length ≤ m := by
     have h := List.length_filter_le (fun k => decide (f k = c)) (List.finRange m)
     rwa [List.length_finRange] at h
@@ -377,7 +374,7 @@ theorem arrOps_le (hX : M.length + m + 1 = X) (c : Fin m) : (arrOps S M f c).2 �
   have hc := fun s => candidate_le_cube hX S hC (rows := (rowsOfOps S M f c).1) hr s
   have h₁ := rowsOfOps_le (S := S) (M := M) (f := f) hX c
   have h₂ : ((rowsOfOps S M f c).1.map fun s => (candidate S (sitesOf f c) (rowsOfOps S M f c).1 s).2).sum ≤ 21 * X ^ 4 := by
-    refine (sum_map_le fun s _ => hc s).trans ?_
+    refine (List.sum_map_le_length_mul fun s _ => hc s).trans ?_
     calc _ ≤ X * (21 * X ^ 3) := Nat.mul_le_mul_right _ (hr.trans (by omega))
       _ = 21 * X ^ 4 := by ring
   have h₃ : (match (rowsOfOps S M f c).1.find? (fun s => (candidate S (sitesOf f c) (rowsOfOps S M f c).1 s).1) with
@@ -390,7 +387,7 @@ theorem arrOps_le (hX : M.length + m + 1 = X) (c : Fin m) : (arrOps S M f c).2 �
   omega
 
 theorem siteNodeOps_le (hX : M.length + m + 1 = X) (har : ∀ c, (ar c).2.1.length ≤ M.length ∧ (ar c).2.2.length ≤ M.length) (i : Fin m) : (siteNodeOps S f ar i).2 ≤ 7 * X ^ 2 := by
-  obtain ⟨p, -⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, -⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   have hlen : ((ar (f i)).2.1 ++ (ar (f i)).2.2).length ≤ 2 * X := by
     have := har (f i)
     rw [List.length_append]
@@ -407,7 +404,7 @@ This is a bound in `n` and `m`, and not the source's `O(nm + n³)`, so `m ≤ 2n
 theorem galledBuildOps_le (S : Row m) (M : List (Row m)) : (galledBuildOps S M).2 ≤ 233 * (M.length + m + 1) ^ 6 := by
   obtain ⟨X, hX⟩ : ∃ X, M.length + m + 1 = X := ⟨_, rfl⟩
   rw [hX]
-  obtain ⟨p, q, r, s, t⟩ := powers_le (show 1 ≤ X by omega)
+  obtain ⟨p, q, r, s, t⟩ := Nat.pow_chain_le_six (show 1 ≤ X by omega)
   have hd := galledDecide_ops_le S M
   rw [hX] at hd
   unfold galledBuildOps
@@ -416,13 +413,13 @@ theorem galledBuildOps_le (S : Row m) (M : List (Row m)) : (galledBuildOps S M).
     have har : ∀ c : Fin m, ((fun c : Fin m => (List.ofFn fun c => (arrOps S M (labOf (edgesOps S M).1) c).1).getD c.val (S, [], [])) c).2.1.length ≤ M.length ∧ ((fun c : Fin m => (List.ofFn fun c => (arrOps S M (labOf (edgesOps S M).1) c).1).getD c.val (S, [], [])) c).2.2.length ≤ M.length := fun c => by
       simpa [List.getD_eq_getElem?_getD, arrOps] using arrOf_chains_le (S := S) (M := M) (f := labOf (edgesOps S M).1) c
     have h₁ : ((List.finRange m).map fun c => (arrOps S M (labOf (edgesOps S M).1) c).2).sum ≤ 47 * X ^ 5 := by
-      refine (sum_map_le fun c _ => arrOps_le hX c).trans ?_
+      refine (List.sum_map_le_length_mul fun c _ => arrOps_le hX c).trans ?_
       rw [List.length_finRange]
       calc _ ≤ X * (47 * X ^ 4) := Nat.mul_le_mul_right _ hm
         _ = 47 * X ^ 5 := by ring
     have h₂ := gTableOps_le (S := S) (M := M) (f := labOf (edgesOps S M).1) hX har
     have h₃ : ((List.finRange m).map fun i => (siteNodeOps S (labOf (edgesOps S M).1) (fun c : Fin m => (List.ofFn fun c => (arrOps S M (labOf (edgesOps S M).1) c).1).getD c.val (S, [], [])) i).2).sum ≤ 7 * X ^ 3 := by
-      refine (sum_map_le fun i _ => siteNodeOps_le hX har i).trans ?_
+      refine (List.sum_map_le_length_mul fun i _ => siteNodeOps_le hX har i).trans ?_
       rw [List.length_finRange]
       calc _ ≤ X * (7 * X ^ 2) := Nat.mul_le_mul_right _ hm
         _ = 7 * X ^ 3 := by ring

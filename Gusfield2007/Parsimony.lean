@@ -99,8 +99,8 @@ def trim [Finite V] (hroot : ∃ r, T.Reach T.root (anchor r)) :
   root := .inl ⟨T.root, hroot⟩
   label := Sum.elim (fun v => T.label v.1) (fun r => r.1)
   acyclic := by
-    obtain ⟨ρ, hρ⟩ := exists_rank T.Arc T.acyclic
-    refine Network.acyclic_of_rank (Sum.elim (fun v => ρ v.1) (fun r => ρ (anchor r) + 1)) ?_
+    obtain ⟨ρ, hρ⟩ := Relation.exists_forall_lt_of_not_transGen_self T.Arc T.acyclic
+    refine Relation.not_transGen_arc_self_of_rank (Sum.elim (fun v => ρ v.1) (fun r => ρ (anchor r) + 1)) ?_
     rintro (e | r)
     · exact hρ _ _ ⟨e.1, rfl, rfl⟩
     · exact Nat.lt_succ_self _
@@ -223,7 +223,7 @@ def reverseRoot (e : E) (he : T.src e = T.root) : MutationTree ι V E where
   label := T.label
   acyclic := by
     have hne : T.tgt e ≠ T.root := fun h => (T.root_iff T.root).2 rfl e h
-    refine Network.acyclic_of_add_arc (r := fun a b => ∃ g, g ≠ e ∧ T.src g = a ∧ T.tgt g = b) (y := T.tgt e) (x := T.root) ?_ ?_ ?_
+    refine Relation.not_transGen_self_of_le_or_eq (r := fun a b => ∃ g, g ≠ e ∧ T.src g = a ∧ T.tgt g = b) (y := T.tgt e) (x := T.root) ?_ ?_ ?_
     · intro a h
       refine T.acyclic a (Relation.TransGen.mono ?_ _ _ h)
       rintro a b ⟨g, -, h₁, h₂⟩
@@ -631,7 +631,7 @@ theorem exists_gen [Fintype E] (T : MutationTree ι V E) :
     ∀ W : Finset V, T.root ∈ W → (∀ e, T.tgt e ∈ W → T.src e ∈ W) → ∃ A U K, Gen .pointwise (T.label T.root) A U K ∧ (∀ v ∈ W, T.label v ∈ A) ∧
       (∀ e, T.tgt e ∈ W → ∀ i, T.label (T.src e) i ≠ T.label (T.tgt e) i → i ∈ U) ∧
       K + U.ncard = ∑ e with T.tgt e ∈ W, (Finset.univ.filter fun i => T.label (T.src e) i ≠ T.label (T.tgt e) i).card := by
-  obtain ⟨rk, hrk⟩ := exists_rank T.Arc T.acyclic
+  obtain ⟨rk, hrk⟩ := Relation.exists_forall_lt_of_not_transGen_self T.Arc T.acyclic
   intro W
   induction W using Finset.strongInduction with
   | H W ih =>

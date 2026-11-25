@@ -20,7 +20,7 @@ Every numbered result is proved, as printed or in a corrected form, with no `sor
 | §5.3: the refutations, Theorem 11 | proved |
 | §5.4: the simulation study, Table 1 | not formalized |
 | Figures 5–10, Footnote 2 | their numbers proved |
-| Line 425 ([`Gusfield2007.MinDecomposableOfForallS`](Gusfield2007/Conjectures.lean#L118)) | open; proved when `H(M) = R(M)` |
+| Line 425 ([`Gusfield2007.MinDecomposableOfForallS`](Gusfield2007/Conjectures.lean#L87)) | open; proved when `H(M) = R(M)` |
 | What the paper says in passing: lines 135, 156, 180, 299, 329, 381, 403, 411, 418, 420, 554, 559, 590, 608 | proved; lines 156, 180, 403 and 554 in corrected forms |
 | Cited results (Gusfield 1991; Semple, Steel 2003; Gusfield, Eddhu, Langley 2004; Myers, Griffiths 2003; Hudson, Kaplan 1985; Song, Hein 2005) | proved, in [`Gusfield2007/External/`](Gusfield2007/External) |
 
@@ -73,9 +73,9 @@ These are the theorems of the Challenge, [`palomar/Gusfield2007/Challenge.lean`]
 | Gusfield et al. 2007, line 381 | [`galled_line381`](palomar/Gusfield2007/Challenge.lean#L273) | a galled tree reduced for `G(M)` makes `M` min decomposable, in its model and for multiple crossovers |
 | Gusfield, Eddhu, Langley 2004, the algorithm | [`galled_galledBuild_correct`](palomar/Gusfield2007/Challenge.lean#L280) | if the computable function `galledBuild` returns a table, it is that of a reduced galled tree deriving `M` with ancestral sequence `S` and single crossovers |
 | Gusfield, Eddhu, Langley 2004, its count | [`galled_galledBuildOps_le`](palomar/Gusfield2007/Challenge.lean#L288) | on `n` rows and `m` sites, the algorithm counts at most `233 (n + m + 1)⁶` operations; not the source's `O(nm + n³)` |
-| Myers, Griffiths 2003, Algorithm 1 | [`myersGriffiths_algorithm1_isOptimalValue`](palomar/Gusfield2007/Challenge.lean#L300) | the matrix that [`algorithm1`](Gusfield2007/External/MyersGriffiths2003/Algorithm1.lean#L257) builds is that of the optimal values of the integer program on regions |
+| Myers, Griffiths 2003, Algorithm 1 | [`myersGriffiths_algorithm1_isOptimalValue`](palomar/Gusfield2007/Challenge.lean#L300) | the matrix that [`algorithm1`](Gusfield2007/External/MyersGriffiths2003/Algorithm1.lean#L258) builds is that of the optimal values of the integer program on regions |
 | Myers, Griffiths 2003, `R_h` | [`myersGriffiths_Rh_le_R`](palomar/Gusfield2007/Challenge.lean#L304) | the haplotype bounds on regions, combined by Algorithm 1, are a lower bound on `R¹(M)` |
-| Hudson, Kaplan 1985, Appendix 2 | [`Gusfield2007Challenge.hudsonKaplan_isOptimalValue`](palomar/Gusfield2007/Challenge.lean#L308) | the final number of intervals of [`hudsonKaplan`](Gusfield2007/External/HudsonKaplan1985/Algorithm.lean#L72) is the bound `R_M`, the optimal value of the program for the matrix of incompatible pairs |
+| Hudson, Kaplan 1985, Appendix 2 | [`Gusfield2007Challenge.hudsonKaplan_isOptimalValue`](palomar/Gusfield2007/Challenge.lean#L308) | the final number of intervals of [`hudsonKaplan`](Gusfield2007/External/HudsonKaplan1985/Algorithm.lean#L73) is the bound `R_M`, the optimal value of the program for the matrix of incompatible pairs |
 | Song, Hein 2005, equations (3), (5) | [`songHein_exists_orderedLength_eq_R`](palomar/Gusfield2007/Challenge.lean#L313) | over sequences of binary trees with totally ordered internal nodes, compatible with the columns, the minimum of `L(P)` is `R¹(M)`, and it is attained |
 
 ## The conditional theorem

@@ -2,6 +2,7 @@ module
 
 public import Gusfield2007.External.GusfieldEtAl2004.Algorithm
 public import Mathlib.Data.List.MinMax
+public import Gusfield2007.Basic.Data.List
 
 /-!
 # The reduced galled tree, computed (Gusfield, Eddhu, Langley 2004, Sections 3 to 6)
@@ -333,7 +334,7 @@ theorem Std.two_parts (hs : Std S M f) {c : Fin m} (hc : isNT f c = true) : ∃ 
   obtain ⟨a, b, ha, hb, hab⟩ := hlen
   have hfa : f a = c := by simpa [sitesOf] using ha
   have hfb : f b = c := by simpa [sitesOf] using hb
-  obtain ⟨k, hk⟩ := exists_adj_of_reachable ((hs.lab a b).1 (hfa.trans hfb.symm)) hab
+  obtain ⟨k, hk⟩ := SimpleGraph.Reachable.exists_adj_of_ne ((hs.lab a b).1 (hfa.trans hfb.symm)) hab
   have hkc : f k = c := ((hs.lab a k).2 (SimpleGraph.Adj.reachable hk)).symm.trans hfa
   have hne : (!S a) ≠ S a := by cases S a <;> simp
   have hrow : ∀ b' : Bool, ∃ r ∈ M, r a = !S a ∧ r k = b' := by
@@ -552,43 +553,6 @@ theorem Std.not_up_leaf (hs : Std S M f) (hv : Valid S M f v) {ρ : Row m} : Up 
   · have := hidx0 h₅.symm
     omega
 
-theorem length_filter_le' {β : Type*} {l : List β} {p q : β → Bool} (hpq : ∀ x ∈ l, p x = true → q x = true) : (l.filter p).length ≤ (l.filter q).length := by
-  induction l with
-  | nil => simp
-  | cons a t ih =>
-    have ih' := ih fun x hx => hpq x (List.mem_cons_of_mem _ hx)
-    have ha := hpq a List.mem_cons_self
-    simp only [List.filter_cons]
-    by_cases hp : p a = true
-    · simp [hp, ha hp]
-      omega
-    · by_cases hq : q a = true
-      · simp [hp, hq]
-        omega
-      · simp [hp, hq]
-        omega
-
-theorem length_filter_lt {β : Type*} {l : List β} {p q : β → Bool} (hpq : ∀ x ∈ l, p x = true → q x = true) (h : ∃ x ∈ l, q x = true ∧ p x = false) : (l.filter p).length < (l.filter q).length := by
-  induction l with
-  | nil => simp at h
-  | cons a t ih =>
-    have hle := length_filter_le' (l := t) fun x hx => hpq x (List.mem_cons_of_mem _ hx)
-    have ha := hpq a List.mem_cons_self
-    obtain ⟨x, hx, hqx, hpx⟩ := h
-    simp only [List.filter_cons]
-    rcases List.mem_cons.1 hx with rfl | hx'
-    · simp [hqx, hpx]
-      omega
-    · have hlt := ih (fun y hy => hpq y (List.mem_cons_of_mem _ hy)) ⟨x, hx', hqx, hpx⟩
-      by_cases hp : p a = true
-      · simp [hp, ha hp]
-        omega
-      · by_cases hq : q a = true
-        · simp [hp, hq]
-          omega
-        · simp [hp, hq]
-          omega
-
 theorem rank_le (w : GNode m) : w.rank f ≤ 4 := by
   cases w <;> simp only [GNode.rank]
   · omega
@@ -611,11 +575,11 @@ theorem key_lt {u v : GNode m} (h : Up S M f u v = true) : key S M f u < key S M
   have hru := rank_le (f := f) u
   have hrv := rank_le (f := f) v
   have hbound : u.rank f * (m + 1) + u.idx ≤ 4 * (m + 1) + m := by nlinarith
-  have hle : (M.filter (v.cl S f)).length ≤ (M.filter (u.cl S f)).length := length_filter_le' fun x hx => h₁ x hx
+  have hle : (M.filter (v.cl S f)).length ≤ (M.filter (u.cl S f)).length := List.length_filter_le_length_filter fun x hx => h₁ x hx
   have hleM : (M.filter (u.cl S f)).length ≤ M.length := List.length_filter_le _ _
   unfold key
   by_cases hsub : SubCl S M f u v
-  · have heq : (M.filter (u.cl S f)).length = (M.filter (v.cl S f)).length := le_antisymm (length_filter_le' fun x hx => hsub x hx) hle
+  · have heq : (M.filter (u.cl S f)).length = (M.filter (v.cl S f)).length := le_antisymm (List.length_filter_le_length_filter fun x hx => hsub x hx) hle
     rw [heq]
     rcases h₂ hsub with ht | ⟨ht, hi⟩
     · have : (u.rank f + 1) * (m + 1) ≤ v.rank f * (m + 1) := Nat.mul_le_mul_right _ ht
@@ -625,7 +589,7 @@ theorem key_lt {u v : GNode m} (h : Up S M f u v = true) : key S M f u < key S M
   · unfold SubCl at hsub
     push Not at hsub
     obtain ⟨r, hr, h₃, h₄⟩ := hsub
-    have hlt : (M.filter (v.cl S f)).length < (M.filter (u.cl S f)).length := length_filter_lt (fun x hx => h₁ x hx) ⟨r, hr, h₃, by simpa using h₄⟩
+    have hlt : (M.filter (v.cl S f)).length < (M.filter (u.cl S f)).length := List.length_filter_lt_length_filter (fun x hx => h₁ x hx) ⟨r, hr, h₃, by simpa using h₄⟩
     obtain ⟨d, hd⟩ : ∃ d, M.length - (M.filter (v.cl S f)).length = M.length - (M.filter (u.cl S f)).length + 1 + d := ⟨M.length - (M.filter (v.cl S f)).length - (M.length - (M.filter (u.cl S f)).length) - 1, by omega⟩
     rw [hd]
     nlinarith [Nat.zero_le (d * (6 * (m + 1))), Nat.zero_le (v.rank f * (m + 1))]
@@ -861,7 +825,7 @@ theorem Sub1.refl' (x : Row m) : Sub1 S x x := fun _ h => h
 theorem Sub1.trans' {x y z : Row m} (h₁ : Sub1 S x y) (h₂ : Sub1 S y z) : Sub1 S x z := fun i hi => h₂ i (h₁ i hi)
 
 theorem card1_le {x y : Row m} (h : Sub1 S x y) : card1 S x ≤ card1 S y :=
-  length_filter_le' fun i _ hi => by simpa using h i (by simpa using hi)
+  List.length_filter_le_length_filter fun i _ hi => by simpa using h i (by simpa using hi)
 
 theorem eq_of_sub1 {x y : Row m} (h : Sub1 S x y) (h' : Sub1 S y x) : x = y := by
   funext i
@@ -876,7 +840,7 @@ theorem card1_lt {x y : Row m} (h : Sub1 S x y) (hne : x ≠ y) : card1 S x < ca
     push Not at hno
     exact hne (eq_of_sub1 h fun i hi => hno i hi)
   obtain ⟨i, h₁, h₂⟩ := hi
-  exact length_filter_lt (fun j _ hj => by simpa using h j (by simpa using hj)) ⟨i, List.mem_finRange i, by simpa using h₁, by simpa using h₂⟩
+  exact List.length_filter_lt_length_filter (fun j _ hj => by simpa using h j (by simpa using hj)) ⟨i, List.mem_finRange i, by simpa using h₁, by simpa using h₂⟩
 
 /-- A chain of rows. -/
 def Ch (S : Row m) (X : List (Row m)) : Prop := ∀ x ∈ X, ∀ y ∈ X, Sub1 S x y ∨ Sub1 S y x
@@ -1260,7 +1224,7 @@ def galPos (S : Row m) (ar : Fin m → Arr m) (m' : ℕ) : GNode m → ℕ
 
 omit hs har in
 theorem numAbove_lt {u v : GNode m} (hu : Valid S M f u) (hul : ∀ ρ, u ≠ .leaf ρ) (h : Up S M f u v = true) : numAbove S M f u < numAbove S M f v :=
-  length_filter_lt (fun _ _ hk => up_trans hk h) ⟨u, mem_cands_of_valid hu hul, h, up_irrefl⟩
+  List.length_filter_lt_length_filter (fun _ _ hk => up_trans hk h) ⟨u, mem_cands_of_valid hu hul, h, up_irrefl⟩
 
 omit har in
 /-- The nodes of a gall have the same nodes above. -/
@@ -1276,7 +1240,7 @@ theorem numAbove_part {c : Fin m} (hc : isNT f c = true) {σ τ : Row m} (hσ : 
       exact absurd h (by simp)
     · push Not at h₂
       exact up_trans (hs.up_top_of_up_part hc hσ (valid_of_mem_cands hk) h₁ h₂ h) (hs.top_up_part hc hτ)
-  refine le_antisymm (length_filter_le' fun k hk h => hkey hσ hτ k hk h) (length_filter_le' fun k hk h => hkey hτ hσ k hk h)
+  refine le_antisymm (List.length_filter_le_length_filter fun k hk h => hkey hσ hτ k hk h) (List.length_filter_le_length_filter fun k hk h => hkey hτ hσ k hk h)
 
 /-- **The network is acyclic**: the number of nodes above goes up along an arc, and along a gall the place on it does. -/
 theorem rank_lt {a b : GNode m} (hb : Valid S M f b) (h : par S M f ar b = some a ∨ par₂ S ar b = some a) :
@@ -1595,7 +1559,7 @@ def gPreNet : PreNet (Fin m) (VNode S M f) where
     obtain ⟨c, hc, hv, hq'⟩ := par₂_some v.2 hq
     rw [hv, par_recomb] at hp
     exact endNode_ne har hc ((Option.some.inj hp).trans hq')
-  acyclic := Gusfield2007.acyclic_of_strict (fun v : VNode S M f => numAbove S M f v.1 * (m + 2) + galPos S ar m v.1) fun a b h => by
+  acyclic := Relation.not_transGen_self_of_forall_lt (fun v : VNode S M f => numAbove S M f v.1 * (m + 2) + galPos S ar m v.1) fun a b h => by
     refine rank_lt hs har b.2 ?_
     rcases h with h | h
     · exact Or.inl (liftOpt_eq_some.1 h)
@@ -2039,7 +2003,7 @@ theorem Std.exists_adj_of_isNT {c : Fin m} (hc : isNT f c = true) {i : Fin m} (h
     by_cases h : a = i
     · exact ⟨b, hfb, fun h' => hab (h.trans h'.symm)⟩
     · exact ⟨a, hfa, h⟩
-  obtain ⟨k, hk⟩ := exists_adj_of_reachable ((hs.lab i j).1 (hi.trans hj.symm)) (Ne.symm hji)
+  obtain ⟨k, hk⟩ := SimpleGraph.Reachable.exists_adj_of_ne ((hs.lab i j).1 (hi.trans hj.symm)) (Ne.symm hji)
   exact ⟨k, ((hs.lab i k).2 (SimpleGraph.Adj.reachable hk)).symm.trans hi, hk⟩
 
 /-- The node below the arc of a site, in the network. -/

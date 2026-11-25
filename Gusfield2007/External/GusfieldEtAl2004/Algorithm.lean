@@ -4,6 +4,8 @@ public import Gusfield2007.External.GusfieldEtAl2004.GallFromChains
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring
+public import Gusfield2007.Basic.Data.List
+public import Gusfield2007.Basic.Order.Fin
 
 /-!
 # The decision algorithm of Gusfield, Eddhu, Langley 2004 (Sections 3.1, 3.2, 7)
@@ -128,15 +130,11 @@ def galledDecide (S : Row m) (M : List (Row m)) : Bool × ℕ :=
 
 /-! ### The count -/
 
-theorem sum_map_le {l : List β} {g : β → ℕ} {c : ℕ} (h : ∀ b ∈ l, g b ≤ c) : (l.map g).sum ≤ l.length * c := by
-  have := List.sum_le_length_nsmul (l.map g) c (by simpa using h)
-  simpa using this
+theorem allOps_le {l : List β} {p : β → Bool × ℕ} {c : ℕ} (h : ∀ b ∈ l, (p b).2 ≤ c) : (allOps l p).2 ≤ l.length * c := List.sum_map_le_length_mul h
 
-theorem allOps_le {l : List β} {p : β → Bool × ℕ} {c : ℕ} (h : ∀ b ∈ l, (p b).2 ≤ c) : (allOps l p).2 ≤ l.length * c := sum_map_le h
+theorem anyOps_le {l : List β} {p : β → Bool × ℕ} {c : ℕ} (h : ∀ b ∈ l, (p b).2 ≤ c) : (anyOps l p).2 ≤ l.length * c := List.sum_map_le_length_mul h
 
-theorem anyOps_le {l : List β} {p : β → Bool × ℕ} {c : ℕ} (h : ∀ b ∈ l, (p b).2 ≤ c) : (anyOps l p).2 ≤ l.length * c := sum_map_le h
-
-theorem filterOps_le {l : List β} {p : β → Bool × ℕ} {c : ℕ} (h : ∀ b ∈ l, (p b).2 ≤ c) : (filterOps l p).2 ≤ l.length * c := sum_map_le h
+theorem filterOps_le {l : List β} {p : β → Bool × ℕ} {c : ℕ} (h : ∀ b ∈ l, (p b).2 ≤ c) : (filterOps l p).2 ≤ l.length * c := List.sum_map_le_length_mul h
 
 theorem filterOps_length_le {l : List β} {p : β → Bool × ℕ} : (filterOps l p).1.length ≤ l.length := List.length_filter_le _ _
 
@@ -592,24 +590,6 @@ open Gusfield2007 Gusfield2007.Network Gusfield2007.Decomp
 
 variable {V E : Type*} {N : Network (Fin m) V E} [Finite V] {M : List (Row m)}
 
-/-- A lower set of the sites is a recombination point. -/
-theorem exists_point (L₀ : LowerSet (Fin m)) : ∃ n, n ≤ m ∧ ∀ i : Fin m, i ∈ L₀ ↔ i.val < n := by
-  by_cases hall : ∀ i : Fin m, i ∈ L₀
-  · exact ⟨m, le_rfl, fun i => ⟨fun _ => i.2, fun _ => hall i⟩⟩
-  · push Not at hall
-    obtain ⟨i₀, hi₀⟩ := hall
-    have hex : ∃ k, ∃ i : Fin m, i.val = k ∧ i ∉ L₀ := ⟨i₀.val, i₀, rfl, hi₀⟩
-    refine ⟨Nat.find hex, ?_, fun i => ⟨fun hi => ?_, fun hi => ?_⟩⟩
-    · obtain ⟨i, hi, -⟩ := Nat.find_spec hex
-      rw [← hi]
-      exact i.2.le
-    · by_contra hge
-      push Not at hge
-      obtain ⟨j, hj, hjL⟩ := Nat.find_spec hex
-      exact hjL (L₀.lower (show j ≤ i from by rw [Fin.le_def, hj]; exact hge) hi)
-    · by_contra hiL
-      exact Nat.find_min hex hi ⟨i, rfl, hiL⟩
-
 /-- **The test on an arrangement.** Rows at two sides, with chains on each side, no site in common across, and `s` a recombination of the ends: `candidate` accepts `s`. -/
 theorem candidate_of_sides {S : Row m} {C : List (Fin m)} {rows : List (Row m)} {s : Row m} {SP SQ : Row m → Prop} {tP tQ : Row m} (hne : C ≠ [])
     (h₁ : ∀ r, (r ∈ rows ∧ ¬ ∀ i ∈ C, r i = s i) → SP r ∨ SQ r)
@@ -812,7 +792,7 @@ theorem candidate_of_gall (hG : IsGalledTree N) (hc₁ : N.Obeys .single) {w x :
     (htop hc ha hax hpq hside) (htop hc.symm hb hbx hqp fun r hr => (hside r hr).symm) ?_
   -- the recombination of `N`
   obtain ⟨e, f, hef, he, hf, L₀, hL₀⟩ := hc₁ x hc.1
-  obtain ⟨n, hn, hn'⟩ := exists_point L₀
+  obtain ⟨n, hn, hn'⟩ := Fin.exists_le_forall_mem_lowerSet_iff_lt L₀
   refine ⟨n, hn, ?_⟩
   have hsplit : ∀ i ∈ C, s i = if i.val < n then N.label (N.src e) i else N.label (N.src f) i := by
     intro i hi

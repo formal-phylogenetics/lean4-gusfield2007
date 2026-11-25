@@ -2,6 +2,7 @@ module
 
 public import Gusfield2007.External.GusfieldEtAl2004.SameBlob
 public import Phylogenetics.Tree.XTree
+public import Gusfield2007.Basic.Data.Bool
 
 /-!
 # The Perfect Phylogeny Theorem (Gusfield 1991)
@@ -27,29 +28,6 @@ variable {X κ : Type*}
 /-- The sets of rows that differ from the base at a column, and the singletons of rows, on `X` and a new element for the
 root. The root of the tree is then a node apart from the sets, even when a column differs from the base at all rows. -/
 def rowSets (O : κ → Set X) : Set (Set (Option X)) := {A | (∃ k, A = some '' O k) ∨ ∃ x, A = {some x}}
-
-/-- Two columns that miss a pair of states, other than the pair of the base, have their sets disjoint or nested. -/
-theorem comparable_of_missing {f g : X → Bool} {p q a b : Bool} (hne : a ≠ p ∨ b ≠ q) (h : ∀ x, ¬ (f x = a ∧ g x = b)) :
-    Disjoint {x | f x ≠ p} {x | g x ≠ q} ∨ {x | f x ≠ p} ⊆ {x | g x ≠ q} ∨ {x | g x ≠ q} ⊆ {x | f x ≠ p} := by
-  have flip : ∀ {u v : Bool}, u ≠ v → u = !v := by decide
-  by_cases ha : a = p
-  · have hb : b = !q := flip (hne.resolve_left (by simpa using ha))
-    subst ha hb
-    refine Or.inr (Or.inr fun x hx => ?_)
-    by_contra hxf
-    have hxf' : f x = a := by simpa using hxf
-    exact h x ⟨hxf', flip hx⟩
-  · have ha' : a = !p := flip ha
-    by_cases hb : b = q
-    · subst ha' hb
-      refine Or.inr (Or.inl fun x hx => ?_)
-      by_contra hxg
-      have hxg' : g x = b := by simpa using hxg
-      exact h x ⟨flip hx, hxg'⟩
-    · have hb' : b = !q := flip hb
-      subst ha' hb'
-      refine Or.inl (Set.disjoint_left.2 fun x hx hy => ?_)
-      exact h x ⟨flip hx, flip hy⟩
 
 variable {O : κ → Set X}
 
@@ -255,7 +233,7 @@ theorem exists_network_of_no_conflict (M : Finset (ι → Bool)) (S : ι → Boo
     unfold Conflict at hcon
     push Not at hcon
     obtain ⟨a, b, hab, hno⟩ := hcon
-    exact comparable_of_missing (f := fun r : M => (r : ι → Bool) i) (g := fun r : M => (r : ι → Bool) j) hab
+    exact Bool.disjoint_or_subset_of_forall_not_and (f := fun r : M => (r : ι → Bool) i) (g := fun r : M => (r : ι → Bool) j) hab
       fun r ⟨h₁, h₂⟩ => hno r r.2 h₁ h₂
   have hL : IsLaminar (rowSets O) := rowSets_isLaminar hne hO
   have : Nonempty M := hM.to_subtype
@@ -463,7 +441,7 @@ theorem exists_isPerfectPhylogeny_iff {X κ : Type*} [Finite X] [Nonempty X] [Fi
       have hO : ∀ k l, Disjoint (O k) (O l) ∨ O k ⊆ O l ∨ O l ⊆ O k := by
         intro k l
         obtain ⟨a, b, hab⟩ := hmiss k l
-        refine comparable_of_missing (f := fun x => A x k) (g := fun x => A x l) (p := A x₀ k) (q := A x₀ l) ?_ hab
+        refine Bool.disjoint_or_subset_of_forall_not_and (f := fun x => A x k) (g := fun x => A x l) (p := A x₀ k) (q := A x₀ l) ?_ hab
         by_contra hno
         push Not at hno
         exact hab x₀ ⟨hno.1.symm, hno.2.symm⟩
