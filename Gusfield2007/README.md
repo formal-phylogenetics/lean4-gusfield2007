@@ -6,7 +6,7 @@ Source: D. Gusfield, V. Bansal, V. Bafna, Y. S. Song, J. Comput. Biol. 14 (2007)
 
 The routes of the proofs are in `docs/Gusfield2007/paper_routes.tsv`, and their differences from the paper's in `docs/Gusfield2007/route_differences.tsv`.
 
-The modules are in the namespace `Gusfield2007`. They import Mathlib, the cited results in `External/`, one directory per source in the namespace `External.<Source>` (`External/README.md` lists them, and each source's README says whether it was read), and, in `TreeFacts`, `Phylogenetics.Tree.XTree` of the library lean4-phylogenetics.
+The paper's library is in the namespace `Gusfield2007`. It imports Mathlib, `Basic/`, the definitions and the shared facts (`Defs`, `Networks/`), the cited results in `External/`, one directory per source in the namespace `External.<Source>` (`External/README.md` lists them, and each source's README says whether it was read), and, in `ProofOfDecomposition/TreeFacts`, `Phylogenetics.Tree.XTree` of the library lean4-phylogenetics.
 
 ## Theorem 4
 
@@ -17,7 +17,7 @@ Theorem 4 is false with the printed definition of "efficient", because that defi
 - The hypotheses can be met, for every `M` with at least three rows (`exists_realization`).
 - Line 329 for `IsEfficientAtEntry` keeps the number of recombinations (`exists_isEfficientAtEntry_of_fullyDecomposed`, `exists_isEfficientAtEntry_of_any`, in `EntryNet`). Line 299 holds with the root at any node of `T̄` that isn't a row (`exists_network_rooted_at`, in `RootedFrame`); with the root at a row, the network derives the other rows (`exists_network_rooted_at_row`), since a network deriving all the rows can't have its root at a row with `T′ = T̄` (`root_not_mem_range`).
 
-Section 4.2's characterization is false too (`mostTreeLikePrinted_false`); `treeness_le_and_eq_iff` is the true form, and `MergedTreeness` has the blobs it leaves out, where the inequality can fail (`treeness_merged_false`). The head of `Uniqueness.lean` has the whole account.
+Section 4.2's characterization is false too (`mostTreeLikePrinted_false`); `treeness_le_and_eq_iff` is the true form, and `MergedTreeness` has the blobs it leaves out, where the inequality can fail (`treeness_merged_false`). The head of `ProofOfDecomposition/Uniqueness.lean` has the whole account.
 
 ## Theorem 10
 
@@ -29,32 +29,52 @@ Line 425, `MinDecomposableOfForallS`. `minDecomposableOfForallS_of_haplotypeBoun
 
 ## Modules
 
+The modules are in the namespace `Gusfield2007` and listed by the sections of the paper. `Basic/` and `External/` have READMEs
+of their own.
+
+### Definitions, and what the sources share
+
 | Module | Contents |
 | --- | --- |
-| `Defs` | the definitions the statements mention, and the readings of the paper |
-| `Preliminaries` | `G_S(M) = G(M + S)`, arcs, paths and reachability, embeddings, isomorphisms, recombinants, `R` and `R_S` under renaming |
-| `Blobs` | line 139, the two paths lemma, `T′` is a tree, making blobs node-disjoint (line 135) |
-| `NetworkOps` | where a label comes from, the four-gamete test, trimming to the rows, moving a recombination node, `PreNet` |
-| `BlobFacts` | sites off a blob, tree arcs, tops and exits of a blob, sides of a tree arc in `T′` |
-| `Surgery` | the restriction to a component, and Lemma 5 |
+| `Defs` | the definitions, with the readings of the paper; its block between the markers is the Challenge's, and imports only Mathlib |
+| `Networks.Basic` | `G_S(M) = G(M + S)`, arcs, paths and reachability, embeddings, isomorphisms, recombinants, `R` and `R_S` under renaming, the non-trivial components (`Decomp.Cent`) |
+| `Networks.Blobs` | Section 2.1: recombination cycles and blobs, line 139, the two paths lemma, `T′` is a tree, making blobs node-disjoint (line 135) |
+| `Networks.Operations` | where a label comes from, the four-gamete test, trimming to the rows, moving a recombination node, `PreNet` |
+| `Networks.Explicit` | rows from bits, and networks from lists of numbers, checked by the kernel |
+| `Networks.Existence` | a network for every set of rows, with any ancestral sequence, used to inflate a node of `T̄` |
+| `Networks.TimeOrdered` | Section 5.3.3: time-ordered trees and ordered SPR, for Song and Hein's bound |
+
+### Section 3, the proof of the Decomposition Theorem (`ProofOfDecomposition/`)
+
+| Module | Contents |
+| --- | --- |
 | `Structure` | Section 3.1: Lemmas 1, 2, Theorem 2, Corollary 1 |
-| `TreeFacts`, `TreeCuts`, `TreeContract` | sides of edges of a tree, cut functions, a perfect phylogeny with every internal edge labelled |
-| `SuperCharacters` | Sections 3.2, 3.3: Lemmas 3, 4, existence and uniqueness of `T̄` |
-| `DecompNet`, `InflateNet`, `GlueNet`, `TBarFrame` | removing arcs and leaves, a new leaf, the network that replaces a central node, gluing, `T̄` as a frame |
+| `TreeFacts`, `TreeCuts`, `TreeContract` | sides of edges of a tree, cut functions, a perfect phylogeny with every internal edge labelled, line 295 |
+| `SuperCharacters`, `Figure1` | Sections 3.2, 3.3: Lemmas 3, 4, existence and uniqueness of `T̄`; Footnote 2 |
+| `DecompNet`, `GlueNet`, `TBarFrame`, `SameCycles` | removing arcs and leaves, a new leaf, gluing networks into the central nodes, `T̄` as a frame, networks with the same cycles |
 | `Decomposition` | Sections 2.3, 3.4, 3.5: Theorems 1, 3 and the converses |
-| `SameCycles` | two networks with the same recombination cycles, for the surgeries that follow |
-| `Hub` | the modification of line 330, and turning an arc out of the root round |
-| `ExplicitNetworks`, `FiniteNets`, `CounterexampleNets` | networks from lists of numbers, checked by the kernel; the networks of Sections 3.7 and 4.2 |
-| `Uniqueness` | Sections 3.7, 4.2: Theorem 4, line 329, treeness |
-| `Realizability` | the hypotheses of Theorem 4 can be met |
-| `EntryNet`, `RootedFrame`, `MergedTreeness` | line 329 for `IsEfficientAtEntry` with no more recombinations, line 299 with the root at any node, the treeness inequality for blobs that merge components |
-| `Conjectures` | Section 5.1: the conjectures, the computation of `F` and `F_S` |
-| `Histories`, `Parsimony` | the labels of a network generated one at a time (`Gen`); mutation trees as networks, re-rooting (Section 4.1) |
-| `SufficientConditions` | Section 5.2: Theorems 5 to 10, Corollaries 2, 3 |
-| `OpenStatements`, `OpenSearch`, `Theorem10PrintedMultiple` | Theorem 10 with `R(M + S)` read literally, and without an ancestral sequence; line 425 |
+| `BlobFacts`, `Hub`, `Uniqueness`, `Realizability`, `EntryNet`, `RootedFrame` | Section 3.7: Theorem 4, false as printed, and its true forms; the modification of line 329; line 299 with the root at any node; the hypotheses can be met |
+| `FiniteNets`, `CounterexampleNets` | the networks of Sections 3.7 and 4.2, checked by the kernel |
+| `GalledTrees.Existence`, `GalledTrees.Unrooted`, `GalledTrees.Decide`, `GalledTrees.Build` | the results of Gusfield, Eddhu, Langley 2004 that are proved with this section's construction or with line 212: reduced galled trees exist (Corollary 5.1 of the source), Theorem 2.7, and the correctness of the algorithm |
+
+### Section 4, broader applications (`Applications/`)
+
+| Module | Contents |
+| --- | --- |
+| `Histories` | the labels of a network generated one at a time (`Gen`), for the lower bounds of Section 5 and the trees of Section 4.1 |
+| `Parsimony` | Section 4.1: mutation trees as networks, re-rooting |
+| `MergedTreeness` | Section 4.2: the treeness inequality for blobs that merge components |
+
+### Section 5, the Full-Decomposition Optimality Conjectures (`OptimalityConjectures/`)
+
+| Module | Contents |
+| --- | --- |
+| `Introduction` | Section 5.1: the conjectures, the computation of `F` and `F_S`, line 425 |
+| `SufficientConditions`, `Surgery` | Section 5.2: Theorems 5 to 10, Corollaries 2, 3, Lemma 5 |
+| `OpenStatements`, `OpenSearch`, `LabelSearch`, `Theorem10PrintedMultiple` | Theorem 10 with `R(M + S)` read literally, and without an ancestral sequence; a verified search for lower bounds on `R` |
 | `GalledNetworks` | line 554: non-degenerate galled networks |
 | `HusonKloepper` | line 590: Conjecture 1 of Huson and Klöpper, read from Conjecture 2.2 of Klöpper's thesis; reticulate networks and the bridge to `R`; the refutation by Figure 8 |
-| `Examples`, `Components`, `LabelSearch` | the matrices of the figures, bookkeeping, a verified search for lower bounds on `R` |
-| `Figure1`, `Figure5`, `Figure6`, `Figure8`, `EvenRows`, `MdMatrix`, `Mosaic` | the numbers of the figures, Footnote 2, `M_d` |
-| `TimeOrdered`, `Figure10`, `MdLower` | Section 5.3.3: time-ordered trees and ordered SPR, Figure 10, `R¹(M_d) ≤ 3d`, and `R¹(M_d) = 3d` |
+| `Examples`, `Components` | the matrices of the figures, bookkeeping |
+| `Figure5`, `Figure6`, `Figure8`, `EvenRows`, `MdMatrix`, `Mosaic` | Section 5.3: the numbers of the figures, `M_d` |
+| `Figure10`, `MdLower` | Section 5.3.3: Figure 10, `R¹(M_d) ≤ 3d`, and `R¹(M_d) = 3d` |
 | `Counterexamples` | Sections 5.1, 5.3: the conjectures are false, Theorem 11 |

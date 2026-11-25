@@ -23,8 +23,8 @@ jobs:
       - uses: leanprover/lean-action@v1
       # The audit sees a module's proofs only through its own `import all` line: every module of
       # Gusfield2007/ (External/ and the paper's library) and the paper's Solution in palomar/, but
-      # not the Challenge, whose theorems the Solution restates. It also imports the modules of the
-      # library Phylogenetics that the project uses.
+      # not the Challenge, which holds a copy of the definitions of Gusfield2007/Defs.lean. It also
+      # imports the modules of the library Phylogenetics that the project uses.
       - name: Check that the audit imports every module of the libraries
         run: >-
           diff <({ find Gusfield2007 -name '*.lean'; cd palomar && find . -name Solution.lean; }
@@ -39,6 +39,9 @@ jobs:
         run: >-
           python3 scripts/route_check.py check docs/Gusfield2007/paper_routes.tsv
           --accept docs/Gusfield2007/route_differences.tsv
+      # The copy of Gusfield2007/Defs.lean in palomar/Gusfield2007/Challenge.lean.
+      - name: Check that the Challenge's copy of the shared definitions is current
+        run: python3 scripts/sync_challenge_defs.py --check
       - name: Check that the documentation's links to the code are current
         run: python3 scripts/linkify_docs.py --check
       - name: Check the Markdown tables

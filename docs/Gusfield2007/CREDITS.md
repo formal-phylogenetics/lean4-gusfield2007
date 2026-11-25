@@ -34,7 +34,9 @@ of each.
   Equivalence Theorem of Semple, Steel 2003, which this paper and Allman et al. 2023 both use, moved to the library
   [lean4-phylogenetics](https://github.com/vltanh/lean4-phylogenetics), and [`Gusfield2007/External/SempleSteel2003/`](../../Gusfield2007/External/SempleSteel2003) restates it.
 - **2026-11-24, the collection's layout.** Claude Opus 5.5 in Claude Code, one agent, gave the repository the layout and the
-  names of the collection rooted at lean4-phylogenetics: the code under the root [`Gusfield2007/`](../../Gusfield2007), the cited results in
-  [`Gusfield2007/External/`](../../Gusfield2007/External) in the namespaces `External.<Source>`, the main theorems as the Challenge and the Solution in
-  [`palomar/Gusfield2007/`](../../palomar/Gusfield2007), and the documents in `docs/Gusfield2007/`. No statement or proof changed. It took 0.5 h
-  elapsed.
+  names of the collection rooted at lean4-phylogenetics, as the maintainer decided: the code under the root [`Gusfield2007/`](../../Gusfield2007),
+  the general lemmas in [`Gusfield2007/Basic/`](../../Gusfield2007/Basic) under Mathlib's names, the cited results in [`Gusfield2007/External/`](../../Gusfield2007/External) in the
+  namespaces `External.<Source>`, the definitions and facts that they share with the paper's library in [`Gusfield2007/Defs.lean`](../../Gusfield2007/Defs.lean)
+  and [`Gusfield2007/Networks/`](../../Gusfield2007/Networks), the paper's library by its sections, a Challenge of the main results that imports only Mathlib,
+  with the Solution, in [`palomar/Gusfield2007/`](../../palomar/Gusfield2007), and the documents in `docs/Gusfield2007/`. No statement or proof of a result
+  changed. It took 2.4 h elapsed, including a restart of the machine.

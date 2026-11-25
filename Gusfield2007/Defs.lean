@@ -17,7 +17,8 @@ D. Gusfield, V. Bansal, V. Bafna, Y. S. Song, *A decomposition theory for phylog
 incompatible characters*, J. Comput. Biol. 14 (2007) 1247--1272. Line numbers are those of the plain text of the PMC page
 (PMC2581772), one line per paragraph: see `Gusfield2007/README.md`.
 
-This file imports Mathlib only. The block between the markers holds what the numbered results mention.
+This file imports Mathlib only. The block between the markers holds the definitions that the statements of record use:
+`scripts/sync_challenge_defs.py` copies it into `palomar/Gusfield2007/Challenge.lean`. The other definitions follow it.
 
 ## Representation
 
@@ -92,18 +93,22 @@ def Conflict (S : ι → Bool) (M : Finset (ι → Bool)) (i j : ι) : Prop :=
 /-- The incompatibility graph `G(M)` (line 160). -/
 def incompatGraph (M : Finset (ι → Bool)) : SimpleGraph ι where
   Adj := Incompatible M
-  symm := ⟨fun _ _ h a b => by simpa [and_comm] using h b a⟩
+  symm := ⟨fun i j h a b => by
+    obtain ⟨r, hr, h₁, h₂⟩ := h b a
+    exact ⟨r, hr, h₂, h₁⟩⟩
   loopless := ⟨fun i h => by
     obtain ⟨r, -, h₁, h₂⟩ := h true false
-    exact absurd (h₁.symm.trans h₂) (by simp)⟩
+    exact absurd (h₁.symm.trans h₂) (by decide)⟩
 
 /-- The conflict graph `G_S(M)` (line 160). -/
 def conflictGraph (S : ι → Bool) (M : Finset (ι → Bool)) : SimpleGraph ι where
   Adj := Conflict S M
-  symm := ⟨fun _ _ h a b hab => by simpa [and_comm] using h b a hab.symm⟩
+  symm := ⟨fun i j h a b hab => by
+    obtain ⟨r, hr, h₁, h₂⟩ := h b a hab.symm
+    exact ⟨r, hr, h₂, h₁⟩⟩
   loopless := ⟨fun i h => by
-    obtain ⟨r, -, h₁, h₂⟩ := h (!S i) (S i) (Or.inl (by simp))
-    exact absurd (h₁.symm.trans h₂) (by simp)⟩
+    obtain ⟨r, -, h₁, h₂⟩ := h (!S i) (S i) (Or.inl (Bool.not_ne_self (S i)))
+    exact Bool.not_ne_self (S i) (h₁.symm.trans h₂)⟩
 
 /-- The number of distinct columns of `M`. -/
 def distinctColumns (M : Finset (ι → Bool)) : ℕ :=
@@ -160,12 +165,6 @@ variable {ι : Type u} {V : Type v} {E : Type w} (N : Network ι V E)
 
 /-- The ancestral sequence: the label of the root. -/
 def ancestral : ι → Bool := N.label N.root
-
-/-- The arc relation on nodes. -/
-def Arc (a b : V) : Prop := ∃ e, N.src e = a ∧ N.tgt e = b
-
-/-- A directed path from `u` to `v`, weakly. -/
-def Reach : V → V → Prop := Relation.ReflTransGen N.Arc
 
 /-- A recombination node: a node with two incoming edges (line 94). -/
 def IsRecomb (x : V) : Prop := ∃ e f, e ≠ f ∧ N.tgt e = x ∧ N.tgt f = x
@@ -224,32 +223,6 @@ def blobVerts (B : Set E) : Set V := N.src '' B ∪ N.tgt '' B
 def BlobsNodeDisjoint : Prop :=
   ∀ B B', N.IsBlob B → N.IsBlob B' → B ≠ B' → Disjoint (N.blobVerts B) (N.blobVerts B')
 
-/-- Nodes in the same connected component of the arcs on recombination cycles. -/
-def blobSetoid : Setoid V :=
-  Relation.EqvGen.setoid fun u v => ∃ e, N.OnCycle e ∧ N.src e = u ∧ N.tgt e = v
-
-/-- The nodes of the blobbed tree `T′`: the nodes of `N` with each blob contracted to a point (line 140). -/
-abbrev BlobNode : Type v := Quotient N.blobSetoid
-
-/-- The class of a node in `T′`. -/
-def toBlobNode (v : V) : N.BlobNode := Quotient.mk N.blobSetoid v
-
-/-- The blobbed tree `T′` with its edges made undirected (lines 142, 336). -/
-def blobbedTree : SimpleGraph N.BlobNode :=
-  SimpleGraph.fromRel fun a b => ∃ e, N.IsTreeArc e ∧ N.toBlobNode (N.src e) = a ∧ N.toBlobNode (N.tgt e) = b
-
-/-- A node of the blob `B` with an edge to a node outside `B` (line 326). -/
-def IsExternal (B : Set E) (v : V) : Prop :=
-  v ∈ N.blobVerts B ∧ ∃ e, N.src e = v ∧ N.tgt e ∉ N.blobVerts B
-
-/-- An efficient network (line 327): no two external nodes have the same label, and each external node has exactly one
-edge to a node off its blob. -/
-structure IsEfficient : Prop where
-  label_inj : ∀ B B' v v', N.IsBlob B → N.IsBlob B' → N.IsExternal B v → N.IsExternal B' v' →
-    N.label v = N.label v' → v = v'
-  exit_unique : ∀ B e f, N.IsBlob B → N.src e ∈ N.blobVerts B → N.tgt e ∉ N.blobVerts B →
-    N.src f = N.src e → N.tgt f ∉ N.blobVerts B → e = f
-
 /-- `N` is fully decomposed with respect to the graph `G` on sites: every blob contains all and only the sites of a single
 non-trivial connected component of `G`, every site that's isolated in `G` is on a tree edge, and blobs share no node
 (Theorem 1, line 173; line 178). `G` is `G(M)`, or `G_S(M)` when the ancestral sequence is `S` (line 187). The second
@@ -300,11 +273,6 @@ def RS (c : Crossover) (S : ι → Bool) (M : Finset (ι → Bool)) : ℕ :=
 def F (c : Crossover) (M : Finset (ι → Bool)) : ℕ :=
   sInf {k | ∃ (a b : ℕ) (N : Network ι (Fin a) (Fin b)),
     N.Obeys c ∧ N.Derives M ∧ N.IsFullyDecomposedFor (incompatGraph M) ∧ N.recombCount = k}
-
-/-- `F_S(M)`, `F¹_S(M)`: the minimum over fully decomposed networks with ancestral sequence `S` (line 413). -/
-def FS (c : Crossover) (S : ι → Bool) (M : Finset (ι → Bool)) : ℕ :=
-  sInf {k | ∃ (a b : ℕ) (N : Network ι (Fin a) (Fin b)),
-    N.Obeys c ∧ N.Derives M ∧ N.ancestral = S ∧ N.IsFullyDecomposedFor (conflictGraph S M) ∧ N.recombCount = k}
 
 /-- `N` is optimal for `M` with ancestral sequence `S`, in the model `c` (line 386). -/
 def Network.IsOptimalRooted {V E : Type*} (N : Network ι V E) (c : Crossover) (S : ι → Bool)
@@ -370,6 +338,87 @@ assumption, is S-min decomposable (`c = multiple`), or S-min-1 decomposable (`c 
 def RootedConjecture (c : Crossover) : Prop :=
   ∀ (m : ℕ) (M : Finset (Fin m → Bool)) (S : Fin m → Bool), M.Nonempty → NoConstantColumn M →
     SMinDecomposable c S M
+
+-- END SHARED DEFINITIONS
+
+/-! ### Definitions that the statements of record don't use -/
+
+namespace Network
+
+variable {ι : Type u} {V : Type v} {E : Type w} (N : Network ι V E)
+
+/-- The arc relation on nodes. -/
+def Arc (a b : V) : Prop := ∃ e, N.src e = a ∧ N.tgt e = b
+
+/-- A directed path from `u` to `v`, weakly. -/
+def Reach : V → V → Prop := Relation.ReflTransGen N.Arc
+
+/-- Nodes in the same connected component of the arcs on recombination cycles. -/
+def blobSetoid : Setoid V :=
+  Relation.EqvGen.setoid fun u v => ∃ e, N.OnCycle e ∧ N.src e = u ∧ N.tgt e = v
+
+/-- The nodes of the blobbed tree `T′`: the nodes of `N` with each blob contracted to a point (line 140). -/
+abbrev BlobNode : Type v := Quotient N.blobSetoid
+
+/-- The class of a node in `T′`. -/
+def toBlobNode (v : V) : N.BlobNode := Quotient.mk N.blobSetoid v
+
+/-- The blobbed tree `T′` with its edges made undirected (lines 142, 336). -/
+def blobbedTree : SimpleGraph N.BlobNode :=
+  SimpleGraph.fromRel fun a b => ∃ e, N.IsTreeArc e ∧ N.toBlobNode (N.src e) = a ∧ N.toBlobNode (N.tgt e) = b
+
+/-- A node of the blob `B` with an edge to a node outside `B` (line 326). -/
+def IsExternal (B : Set E) (v : V) : Prop :=
+  v ∈ N.blobVerts B ∧ ∃ e, N.src e = v ∧ N.tgt e ∉ N.blobVerts B
+
+/-- An efficient network (line 327): no two external nodes have the same label, and each external node has exactly one
+edge to a node off its blob. -/
+structure IsEfficient : Prop where
+  label_inj : ∀ B B' v v', N.IsBlob B → N.IsBlob B' → N.IsExternal B v → N.IsExternal B' v' →
+    N.label v = N.label v' → v = v'
+  exit_unique : ∀ B e f, N.IsBlob B → N.src e ∈ N.blobVerts B → N.tgt e ∉ N.blobVerts B →
+    N.src f = N.src e → N.tgt f ∉ N.blobVerts B → e = f
+
+/-- The rows below the arc `e`: the labels of the leaves reached from it. -/
+def arcSide (e : E) : Set (ι → Bool) :=
+  {r | ∃ v, N.IsLeaf v ∧ N.Reach (N.tgt e) v ∧ N.label v = r}
+
+/-- The second wording of Theorem 1 (line 178): a one-one correspondence between the non-trivial connected components
+of `G` and the blobs, where the blob of `C` contains all and only the sites of `C`. -/
+def BlobCorrespondence (G : SimpleGraph ι) : Prop :=
+  ∃ f : {c : G.ConnectedComponent // c.supp.Nontrivial} ≃ {B : Set E // N.IsBlob B},
+    ∀ c i, N.site i ∈ (f c : Set E) ↔ i ∈ c.1.supp
+
+/-- The node `v` is on a blob. -/
+def OnBlob (v : V) : Prop := ∃ B, N.IsBlob B ∧ v ∈ N.blobVerts B
+
+/-- The splits of the tree edges of `N`, on the rows `M`, as sides. -/
+def treeSplits (M : Finset (ι → Bool)) : Set (Set (ι → Bool)) :=
+  {A | ∃ e, N.IsTreeArc e ∧ (A = N.arcSide e ∨ A = (M : Set (ι → Bool)) \ N.arcSide e)}
+
+/-- The treeness of `N` (line 366): the number of edges of `T′`. -/
+def treeness : ℕ := Nat.card {e // N.IsTreeArc e}
+
+/-- `N` and `N'` are the same network up to renaming vertices and arcs. -/
+structure IsIso {V' E' : Type*} (N' : Network ι V' E') (eV : V ≃ V') (eE : E ≃ E') : Prop where
+  src : ∀ e, N'.src (eE e) = eV (N.src e)
+  tgt : ∀ e, N'.tgt (eE e) = eV (N.tgt e)
+  root : N'.root = eV N.root
+  site : ∀ i, N'.site i = eE (N.site i)
+  label : ∀ v, N'.label (eV v) = N.label v
+
+end Network
+
+section Counts
+
+variable {ι : Type u} [LinearOrder ι]
+
+/-- `F_S(M)`, `F¹_S(M)`: the minimum over fully decomposed networks with ancestral sequence `S` (line 413). -/
+def FS (c : Crossover) (S : ι → Bool) (M : Finset (ι → Bool)) : ℕ :=
+  sInf {k | ∃ (a b : ℕ) (N : Network ι (Fin a) (Fin b)),
+    N.Obeys c ∧ N.Derives M ∧ N.ancestral = S ∧ N.IsFullyDecomposedFor (conflictGraph S M) ∧ N.recombCount = k}
+
+end Counts
 
 section Dominance
 
@@ -437,44 +486,6 @@ structure IsTBar {ι : Type*} (M : Finset (ι → Bool)) (T : SimpleGraph W) (φ
   degree_ne_two : ∀ v, (T.neighborSet v).ncard ≠ 2
 
 end PerfectPhylogeny
-
--- END SHARED DEFINITIONS
-
-/-! ### Definitions used only by lemmas -/
-
-namespace Network
-
-variable {ι : Type u} {V : Type v} {E : Type w} (N : Network ι V E)
-
-/-- The rows below the arc `e`: the labels of the leaves reached from it. -/
-def arcSide (e : E) : Set (ι → Bool) :=
-  {r | ∃ v, N.IsLeaf v ∧ N.Reach (N.tgt e) v ∧ N.label v = r}
-
-/-- The second wording of Theorem 1 (line 178): a one-one correspondence between the non-trivial connected components
-of `G` and the blobs, where the blob of `C` contains all and only the sites of `C`. -/
-def BlobCorrespondence (G : SimpleGraph ι) : Prop :=
-  ∃ f : {c : G.ConnectedComponent // c.supp.Nontrivial} ≃ {B : Set E // N.IsBlob B},
-    ∀ c i, N.site i ∈ (f c : Set E) ↔ i ∈ c.1.supp
-
-/-- The node `v` is on a blob. -/
-def OnBlob (v : V) : Prop := ∃ B, N.IsBlob B ∧ v ∈ N.blobVerts B
-
-/-- The splits of the tree edges of `N`, on the rows `M`, as sides. -/
-def treeSplits (M : Finset (ι → Bool)) : Set (Set (ι → Bool)) :=
-  {A | ∃ e, N.IsTreeArc e ∧ (A = N.arcSide e ∨ A = (M : Set (ι → Bool)) \ N.arcSide e)}
-
-/-- The treeness of `N` (line 366): the number of edges of `T′`. -/
-def treeness : ℕ := Nat.card {e // N.IsTreeArc e}
-
-/-- `N` and `N'` are the same network up to renaming vertices and arcs. -/
-structure IsIso {V' E' : Type*} (N' : Network ι V' E') (eV : V ≃ V') (eE : E ≃ E') : Prop where
-  src : ∀ e, N'.src (eE e) = eV (N.src e)
-  tgt : ∀ e, N'.tgt (eE e) = eV (N.tgt e)
-  root : N'.root = eV N.root
-  site : ∀ i, N'.site i = eE (N.site i)
-  label : ∀ v, N'.label (eV v) = N.label v
-
-end Network
 
 /-- The splits of the characters of `B`, as sides. -/
 def charSplits {ι : Type*} (M : Finset (ι → Bool)) : Set (Set (ι → Bool)) :=

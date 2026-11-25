@@ -27,10 +27,11 @@ locator only.
   at the train's commit, for the Splits Equivalence Theorem and what it needs about X-trees
   ([`lakefile.toml`](../../lakefile.toml)).
 - The layout and the names are the collection's: the root and the paper `Gusfield2007`, the library in the namespace
-  `Gusfield2007`, the cited results in `External.<Source>`, and the Challenge's theorems in `Gusfield2007Challenge`.
+  `Gusfield2007` and in directories by the paper's sections, general mathematics in `Gusfield2007/Basic/` in Mathlib's
+  namespaces, the cited results in `External.<Source>`, and the Challenge's theorems in `Gusfield2007Challenge`.
 - Palomar is not a target. [`palomar/Gusfield2007/`](../../palomar/Gusfield2007) keeps the files for a possible submission:
-  the Challenge, which imports the library's definitions, the Solution, `comparator.json`, which names them, and
-  `formalization.yaml`. `scripts/check_kernels.sh` runs Comparator and con-ron, Palomar's three kernels.
+  the Challenge, which imports only Mathlib and holds a copy of the definitions of `Gusfield2007/Defs.lean`, the Solution,
+  `comparator.json`, which names them, and `formalization.yaml`. `scripts/check_kernels.sh` runs Comparator and con-ron, Palomar's three kernels.
 
 ## Publishing
 

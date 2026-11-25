@@ -4,8 +4,8 @@ public meta import Lean.Elab.Command
 public meta import Lean.DocString
 -- One `import all` line per module of the libraries, so that proofs are visible to the dependency
 -- traversal (the module system hides them from a plain `import`): every module of `Gusfield2007/`
--- (`External/` and the paper's library) and the paper's Solution in `palomar/`, but not the
--- Challenge, whose theorems the Solution restates under the same names; then the modules of the
+-- (`Basic/`, `External/` and the paper's library) and the paper's Solution in `palomar/`, but not
+-- the Challenge, which holds a copy of the definitions of `Gusfield2007/Defs.lean`; then the modules of the
 -- library `Phylogenetics` that the project imports, whose proofs the audit reads too. Generate the
 -- first lines with
 --   { find Gusfield2007 -name '*.lean'; cd palomar && find . -name Solution.lean; } |
@@ -465,44 +465,21 @@ meta def paperResults : List (String × Name) :=
 /-- The theorems that Palomar's comparator checks (`theorem_names` of
 `palomar/Gusfield2007/comparator.json`), as the Solution restates them. -/
 meta def solutionResults : List Name :=
-  [``Gusfield2007Challenge.gusfield_theorem1,
-   ``Gusfield2007Challenge.gusfield_theorem3,
-   ``Gusfield2007Challenge.gusfield_lemma4,
-   ``Gusfield2007Challenge.gusfield_theorem4_entry,
-   ``Gusfield2007Challenge.gusfield_theorem4_iff,
-   ``Gusfield2007Challenge.gusfield_exists_realization,
-   ``Gusfield2007Challenge.gusfield_theorem4_false_top,
-   ``Gusfield2007Challenge.gusfield_theorem4_false_siteFree,
-   ``Gusfield2007Challenge.gusfield_theorem5,
-   ``Gusfield2007Challenge.gusfield_theorem6,
-   ``Gusfield2007Challenge.gusfield_theorem7,
-   ``Gusfield2007Challenge.gusfield_theorem8,
-   ``Gusfield2007Challenge.gusfield_theorem9,
-   ``Gusfield2007Challenge.gusfield_theorem10,
-   ``Gusfield2007Challenge.gusfield_theorem11,
-   ``Gusfield2007Challenge.gusfield_corollary2,
-   ``Gusfield2007Challenge.gusfield_corollary3,
-   ``Gusfield2007Challenge.gusfield_unrootedConjecture_single_false,
-   ``Gusfield2007Challenge.gusfield_unrootedConjecture_multiple_false,
-   ``Gusfield2007Challenge.gusfield_rootedConjecture_single_false,
-   ``Gusfield2007Challenge.gusfield_rootedConjecture_multiple_false,
-   ``Gusfield2007Challenge.gusfield_theorem10_unrooted,
-   ``Gusfield2007Challenge.gusfield_theorem10Printed_single_false,
-   ``Gusfield2007Challenge.gusfield_theorem10Printed_multiple_false_of_search,
-   ``Gusfield2007Challenge.gusfield_exists_isEfficientAtEntry,
-   ``Gusfield2007Challenge.gusfield_treeness_merged_false,
-   ``Gusfield2007Challenge.gusfield_Md_R_eq,
-   ``Gusfield2007Challenge.gusfield_conjecture22_false,
-   ``Gusfield2007Challenge.galled_exists_isCycle_of_conflict,
-   ``Gusfield2007Challenge.galled_theorem2_2,
-   ``Gusfield2007Challenge.galled_theorem8_3,
-   ``Gusfield2007Challenge.galled_line381,
-   ``Gusfield2007Challenge.galled_galledBuild_correct,
-   ``Gusfield2007Challenge.galled_galledBuildOps_le,
-   ``Gusfield2007Challenge.myersGriffiths_algorithm1_isOptimalValue,
-   ``Gusfield2007Challenge.myersGriffiths_Rh_le_R,
-   ``Gusfield2007Challenge.hudsonKaplan_isOptimalValue,
-   ``Gusfield2007Challenge.songHein_exists_orderedLength_eq_R]
+  [``Gusfield2007Challenge.theorem1,
+   ``Gusfield2007Challenge.theorem3,
+   ``Gusfield2007Challenge.theorem5,
+   ``Gusfield2007Challenge.theorem6,
+   ``Gusfield2007Challenge.theorem7,
+   ``Gusfield2007Challenge.theorem8,
+   ``Gusfield2007Challenge.theorem9,
+   ``Gusfield2007Challenge.theorem10,
+   ``Gusfield2007Challenge.corollary2,
+   ``Gusfield2007Challenge.corollary3,
+   ``Gusfield2007Challenge.theorem11,
+   ``Gusfield2007Challenge.unrootedConjecture_single_false,
+   ``Gusfield2007Challenge.unrootedConjecture_multiple_false,
+   ``Gusfield2007Challenge.rootedConjecture_single_false,
+   ``Gusfield2007Challenge.rootedConjecture_multiple_false]
 
 /-- Lean's standard axioms. -/
 meta def standardAxioms : List Name := [``propext, ``Classical.choice, ``Quot.sound]

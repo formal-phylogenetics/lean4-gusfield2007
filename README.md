@@ -22,65 +22,68 @@ Every numbered result is proved, as printed or in a corrected form, with no `sor
 | Figures 5–10, Footnote 2 | their numbers proved |
 | Line 425 ([`Gusfield2007.MinDecomposableOfForallS`](Gusfield2007/OptimalityConjectures/Introduction.lean#L87)) | open; proved when `H(M) = R(M)` |
 | What the paper says in passing: lines 135, 156, 180, 299, 329, 381, 403, 411, 418, 420, 554, 559, 590, 608 | proved; lines 156, 180, 403 and 554 in corrected forms |
-| Cited results (Gusfield 1991; Semple, Steel 2003; Gusfield, Eddhu, Langley 2004; Myers, Griffiths 2003; Hudson, Kaplan 1985; Song, Hein 2005) | proved, in [`Gusfield2007/External/`](Gusfield2007/External) |
+| Cited results (Gusfield 1991; Semple, Steel 2003; Gusfield, Eddhu, Langley 2004; Myers, Griffiths 2003; Hudson, Kaplan 1985; Song, Hein 2005) | proved, in [`Gusfield2007/External/`](Gusfield2007/External); the results of Gusfield, Eddhu, Langley 2004 that rest on the paper's construction in [`Gusfield2007/ProofOfDecomposition/GalledTrees/`](Gusfield2007/ProofOfDecomposition/GalledTrees) |
 
 [Section 9 of the report](docs/Gusfield2007/REPORT.md#9-not-formalized) lists what is not formalized.
 
 ## Main results
 
-These are the theorems of the Challenge, [`palomar/Gusfield2007/Challenge.lean`](palomar/Gusfield2007/Challenge.lean), in the namespace `Gusfield2007Challenge`, each with a docstring in plain terms. They keep the paper's hypotheses, and [`palomar/Gusfield2007/Solution.lean`](palomar/Gusfield2007/Solution.lean) proves each of them, under the same name, from the library.
-
-### The paper
+The statements of record are the theorems of the Challenge, [`palomar/Gusfield2007/Challenge.lean`](palomar/Gusfield2007/Challenge.lean), in the namespace `Gusfield2007Challenge`: the paper's main results, as its abstract states them. The Challenge imports only Mathlib, and its definitions are those of [`Gusfield2007/Defs.lean`](Gusfield2007/Defs.lean), copied by [`scripts/sync_challenge_defs.py`](scripts/sync_challenge_defs.py). [`palomar/Gusfield2007/Solution.lean`](palomar/Gusfield2007/Solution.lean) proves each of them, under the same name, from the library. They keep the paper's hypotheses.
 
 | Paper | Lean | Statement |
 | --- | --- | --- |
-| Theorem 1 | [`gusfield_theorem1`](palomar/Gusfield2007/Challenge.lean#L68) | in any crossover model, a nonempty `M` with no constant column has a network in which every blob contains all and only the sites of one non-trivial component of `G(M)`, and every compatible site is on a tree edge |
-| Theorem 3 | [`gusfield_theorem3`](palomar/Gusfield2007/Challenge.lean#L75) | for any ancestral sequence `S`, some network is fully decomposed for `G_S(M)`, with `S` at its root and exactly `Σ_C R_{S(C)}(M(C))` recombination nodes |
-| Lemma 4 | [`gusfield_lemma4`](palomar/Gusfield2007/Challenge.lean#L85) | for a component `C` of `G(M)`, `T̄` has a node on all the edges labelled by characters from `C`, on the 0-side of each |
-| Theorem 4, corrected | [`gusfield_theorem4_entry`](palomar/Gusfield2007/Challenge.lean#L95) | for a fully decomposed network, `T′ = T̄` exactly when the network is efficient with the entry node of a blob counted and has `RegularArcs` and the degree condition (E42) |
-| Theorem 4, exactly | [`gusfield_theorem4_iff`](palomar/Gusfield2007/Challenge.lean#L103) | with the printed definition of efficient, `T′ = T̄` exactly when the network is efficient and has `IsTreeNormalStructural` and the degree condition |
-| Theorem 4, realizable | [`gusfield_exists_realization`](palomar/Gusfield2007/Challenge.lean#L112) | for every `M` with at least three rows, some efficient fully decomposed network has `T′ = T̄` and all the hypotheses of the true forms; not in the paper |
-| Theorem 4, false | [`gusfield_theorem4_false_top`](palomar/Gusfield2007/Challenge.lean#L122) | Theorem 4 as printed fails, in any crossover model, even with `RegularArcs` and the degree condition |
-| Theorem 4, false | [`gusfield_theorem4_false_siteFree`](palomar/Gusfield2007/Challenge.lean#L127) | Theorem 4 as printed fails on a perfect phylogeny with a site-free arc (E43) |
-| Theorem 5 | [`gusfield_theorem5`](palomar/Gusfield2007/Challenge.lean#L133) | if an optimal network for `M` with ancestral sequence `S` has node labels `L` with as many components in `G_S(L)` as in `G_S(M)`, then `M` is S-min (or S-min-1) decomposable |
-| Theorem 6 | [`gusfield_theorem6`](palomar/Gusfield2007/Challenge.lean#L140) | the same for a network, not necessarily optimal, with every node visible and at most one site on each edge |
-| Theorem 7 | [`gusfield_theorem7`](palomar/Gusfield2007/Challenge.lean#L146) | if every recombination node is a 0- or 1-component recombination for `G_S(M)`, some fully decomposed network in the same model has at most as many recombination nodes |
-| Theorem 8 | [`gusfield_theorem8`](palomar/Gusfield2007/Challenge.lean#L154) | if `M` is spatially disjoint, it is S-min-1 decomposable |
-| Theorem 9 | [`gusfield_theorem9`](palomar/Gusfield2007/Challenge.lean#L159) | if the node labels respect `G_S(M)`, some fully decomposed network in the same model has at most as many recombination nodes |
-| Theorem 10 | [`gusfield_theorem10`](palomar/Gusfield2007/Challenge.lean#L166) | if `H(M + S) = R_S(M)`, or `R¹_S(M)`, then `M` is S-min, or S-min-1, decomposable, in each crossover model |
-| Theorem 10, unrooted | [`gusfield_theorem10_unrooted`](palomar/Gusfield2007/Challenge.lean#L207) | if `H(M) = R(M)`, then `M` is min decomposable; not in the paper |
-| Theorem 10, literal | [`gusfield_theorem10Printed_single_false`](palomar/Gusfield2007/Challenge.lean#L212) | with `R(M + S)` read by line 385, Theorem 10 is false for single crossovers, on 14 rows and 8 sites |
-| Theorem 10, literal | [`gusfield_theorem10Printed_multiple_false_of_search`](palomar/Gusfield2007/Challenge.lean#L220) | **conditional**: with that reading, it is false for multiple crossovers on 74 rows and 34 sites, given [`Gusfield2007.printedMSearch`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L269) |
-| Theorem 11 | [`gusfield_theorem11`](palomar/Gusfield2007/Challenge.lean#L172) | for any positive `d`, some `M` has `F¹(M) − R¹(M) ≥ d` |
-| Line 656 | [`gusfield_Md_R_eq`](palomar/Gusfield2007/Challenge.lean#L242) | `R¹(M_d) = 3d`, where the paper claims the upper bound |
-| Corollary 2 | [`gusfield_corollary2`](palomar/Gusfield2007/Challenge.lean#L177) | if every node of an optimal network for `M` with ancestral sequence `S` is visible, `M` is S-min (or S-min-1) decomposable |
-| Corollary 3 | [`gusfield_corollary3`](palomar/Gusfield2007/Challenge.lean#L183) | when recombinations only model back or recurrent mutations, `M` is S-min decomposable for any `S`, and its parsimony score is the sum over the components of `G_S(M)` |
-| §5.3.1 | [`gusfield_unrootedConjecture_single_false`](palomar/Gusfield2007/Challenge.lean#L191) | the unrooted conjecture is false for single crossovers: on Figure 6, `F¹ ≥ 4` and `R¹ ≤ 3` |
-| §5.3.2 | [`gusfield_unrootedConjecture_multiple_false`](palomar/Gusfield2007/Challenge.lean#L196) | the unrooted conjecture is false for multiple crossovers: on Figure 8, `F ≥ 4` and `R ≤ 3` |
-| §5.3.1 | [`gusfield_rootedConjecture_single_false`](palomar/Gusfield2007/Challenge.lean#L200) | the rooted conjecture is false for single crossovers |
-| §5.3 | [`gusfield_rootedConjecture_multiple_false`](palomar/Gusfield2007/Challenge.lean#L203) | the rooted conjecture is false for multiple crossovers |
-| Line 329 | [`gusfield_exists_isEfficientAtEntry`](palomar/Gusfield2007/Challenge.lean#L226) | a fully decomposed network can be made efficient, also with the entry node counted, with no more recombination nodes, the same ancestral sequence, and staying fully decomposed |
-| §4.2 | [`gusfield_treeness_merged_false`](palomar/Gusfield2007/Challenge.lean#L234) | the treeness inequality fails for a blob that merges two components: treeness 5, where `T̄` has 4 edges |
-| Line 590 | [`gusfield_conjecture22_false`](palomar/Gusfield2007/Challenge.lean#L245) | the conjecture of Huson and Klöpper is false, as Conjecture 2.2 of Klöpper's thesis states it |
+| Theorem 1 | [`Gusfield2007Challenge.theorem1`](palomar/Gusfield2007/Challenge.lean#L355) | in any crossover model, a nonempty `M` with no constant column has a network in which every blob contains all and only the sites of one non-trivial component of `G(M)`, and every compatible site is on a tree edge |
+| Theorem 3 | [`Gusfield2007Challenge.theorem3`](palomar/Gusfield2007/Challenge.lean#L363) | for any ancestral sequence `S`, some network is fully decomposed for `G_S(M)`, with `S` at its root and exactly `Σ_C R_{S(C)}(M(C))` recombination nodes |
+| Theorem 5 | [`Gusfield2007Challenge.theorem5`](palomar/Gusfield2007/Challenge.lean#L373) | if an optimal network for `M` with ancestral sequence `S` has node labels `L` with as many components in `G_S(L)` as in `G_S(M)`, then `M` is S-min (or S-min-1) decomposable |
+| Theorem 6 | [`Gusfield2007Challenge.theorem6`](palomar/Gusfield2007/Challenge.lean#L381) | the same for a network, not necessarily optimal, with every node visible and at most one site on each edge |
+| Theorem 7 | [`Gusfield2007Challenge.theorem7`](palomar/Gusfield2007/Challenge.lean#L388) | if every recombination node is a 0- or 1-component recombination for `G_S(M)`, some fully decomposed network in the same model has at most as many recombination nodes |
+| Theorem 8 | [`Gusfield2007Challenge.theorem8`](palomar/Gusfield2007/Challenge.lean#L397) | if `M` is spatially disjoint, it is S-min-1 decomposable |
+| Theorem 9 | [`Gusfield2007Challenge.theorem9`](palomar/Gusfield2007/Challenge.lean#L403) | if the node labels respect `G_S(M)`, some fully decomposed network in the same model has at most as many recombination nodes |
+| Theorem 10 | [`Gusfield2007Challenge.theorem10`](palomar/Gusfield2007/Challenge.lean#L411) | if `H(M + S) = R_S(M)`, or `R¹_S(M)`, then `M` is S-min, or S-min-1, decomposable, in each crossover model |
+| Corollary 2 | [`Gusfield2007Challenge.corollary2`](palomar/Gusfield2007/Challenge.lean#L418) | if every node of an optimal network for `M` with ancestral sequence `S` is visible, `M` is S-min (or S-min-1) decomposable |
+| Corollary 3 | [`Gusfield2007Challenge.corollary3`](palomar/Gusfield2007/Challenge.lean#L425) | when recombinations only model back or recurrent mutations, `M` is S-min decomposable for any `S`, and its parsimony score is the sum over the components of `G_S(M)` |
+| §5.3.1 | [`Gusfield2007Challenge.unrootedConjecture_single_false`](palomar/Gusfield2007/Challenge.lean#L439) | the unrooted conjecture is false for single crossovers |
+| §5.3.2 | [`Gusfield2007Challenge.unrootedConjecture_multiple_false`](palomar/Gusfield2007/Challenge.lean#L443) | the unrooted conjecture is false for multiple crossovers |
+| §5.3.1 | [`Gusfield2007Challenge.rootedConjecture_single_false`](palomar/Gusfield2007/Challenge.lean#L447) | the rooted conjecture is false for single crossovers |
+| §5.3 | [`Gusfield2007Challenge.rootedConjecture_multiple_false`](palomar/Gusfield2007/Challenge.lean#L451) | the rooted conjecture is false for multiple crossovers |
+| Theorem 11 | [`Gusfield2007Challenge.theorem11`](palomar/Gusfield2007/Challenge.lean#L434) | for any positive `d`, some `M` has `F¹(M) − R¹(M) ≥ d` |
+
+### Also proved in the library
+
+| Paper | Lean | Statement |
+| --- | --- | --- |
+| Lemma 4 | [`Gusfield2007.lemma4`](Gusfield2007/ProofOfDecomposition/SuperCharacters.lean#L661) | for a component `C` of `G(M)`, `T̄` has a node on all the edges labelled by characters from `C`, on the 0-side of each |
+| Theorem 4, corrected | [`Gusfield2007.theorem4_entry`](Gusfield2007/ProofOfDecomposition/Uniqueness.lean#L1843) | for a fully decomposed network, `T′ = T̄` exactly when the network is efficient with the entry node of a blob counted and has `RegularArcs` and the degree condition (E42) |
+| Theorem 4, exactly | [`Gusfield2007.theorem4_iff`](Gusfield2007/ProofOfDecomposition/Uniqueness.lean#L1699) | with the printed definition of efficient, `T′ = T̄` exactly when the network is efficient and has `IsTreeNormalStructural` and the degree condition |
+| Theorem 4, realizable | [`Gusfield2007.exists_realization`](Gusfield2007/ProofOfDecomposition/Realizability.lean#L327) | for every `M` with at least three rows, some efficient fully decomposed network has `T′ = T̄` and all the hypotheses of the true forms; not in the paper |
+| Theorem 4, false | [`Gusfield2007.theorem4_false_top`](Gusfield2007/ProofOfDecomposition/Uniqueness.lean#L1943), [`Gusfield2007.theorem4_false_siteFree`](Gusfield2007/ProofOfDecomposition/Uniqueness.lean#L2028) | Theorem 4 as printed fails, in any crossover model, even with `RegularArcs` and the degree condition, and on a perfect phylogeny with a site-free arc (E43) |
+| Theorem 10, unrooted | [`Gusfield2007.minDecomposable_of_haplotypeBound_eq`](Gusfield2007/OptimalityConjectures/OpenStatements.lean#L34) | if `H(M) = R(M)`, then `M` is min decomposable; not in the paper |
+| Theorem 10, literal | [`Gusfield2007.theorem10Printed_single_false`](Gusfield2007/OptimalityConjectures/OpenStatements.lean#L667) | with `R(M + S)` read by line 385, Theorem 10 is false for single crossovers, on 14 rows and 8 sites |
+| Theorem 10, literal | [`Gusfield2007.theorem10Printed_multiple_false_of_search`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L294) | **conditional**: with that reading, it is false for multiple crossovers on 74 rows and 34 sites, given [`Gusfield2007.printedMSearch`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L269) |
+| §5.3 | [`Gusfield2007.unrootedConjecture_single_false`](Gusfield2007/OptimalityConjectures/Counterexamples.lean#L214), [`Gusfield2007.unrootedConjecture_multiple_false`](Gusfield2007/OptimalityConjectures/Counterexamples.lean#L469) | the counterexamples: on Figure 6, `F¹ ≥ 4` and `R¹ ≤ 3`; on Figure 8, `F ≥ 4` and `R ≤ 3` |
+| Line 329 | [`Gusfield2007.exists_isEfficientAtEntry_of_fullyDecomposed`](Gusfield2007/ProofOfDecomposition/EntryNet.lean#L516) | a fully decomposed network can be made efficient, also with the entry node counted, with no more recombination nodes, the same ancestral sequence, and staying fully decomposed |
+| §4.2 | [`Gusfield2007.treeness_merged_false`](Gusfield2007/Applications/MergedTreeness.lean#L94) | the treeness inequality fails for a blob that merges two components: treeness 5, where `T̄` has 4 edges |
+| Line 656 | [`Gusfield2007.Md_R_eq`](Gusfield2007/OptimalityConjectures/MdLower.lean#L173) | `R¹(M_d) = 3d`, where the paper claims the upper bound |
+| Line 590 | [`Gusfield2007.conjecture22_false`](Gusfield2007/OptimalityConjectures/HusonKloepper.lean#L731) | the conjecture of Huson and Klöpper is false, as Conjecture 2.2 of Klöpper's thesis states it |
 
 ### The sources
 
 | Source | Lean | Statement |
 | --- | --- | --- |
-| Gusfield, Eddhu, Langley 2004, proof of Theorem 2.2 | [`galled_exists_isCycle_of_conflict`](palomar/Gusfield2007/Challenge.lean#L256) | two sites that conflict, in any set of rows labelling nodes of a network, are together on a recombination cycle |
-| Gusfield, Eddhu, Langley 2004, Theorem 2.2 | [`galled_theorem2_2`](palomar/Gusfield2007/Challenge.lean#L261) | on a galled tree with single crossovers, sites `i < j` conflict exactly when they are on one gall with the recombination point between them, arranged in one of three ways |
-| Gusfield, Eddhu, Langley 2004, Theorem 8.3 | [`galled_theorem8_3`](palomar/Gusfield2007/Challenge.lean#L268) | a reduced galled tree for `M` has the least number of recombination nodes, in its model and with multiple crossovers, and that number is the bound by removals |
-| Gusfield et al. 2007, line 381 | [`galled_line381`](palomar/Gusfield2007/Challenge.lean#L273) | a galled tree reduced for `G(M)` makes `M` min decomposable, in its model and for multiple crossovers |
-| Gusfield, Eddhu, Langley 2004, the algorithm | [`galled_galledBuild_correct`](palomar/Gusfield2007/Challenge.lean#L280) | if the computable function `galledBuild` returns a table, it is that of a reduced galled tree deriving `M` with ancestral sequence `S` and single crossovers |
-| Gusfield, Eddhu, Langley 2004, its count | [`galled_galledBuildOps_le`](palomar/Gusfield2007/Challenge.lean#L288) | on `n` rows and `m` sites, the algorithm counts at most `233 (n + m + 1)⁶` operations; not the source's `O(nm + n³)` |
-| Myers, Griffiths 2003, Algorithm 1 | [`myersGriffiths_algorithm1_isOptimalValue`](palomar/Gusfield2007/Challenge.lean#L300) | the matrix that [`algorithm1`](Gusfield2007/External/MyersGriffiths2003/Algorithm1.lean#L258) builds is that of the optimal values of the integer program on regions |
-| Myers, Griffiths 2003, `R_h` | [`myersGriffiths_Rh_le_R`](palomar/Gusfield2007/Challenge.lean#L304) | the haplotype bounds on regions, combined by Algorithm 1, are a lower bound on `R¹(M)` |
-| Hudson, Kaplan 1985, Appendix 2 | [`Gusfield2007Challenge.hudsonKaplan_isOptimalValue`](palomar/Gusfield2007/Challenge.lean#L308) | the final number of intervals of [`hudsonKaplan`](Gusfield2007/External/HudsonKaplan1985/Algorithm.lean#L73) is the bound `R_M`, the optimal value of the program for the matrix of incompatible pairs |
-| Song, Hein 2005, equations (3), (5) | [`songHein_exists_orderedLength_eq_R`](palomar/Gusfield2007/Challenge.lean#L313) | over sequences of binary trees with totally ordered internal nodes, compatible with the columns, the minimum of `L(P)` is `R¹(M)`, and it is attained |
+| Gusfield, Eddhu, Langley 2004, proof of Theorem 2.2 | [`External.GusfieldEtAl2004.exists_isCycle_of_conflict`](Gusfield2007/External/GusfieldEtAl2004/SameBlob.lean#L359) | two sites that conflict, in any set of rows labelling nodes of a network, are together on a recombination cycle |
+| Gusfield, Eddhu, Langley 2004, Theorem 2.2 | [`External.GusfieldEtAl2004.theorem2_2`](Gusfield2007/External/GusfieldEtAl2004/Theorem2_2.lean#L126) | on a galled tree with single crossovers, sites `i < j` conflict exactly when they are on one gall with the recombination point between them, arranged in one of three ways |
+| Gusfield, Eddhu, Langley 2004, Theorem 8.3 | [`External.GusfieldEtAl2004.theorem8_3`](Gusfield2007/External/GusfieldEtAl2004/Optimality.lean#L648) | a reduced galled tree for `M` has the least number of recombination nodes, in its model and with multiple crossovers, and that number is the bound by removals |
+| Gusfield et al. 2007, line 381 | [`External.GusfieldEtAl2004.line381`](Gusfield2007/External/GusfieldEtAl2004/Optimality.lean#L683) | a galled tree reduced for `G(M)` makes `M` min decomposable, in its model and for multiple crossovers |
+| Gusfield, Eddhu, Langley 2004, the algorithm | [`External.GusfieldEtAl2004.Algorithm.galledBuild_correct`](Gusfield2007/ProofOfDecomposition/GalledTrees/Build.lean#L1201) | if the computable function `galledBuild` returns a table, it is that of a reduced galled tree deriving `M` with ancestral sequence `S` and single crossovers |
+| Gusfield, Eddhu, Langley 2004, its count | [`External.GusfieldEtAl2004.Algorithm.galledBuildOps_le`](Gusfield2007/External/GusfieldEtAl2004/BuildCount.lean#L404) | on `n` rows and `m` sites, the algorithm counts at most `233 (n + m + 1)⁶` operations; not the source's `O(nm + n³)` |
+| Myers, Griffiths 2003, Algorithm 1 | [`External.MyersGriffiths2003.algorithm1_isOptimalValue`](Gusfield2007/External/MyersGriffiths2003/Algorithm1.lean#L399) | the matrix that [`algorithm1`](Gusfield2007/External/MyersGriffiths2003/Algorithm1.lean#L258) builds is that of the optimal values of the integer program on regions |
+| Myers, Griffiths 2003, `R_h` | [`External.MyersGriffiths2003.Rh_le_R`](Gusfield2007/External/MyersGriffiths2003/Composite.lean#L445) | the haplotype bounds on regions, combined by Algorithm 1, are a lower bound on `R¹(M)` |
+| Hudson, Kaplan 1985, Appendix 2 | [`External.HudsonKaplan1985.hudsonKaplan_isOptimalValue`](Gusfield2007/External/HudsonKaplan1985/Algorithm.lean#L435) | the final number of intervals of [`hudsonKaplan`](Gusfield2007/External/HudsonKaplan1985/Algorithm.lean#L73) is the bound `R_M`, the optimal value of the program for the matrix of incompatible pairs |
+| Song, Hein 2005, equations (3), (5) | [`External.SongHein2005.exists_orderedLength_eq_R`](Gusfield2007/External/SongHein2005/BinaryPaths.lean#L551) | over sequences of binary trees with totally ordered internal nodes, compatible with the columns, the minimum of `L(P)` is `R¹(M)`, and it is attained |
 
 ## The conditional theorem
 
-[`gusfield_theorem10Printed_multiple_false_of_search`](palomar/Gusfield2007/Challenge.lean#L220) takes [`Gusfield2007.printedMSearch`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L269) as a hypothesis: a finite search showing that two extra labels never suffice on the second component of [`printedMRows`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L51). It is a hypothesis of the theorem rather than an axiom, so the statement shows it; Lean's kernel hasn't completed the computation. Two programs by the same author, not in the repository, and Lean's `#eval` support it; none of these is a proof. Theorem 10 itself, with `R_S(M)`, is unconditional.
+[`Gusfield2007.theorem10Printed_multiple_false_of_search`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L294) takes [`Gusfield2007.printedMSearch`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L269) as a hypothesis: a finite search showing that two extra labels never suffice on the second component of [`printedMRows`](Gusfield2007/OptimalityConjectures/Theorem10PrintedMultiple.lean#L51). It is a hypothesis of the theorem rather than an axiom, so the statement shows it; Lean's kernel hasn't completed the computation. Two programs by the same author, not in the repository, and Lean's `#eval` support it; none of these is a proof. Theorem 10 itself, with `R_S(M)`, is unconditional.
 
 ## What the audit found
 
@@ -112,7 +115,7 @@ These are the theorems of the Challenge, [`palomar/Gusfield2007/Challenge.lean`]
 
 ## Palomar
 
-No submission to Palomar is planned. [`palomar/Gusfield2007/`](palomar/Gusfield2007) has the files of an entry: the Challenge, the Solution, [`comparator.json`](palomar/Gusfield2007/comparator.json), which names them and the 38 theorems, and [`formalization.yaml`](palomar/Gusfield2007/formalization.yaml), the entry's metadata, with the statements aligned to the Challenge's theorems and every divergence from the paper. Comparator checks that the Solution proves exactly the Challenge's statements: from the repository root, after `lake build`, run [`scripts/check_kernels.sh`](scripts/check_kernels.sh). The Challenge imports the library's definitions rather than restating them in Mathlib's vocabulary, which Palomar requires of a submission: that would need the definitions its statements use, from [`Gusfield2007/Defs.lean`](Gusfield2007/Defs.lean) and beyond, in a block that the Challenge copies, with the bridges to the library's.
+No submission to Palomar is planned. [`palomar/Gusfield2007/`](palomar/Gusfield2007) has the files of an entry: the Challenge, which imports only Mathlib, the Solution, [`comparator.json`](palomar/Gusfield2007/comparator.json), which names them and the 15 theorems, and [`formalization.yaml`](palomar/Gusfield2007/formalization.yaml), the entry's metadata, with the statements aligned to the Challenge's theorems and every divergence from the paper. Comparator checks that the Solution proves exactly the Challenge's statements: from the repository root, after `lake build`, run [`scripts/check_kernels.sh`](scripts/check_kernels.sh). CI checks that the Challenge's copy of the definitions is the block of [`Gusfield2007/Defs.lean`](Gusfield2007/Defs.lean) (`python3 scripts/sync_challenge_defs.py --check`).
 
 ## Building
 
@@ -135,12 +138,14 @@ python3 scripts/linkify_docs.py                                      # the docum
 
 | Folder | Content |
 | --- | --- |
-| [`Gusfield2007/`](Gusfield2007) | The paper's library, on sequence-labelled networks, in the namespace [`Gusfield2007`](Gusfield2007); [its README](Gusfield2007/README.md) lists the modules |
-| [`Gusfield2007/External/`](Gusfield2007/External) | The cited results, one directory per source, in the namespaces `External.<Source>`; [its README](Gusfield2007/External/README.md) lists them |
-| [`Gusfield2007/Basic/`](Gusfield2007/Basic) | General mathematics: none yet |
+| [`Gusfield2007/`](Gusfield2007) | The Lean code; [its README](Gusfield2007/README.md) lists the modules by section of the paper |
+| [`Gusfield2007/Basic/`](Gusfield2007/Basic) | General mathematics, in Mathlib's namespaces; [its README](Gusfield2007/Basic/README.md) says where each part could go |
+| [`Gusfield2007/External/`](Gusfield2007/External) | The cited results, one directory per source, in the namespaces `External.<Source>`; [its README](Gusfield2007/External/README.md) lists them and the definitions they share with the paper's library |
+| [`Gusfield2007/Defs.lean`](Gusfield2007/Defs.lean), [`Gusfield2007/Networks/`](Gusfield2007/Networks) | The definitions, and the facts about networks that the sources and the paper's library share |
+| [`Gusfield2007/ProofOfDecomposition/`](Gusfield2007/ProofOfDecomposition), [`Gusfield2007/Applications/`](Gusfield2007/Applications), [`Gusfield2007/OptimalityConjectures/`](Gusfield2007/OptimalityConjectures) | The paper's library, by its Sections 3, 4 and 5, in the namespace [`Gusfield2007`](Gusfield2007) |
 | [`palomar/Gusfield2007/`](palomar/Gusfield2007) | The Challenge, the Solution, the Comparator configuration and the metadata |
 | [`docs/Gusfield2007/`](docs/Gusfield2007) | [The report](docs/Gusfield2007/REPORT.md), [the credits](docs/Gusfield2007/CREDITS.md), the configuration, the routes of the proofs and the hashes of the sources read |
-| [`scripts/`](scripts) | The audit, the route check, the kernels, the links and the tables |
+| [`scripts/`](scripts) | The audit, the route check, the copy of the definitions into the Challenge, the kernels, the links and the tables |
 
 ## Related work
 

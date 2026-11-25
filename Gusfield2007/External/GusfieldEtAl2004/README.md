@@ -59,7 +59,9 @@ Differences from the source (at the head of the file):
 - Lemmas 8.3 and 8.4 are about two leaves with one label. `Derives` is a bijection, and identical rows are one, so they have no counterpart: the graph doesn't change.
 - The unrooted forms aren't in the source. The same proof gives them, since a column with one `1` relative to any sequence is in no incompatibility, and the proof of `lemma8_5` handles the row with the root's pair. Line 381 of 2007 also cites Gusfield 2005, not read.
 
-## `ReducedExists.lean`: Corollary 5.1, Theorem 2.7
+## `ReducedExists.lean` and `GalledTrees/Existence.lean`: Corollary 5.1, Theorem 2.7
+
+The pieces (`gallNet`, `exists_gall_piece`) are in `ReducedExists.lean`. Their gluing uses the construction of Theorem 1 of 2007, so it and the results that rest on it are in the paper's library, in `Gusfield2007/ProofOfDecomposition/GalledTrees/Existence.lean`, under the names below.
 
 `exists_isReducedGalledTree` is Corollary 5.1, `corollary5_1_min` its minimum, `theorem2_7` the first sentence of Theorem 2.7, `RS_eq_card_cent` the value of `R_S`, `sMinDecomposable_of_isGalledTree` line 381 for any galled tree with that ancestral sequence. The hypothesis is the source's that each column has a `1`.
 
@@ -67,7 +69,9 @@ Departure from the source: it moves unconflicted sites off the galls one at a ti
 
 The proof of Theorem 2.7 in the source replaces a gall by a perfect phylogeny of "the sequences labeling the nodes on `Q`". Those can conflict when no row shows it: a gall whose only leaf is below the recombination node.
 
-## `ReducedUnrooted.lean`: line 180 of 2007, unrooted
+## `ReducedUnrooted.lean` and `GalledTrees/Unrooted.lean`: line 180 of 2007, unrooted
+
+The three results below rest on the gluing, and are in `Gusfield2007/ProofOfDecomposition/GalledTrees/Unrooted.lean`; the turning of arcs and the choice of the root are in `ReducedUnrooted.lean`.
 
 `exists_isReducedGalledTree_incompatGraph` is line 180 for `G(M)`, `minDecomposable_of_isGalledTree` line 381 for any galled tree, `R_eq_card_cent` the value of `R`. Not in the source, which leaves this case to a "future paper"; Gusfield 2005 wasn't read. The new root is a row off the recombination nodes of the galls with incompatibilities (`exists_leaf_avoiding`), and a gall is rooted at another node by turning arcs (`exists_turned`).
 
@@ -83,13 +87,15 @@ Departure from the source: the algorithm doesn't call this theorem. The source r
 
 `galledDecide S M` is a computable function (it runs under `#eval`) that returns the answer and the number of operations: the conflict graph (`conflictOps`, `edgesOps`), its components (`labOf`), and the Site-Arrangement Algorithm on each non-trivial one (`candidate`, `compTest`).
 
-- `galledDecide_iff`: it says `true` exactly when `M` has a galled tree with ancestral sequence `S` and single crossovers. Hypotheses: there are rows, and each column has a `1`, the source's standing assumptions.
-- `exists_reduced_of_decide`: when it says `true`, a reduced galled tree exists. `Build.lean` returns one.
+- `galledDecide_iff` (in `Gusfield2007/ProofOfDecomposition/GalledTrees/Decide.lean`, since it rests on the gluing): it says `true` exactly when `M` has a galled tree with ancestral sequence `S` and single crossovers. Hypotheses: there are rows, and each column has a `1`, the source's standing assumptions.
+- `exists_reduced_of_decide` (also in `GalledTrees/Decide.lean`): when it says `true`, a reduced galled tree exists. `Build.lean` returns one.
 - `galledDecide_ops_le`: at most `51 (n + m + 1)⁵` operations. This isn't the source's `O(nm + n³)`: the function compares all pairs of rows where the source cites an `O(n |C|)` perfect phylogeny test. The bound is in `n` and `m`, so `m ≤ 2n`, which the source cites from Wang et al. 2001, isn't needed and isn't proved.
 
 It says `true` on the rows of the source's Figure 2 and `false` on those of its Figure 4, as the source says. Differences from the source: the recombination point is tried rather than read from the bipartition of Lemma 3.1, and the decision doesn't need Sections 4 and 6.
 
-## `Build.lean`: the reduced galled tree, computed
+## `Build.lean` and `GalledTrees/Build.lean`: the reduced galled tree, computed
+
+`galledBuild` and its pieces are in `Build.lean`. Its correctness uses `trichotomy`, Theorem 2 of 2007 (line 212), so `trichotomy`, the network `gNet` and the facts about it, `galledBuild_isSome_iff` and `galledBuild_correct` are in the paper's library, in `Gusfield2007/ProofOfDecomposition/GalledTrees/Build.lean`.
 
 `galledBuild S M` is a computable function (it runs under `#eval`). It returns `none` exactly when there is no galled tree (`galledBuild_isSome_iff`), and otherwise a table of nodes, parents and labels, and the node below each site's arc. `galledBuild_correct` says that the table is that of `gNet`, a network that derives `M`, with ancestral sequence `S`, single crossovers, and is a reduced galled tree. On the rows of the source's Figure 2 it returns two galls: the first in the arrangement of the source's Figure 9, with recombination node `10010`, which is another arrangement of the gall of its Figures 2 and 6, and the second below the node `00100` of the first, as in Figure 2. On the rows of Figure 4 it returns `none`.
 
