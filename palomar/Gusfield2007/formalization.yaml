@@ -111,7 +111,7 @@ sources:
 related_formalizations:
   - id: "https://github.com/vltanh/lean4-phylogenetics"
     relationship: "adapts"
-    note: "The project imports two modules of this library, pinned at commit b56ce53: Phylogenetics.Tree.SplitsEquivalence, the Splits Equivalence Theorem, and Phylogenetics.Tree.XTree, what it needs about X-trees. Both import Mathlib only. The rest of the code imports Mathlib only."
+    note: "The project imports two modules of this library, pinned at commit 1d73084: Phylogenetics.Tree.SplitsEquivalence, the Splits Equivalence Theorem, and Phylogenetics.Tree.XTree, what it needs about X-trees. Both import Mathlib only. The rest of the code imports Mathlib only."
   - id: "https://github.com/vltanh/lean4-camus"
     relationship: "independent"
     note: "Surveyed; no code used."
