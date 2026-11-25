@@ -21,6 +21,10 @@ jobs:
           df -h /
       - uses: actions/checkout@v7
       - uses: leanprover/lean-action@v1
+      # `lake build` builds only the modules of Phylogenetics that this repository imports; the
+      # documents link to others, whose locations the link check reads from their `.ilean` files.
+      - name: Build the library that the documents link to
+        run: lake build Phylogenetics
       # The audit sees a module's proofs only through its own `import all` line: every module of
       # Gusfield2007/ (External/ and the paper's library) and the paper's Solution in palomar/, but
       # not the Challenge, which holds a copy of the definitions of Gusfield2007/Defs.lean. It also
