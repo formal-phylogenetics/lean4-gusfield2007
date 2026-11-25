@@ -1,8 +1,8 @@
 name = "Gusfield2007"
 version = "0.1.0"
 keywords = ["math", "phylogenetics", "recombination"]
-srcDir = "src"
-defaultTargets = ["Gusfield2007", "External", "MainResults"]
+description = "A Lean 4 formalization of Gusfield, Bansal, Bafna, Song 2007, A decomposition theory for phylogenetic networks and incompatible characters"
+defaultTargets = ["Gusfield2007", "Palomar"]
 
 [leanOptions]
 pp.unicode.fun = true
@@ -14,18 +14,27 @@ name = "mathlib"
 scope = "leanprover-community"
 rev = "v4.37.0-rc1"
 
+# The root of the collection: the shared library of phylogenetics.
 [[require]]
 name = "Phylogenetics"
 git = "https://github.com/vltanh/lean4-phylogenetics"
 rev = "b56ce531644230622f069aaa8aa51a5143c1411e"
 
+# Every module of the project is in Gusfield2007/, but its Challenge and its Solution, which are in
+# palomar/ (lean4-phylogenetics, docs/CONVENTIONS.md, Sections 2 and 3).
+
+# The paper's library, in the namespace Gusfield2007: the results the paper cites in
+# Gusfield2007/External/, in the namespaces External.<Source>, the definitions of the statements in
+# Gusfield2007/Defs.lean, and the paper's sections.
 [[lean_lib]]
 name = "Gusfield2007"
 globs = ["Gusfield2007.+"]
 
+# The paper's Challenge and Solution, the modules Gusfield2007.Challenge and Gusfield2007.Solution
+# of the source directory palomar/ (Comparator: palomar/Gusfield2007/comparator.json). Declared
+# last: Lake gives a module to the last library whose patterns match it, and the glob above matches
+# these names.
 [[lean_lib]]
-name = "External"
-globs = ["External.+"]
-
-[[lean_lib]]
-name = "MainResults"
+name = "Palomar"
+srcDir = "palomar"
+roots = ["Gusfield2007.Challenge", "Gusfield2007.Solution"]

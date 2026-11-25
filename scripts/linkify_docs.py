@@ -7,7 +7,8 @@ name. A declaration or module of the library `Phylogenetics` links to its line o
 commit that `lake-manifest.json` pins. A code span that names a module of the pinned Mathlib links
 to the module's page in Mathlib's documentation. Existing links are kept, except links to a line of a Lean file and
 links to the page of a Mathlib module, which are recomputed: running the script after editing
-the code brings them up to date. Fenced code blocks, headings and table headers are left
+the code brings them up to date. Private files (`NEXT.md`, `notes/`, and anything git ignores) are
+never linked, and existing links to them are removed, since they are not published. Fenced code blocks, headings and table headers are left
 alone, and the text of a link may run over several lines of a paragraph.
 
 Run from the repository root, after `lake build`:
@@ -19,7 +20,8 @@ The declaration locations come from the `.ilean` files that `lake build` writes.
 
 Configure the block below for the project: the documents to process, the namespaces in which the
 documents name declarations without their prefix, the top-level module names of the project, and
-the module whose declarations win when a name is declared twice (the main results).
+the module whose declarations win when a name is declared twice (the Challenge, whose theorems
+the Solution restates).
 """
 
 import argparse
@@ -32,26 +34,52 @@ from pathlib import Path
 
 # ---- configuration -------------------------------------------------------------------------
 # The Markdown documents to process.
-DOCS = ['README.md', 'REPORT.md', 'docs/CREDITS.md']
-# Namespaces in which the documents name declarations without their prefix, most specific last.
-NAMESPACES = ['Gusfield2007', 'External', 'SempleSteel2003', 'Gusfield1991', 'GusfieldEtAl2004', 'MyersGriffiths2003',
-              'HudsonKaplan1985', 'SongHein2005', 'Phylogenetics', 'Phylogenetics.SplitsEquivalence', 'MainResults']
-# Top-level module names of the project: a code span naming such a module links to its file.
-MODULE_ROOTS = ('Gusfield2007', 'External', 'MainResults')
-# The module whose declarations win when a name is declared in several modules.
-PREFERRED_MODULE = 'MainResults'
-# Directories, besides the repository root, against which the paths in the documents of a
-# given directory are resolved.
-PATH_BASES = {'': ['src', '.github/workflows'], 'docs': ['src', 'docs', '.github/workflows'],
-}
-# The directory of the project's modules.
-SRC_DIR = 'src'
+DOCS = ['README.md', 'docs/Gusfield2007/REPORT.md', 'docs/Gusfield2007/CREDITS.md']
+# Namespaces in which the documents name declarations without their prefix: the paper's library,
+# the sources it cites, the library `Phylogenetics`, then the Challenge.
+NAMESPACES = ['Gusfield2007', 'External', 'External.SempleSteel2003', 'External.Gusfield1991',
+              'External.GusfieldEtAl2004', 'External.MyersGriffiths2003', 'External.HudsonKaplan1985',
+              'External.SongHein2005', 'Phylogenetics', 'Phylogenetics.SplitsEquivalence',
+              'Gusfield2007Challenge']
+# With several papers in one repository: the namespaces of the documents in each top-level
+# directory, tried before `NAMESPACES` (formalize-math-paper, references/multi-paper.md).
+NAMESPACES_BY_DIR = {}
+# Top-level module names of the project: a code span naming such a module links to its file. Every
+# module is under `Gusfield2007`: the library's and the Challenge and the Solution.
+MODULE_ROOTS = ('Gusfield2007',)
+# The module whose declarations win when a name is declared in several modules: the Challenge,
+# whose theorems the Solution restates.
+PREFERRED_MODULE = 'Gusfield2007.Challenge'
+# The source directory of each module root whose `lean_lib` has a `srcDir` other than the
+# repository root: the Challenge and the Solution are in `palomar/`. A module is looked for in its
+# root's source directory first, then at the repository root.
+SOURCE_DIRS = {'Gusfield2007': 'palomar'}
+# Directories, besides the document's own and the repository root, against which the paths in the
+# documents of a given directory are resolved.
+PATH_BASES = {'': ['.github/workflows', 'docs/Gusfield2007', 'palomar/Gusfield2007'],
+              'docs/Gusfield2007': ['palomar/Gusfield2007']}
+# Paths that are never linked, whether or not git ignores them: the private follow-up notes, which
+# are not published. Any other path that git ignores is not linked either.
+PRIVATE = ('NEXT.md', 'notes')
 # The library that this project requires, and where its source is published.
 LIBRARY = 'Phylogenetics'
 LIBRARY_URL = 'https://github.com/vltanh/lean4-phylogenetics/blob/'
 # ---------------------------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def private(path):
+    """Whether `path` (relative to the repository root) must not be linked: a private document
+    (`PRIVATE`), or a file that git ignores (notes, build outputs). Such files are not published,
+    so a link to them would be broken in the repository."""
+    import subprocess
+    parts = Path(os.path.normpath(path)).parts
+    # `NEXT.md` is private in any directory (each paper of a multi-paper repository has one).
+    if any(part in PRIVATE for part in parts) or os.path.normpath(path) in PRIVATE:
+        return True
+    return subprocess.run(['git', 'check-ignore', '-q', path], cwd=ROOT).returncode == 0
+
 BUILD = ROOT / '.lake' / 'build' / 'lib' / 'lean'
 MATHLIB = ROOT / '.lake' / 'packages' / 'mathlib'
 DOCS_URL = 'https://leanprover-community.github.io/mathlib4_docs/'
@@ -76,13 +104,16 @@ def warn(message):
     print('warning: ' + message, file=sys.stderr)
 
 
-def git_ignores(path):
-    """Whether git ignores `path`: a local file that the repository doesn't have, and so can't link to."""
-    return subprocess.run(['git', 'check-ignore', '-q', path], cwd=ROOT).returncode == 0
-
-
 def module_file(module):
-    return SRC_DIR + '/' + '/'.join(module.split('.')) + '.lean'
+    """The file of `module`, relative to the repository root: in the source directory of its root
+    (`SOURCE_DIRS`) when the file is there, otherwise at the repository root. Both hold modules of
+    one root when the root is a paper's name (`PaperName.Challenge` in `palomar/`,
+    `PaperName.Basic.X` at the root)."""
+    path = '/'.join(module.split('.')) + '.lean'
+    base = SOURCE_DIRS.get(module.split('.')[0])
+    if base and (ROOT / base / path).is_file():
+        return base + '/' + path
+    return path
 
 
 def library_source():
@@ -100,45 +131,79 @@ def library_url(module, rev, line=None):
     return url if line is None else '%s#L%d' % (url, line)
 
 
+def dir_namespaces(doc_dir):
+    """The namespaces of `NAMESPACES_BY_DIR` for a document in `doc_dir`: those of the longest
+    configured directory that contains it."""
+    best = None
+    for d in NAMESPACES_BY_DIR:
+        if (doc_dir == d or doc_dir.startswith(d + '/')) and (best is None or len(d) > len(best)):
+            best = d
+    return NAMESPACES_BY_DIR[best] if best is not None else []
+
+
 def mathlib_page(module):
     """The page of a Mathlib module in Mathlib's documentation, or None for another name."""
     return DOCS_URL + module.replace('.', '/') + '.html' if module.startswith('Mathlib.') else None
 
 
 def load_locations():
-    """Each declaration's module and the line of its name, read from the `.ilean` files."""
-    locations, preferred = {}, {}
-    # The library first: a declaration of this project wins over one of the library.
+    """Each declaration's module and the line of its name, read from the `.ilean` files, and the
+    address on GitHub of each declaration of the library."""
+    locations, preferred, rank, urls = {}, {}, {}, {}
     checkout, rev = library_source()
-    build = checkout / '.lake' / 'build' / 'lib' / 'lean'
-    for ilean in sorted(build.rglob('*.ilean')):
+    for ilean in sorted((checkout / '.lake' / 'build' / 'lib' / 'lean').rglob('*.ilean')):
         data = json.loads(ilean.read_text(encoding='utf-8'))
         for name, ranges in data.get('decls', {}).items():
-            locations[name] = (data['module'], ranges[4] + 1, library_url(data['module'], rev, ranges[4] + 1))
+            locations[name] = (data['module'], ranges[4] + 1)
+            urls[name] = library_url(data['module'], rev, ranges[4] + 1)
     for ilean in sorted(BUILD.rglob('*.ilean')):
         data = json.loads(ilean.read_text(encoding='utf-8'))
         # A restored build cache keeps the outputs of deleted modules; skip them.
         if not (ROOT / module_file(data['module'])).is_file():
             continue
         # The preferred module's declarations win over restatements elsewhere.
-        target = preferred if data['module'].split('.')[0] == PREFERRED_MODULE else locations
+        preferred_modules = ((PREFERRED_MODULE,) if isinstance(PREFERRED_MODULE, str)
+                             else tuple(PREFERRED_MODULE))
         for name, ranges in data.get('decls', {}).items():
+            urls.pop(name, None)
             # `ranges` holds the declaration's range, then its name's; lines count from 0.
-            target[name] = (data['module'], ranges[4] + 1, None)
+            location = (data['module'], ranges[4] + 1)
+            if data['module'] not in preferred_modules:
+                locations[name] = location
+                continue
+            # Among the preferred modules, the first one that declares the name wins.
+            index = preferred_modules.index(data['module'])
+            if index <= rank.get(name, index):
+                preferred[name], rank[name] = location, index
     locations.update(preferred)
     if not locations:
         sys.exit('no .ilean files under %s; run `lake build` first' % BUILD)
-    return locations
+    return locations, urls
 
 
 class Linker:
-    def __init__(self, locations):
+    def __init__(self, locations, urls):
         self.locations = locations
+        self.urls = urls
 
-    def declaration(self, name):
+    def place(self, name):
+        """The link target of the declaration `name`: its line in this repository, or its address
+        in the library."""
+        if name in self.urls:
+            return self.urls[name]
+        module, line = self.locations[name]
+        return '%s#L%d' % (module_file(module), line)
+
+    def declaration(self, name, doc_dir=''):
         candidates = [name]
         # Short names such as `U` or `h` are variables, not declarations.
         if len(name) >= 4:
+            own = [ns + '.' + name for ns in dir_namespaces(doc_dir)]
+            # The directory's namespaces in order: the first that declares the name wins (the
+            # library's before the Challenge's, whose Solution restates its theorems).
+            own_hits = [c for c in own if c in self.locations]
+            if name not in self.locations and own_hits:
+                return self.place(own_hits[0])
             candidates += [ns + '.' + name for ns in NAMESPACES]
         hits = [c for c in candidates if c in self.locations]
         if not hits:
@@ -146,34 +211,35 @@ class Linker:
         if hits[0] != name and len(hits) > 1:
             warn('`%s` is ambiguous: %s' % (name, ', '.join(hits)))
             return None
-        module, line, url = self.locations[hits[0]]
-        return url or '%s#L%d' % (module_file(module), line)
+        return self.place(hits[0])
 
     def target(self, text, doc_dir):
         """The repository path or URL that `text` names, or None."""
         path = text.rstrip('/')
         if path and not path.startswith(('/', '.')) and ' ' not in path:
-            for base in [''] + PATH_BASES.get(doc_dir, []):
+            # A document's own directory comes first: `REPORT.md` in `docs/PaperA/README.md` is
+            # `docs/PaperA/REPORT.md`.
+            for base in ([doc_dir] if doc_dir else []) + [''] + PATH_BASES.get(doc_dir, []):
                 candidate = os.path.normpath(os.path.join(base, path))
-                if (ROOT / candidate).exists() and not git_ignores(candidate):
+                if (ROOT / candidate).exists() and not private(candidate):
                     return candidate
         if not IDENT.match(text):
             return None
-        if text.split('.')[0] in MODULE_ROOTS:
-            if (ROOT / module_file(text)).is_file():
-                return module_file(text)
         if text.startswith(LIBRARY + '.'):
             checkout, rev = library_source()
             if (checkout / ('/'.join(text.split('.')) + '.lean')).is_file():
                 return library_url(text, rev)
+        if text.split('.')[0] in MODULE_ROOTS:
+            if (ROOT / module_file(text)).is_file():
+                return module_file(text)
         if text.startswith('Mathlib.'):
             # Only a module of the pinned Mathlib has a page; a proposed module has none.
-            if (MATHLIB / ('/'.join(text.split('.')) + '.lean')).is_file():
+            if (MATHLIB / module_file(text)).is_file():
                 return mathlib_page(text)
             return None
         if text in CORE:
             return DOCS_URL + CORE[text].replace('.', '/') + '.html#' + text
-        return self.declaration(text)
+        return self.declaration(text, doc_dir)
 
     def link(self, text, doc_dir):
         """The link target for `text` in a document of `doc_dir`, or None."""
@@ -192,12 +258,18 @@ class Linker:
             dest = old[1:-1] if old.startswith('<') else old
             recompute = LINE_LINK.match(dest) or dest == mathlib_page(text) or dest.startswith(LIBRARY_URL) or (
                 not dest.startswith(('http:', 'https:', 'mailto:', '#'))
-                and not (ROOT / doc_dir / dest.partition('#')[0]).exists())
+                and (not (ROOT / doc_dir / dest.partition('#')[0]).exists()
+                     or private(os.path.join(doc_dir, dest.partition('#')[0]))))
             if not recompute:
                 return match.group(0)
             new = self.link(text, doc_dir)
             if new is None:
-                warn('%s: `%s` names nothing any more; its link is removed' % (doc, text))
+                local = dest.partition('#')[0]
+                if (local and not dest.startswith(('http:', 'https:', 'mailto:'))
+                        and private(os.path.join(doc_dir, local))):
+                    warn('%s: `%s` is private (not published); its link is removed' % (doc, text))
+                else:
+                    warn('%s: `%s` names nothing any more; its link is removed' % (doc, text))
                 return '`%s`' % text
             return '[`%s`](%s)' % (text, new)
         if span is not None:
@@ -255,7 +327,7 @@ def main():
     parser.add_argument('docs', nargs='*', help='Markdown files (default: %s)' % ', '.join(DOCS))
     args = parser.parse_args()
     docs = [os.path.relpath(os.path.abspath(d), ROOT) for d in args.docs] or DOCS
-    linker = Linker(load_locations())
+    linker = Linker(*load_locations())
     changed = []
     for doc in docs:
         new = linker.rewrite(doc)
