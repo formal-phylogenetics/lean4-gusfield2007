@@ -98,7 +98,7 @@ The statements of record are the theorems of the Challenge, [`palomar/Gusfield20
 | Gusfield, Eddhu, Langley 2004, Corollary 2.1, is false in one direction | E76 |
 | Misprints in the paper, gaps and a misprint in the sources, and one unchecked point on Klöpper's thesis | E54, E77–E79, E85 |
 
-[Section 3 of the report](docs/Gusfield2007/REPORT.md#3-errors-and-gaps-in-the-paper) gives each finding with its location, the paper's sentence, a Lean counterexample and the repair; [Sections 4 and 5](docs/Gusfield2007/REPORT.md#4-missing-hypotheses) give the missing and the redundant hypotheses. The numbers are those that the findings have across the papers of [lean4-tob](https://github.com/vltanh/lean4-tob), where this formalization was made. The proofs follow the paper's arguments, except the departures in [Section 7 of the report](docs/Gusfield2007/REPORT.md#7-departures-from-the-papers-proofs), each with what the paper does, what Lean does and why.
+[Section 3 of the report](docs/Gusfield2007/REPORT.md#3-errors-and-gaps-in-the-paper) gives each finding with its location, the paper's sentence, a Lean counterexample and the repair; [Sections 4 and 5](docs/Gusfield2007/REPORT.md#4-missing-hypotheses) give the missing and the redundant hypotheses. The numbers are those that the findings have across the papers of [lean4-phylo-tree-of-blobs](https://github.com/vltanh/lean4-phylo-tree-of-blobs), where this formalization was made. The proofs follow the paper's arguments, except the departures in [Section 7 of the report](docs/Gusfield2007/REPORT.md#7-departures-from-the-papers-proofs), each with what the paper does, what Lean does and why.
 
 ## Trust
 
@@ -164,7 +164,7 @@ How much does full decomposition cost? Theorem 11 says `F¹ − R¹` is unbounde
 
 - Requested and supervised by The-Anh Vu-Le, who chose the paper and decided the layout, the kernels and publication. **No person has reviewed the proofs.**
 - Statements, proofs, audit and documents by Claude (Opus 5.5) in Claude Code, with sub-agents, following the [formalize-math-paper](https://github.com/vltanh/formalize-math-paper) procedure.
-- Made in [lean4-tob](https://github.com/vltanh/lean4-tob) from 2026-10-31 to 2026-11-01, in two rounds shared with other papers. [`docs/Gusfield2007/CREDITS.md`](docs/Gusfield2007/CREDITS.md) has the details.
+- Made in [lean4-phylo-tree-of-blobs](https://github.com/vltanh/lean4-phylo-tree-of-blobs) from 2026-10-31 to 2026-11-01, in two rounds shared with other papers. [`docs/Gusfield2007/CREDITS.md`](docs/Gusfield2007/CREDITS.md) has the details.
 
 ## License
 

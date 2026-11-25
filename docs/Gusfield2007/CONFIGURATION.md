@@ -1,7 +1,7 @@
 # Formalization configuration
 
 The configuration of the collection where this formalization was made is in
-[lean4-tob's `docs/CONFIGURATION.md`](https://github.com/vltanh/lean4-tob/blob/47250e1/docs/CONFIGURATION.md), at its last commit before the move; what concerns this paper is below.
+[lean4-phylo-tree-of-blobs's `docs/CONFIGURATION.md`](https://github.com/vltanh/lean4-phylo-tree-of-blobs/blob/47250e1/docs/CONFIGURATION.md), at its last commit before the move; what concerns this paper is below.
 
 ## Sources of record
 

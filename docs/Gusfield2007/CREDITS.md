@@ -1,8 +1,8 @@
 # Credits
 
-How this formalization was made. It was made in [lean4-tob](https://github.com/vltanh/lean4-tob), a collection of
+How this formalization was made. It was made in [lean4-phylo-tree-of-blobs](https://github.com/vltanh/lean4-phylo-tree-of-blobs), a collection of
 formalizations on the tree of blobs of phylogenetic networks, and moved to this repository on 2026-11-04.
-[That repository's credits](https://github.com/vltanh/lean4-tob/blob/47250e1/docs/CREDITS.md), at its last commit before the move, record every round in full, with the figures
+[That repository's credits](https://github.com/vltanh/lean4-phylo-tree-of-blobs/blob/47250e1/docs/CREDITS.md), at its last commit before the move, record every round in full, with the figures
 of each.
 
 ## Who
