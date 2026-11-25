@@ -25,9 +25,6 @@ universe u v w
 
 variable {ι : Type u} {G : SimpleGraph ι}
 
-/-- The non-trivial components of `G`. -/
-abbrev Cent (G : SimpleGraph ι) : Type u := {c : G.ConnectedComponent // c.supp.Nontrivial}
-
 /-- The data for gluing: a rooted tree on `W`, its central nodes, the labels of its nodes, the nodes from which edges leave a network `P C`, and the edge of `W` for each site
 out of the non-trivial components. -/
 structure GlueData {Vp Ep : Cent G → Type w} (P : ∀ C : Cent G, Network C.1.supp (Vp C) (Ep C)) (W : Type v) where

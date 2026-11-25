@@ -2,7 +2,7 @@ module
 
 public import Gusfield2007.External.GusfieldEtAl2004.Elimination
 public import Gusfield2007.External.GusfieldEtAl2004.GalledTree
-public import Gusfield2007.Decomposition
+public import Gusfield2007.External.Gusfield1991.Existence
 public import Gusfield2007.Basic.Combinatorics.SimpleGraph.Connectivity
 
 /-!

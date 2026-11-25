@@ -32,6 +32,7 @@ import all Gusfield2007.EntryNet
 import all Gusfield2007.EvenRows
 import all Gusfield2007.Examples
 import all Gusfield2007.ExplicitNetworks
+import all Gusfield2007.External.Gusfield1991.Existence
 import all Gusfield2007.External.Gusfield1991.PerfectPhylogeny
 import all Gusfield2007.External.GusfieldEtAl2004.Algorithm
 import all Gusfield2007.External.GusfieldEtAl2004.Build
@@ -66,6 +67,10 @@ import all Gusfield2007.Figure6
 import all Gusfield2007.Figure8
 import all Gusfield2007.FiniteNets
 import all Gusfield2007.GalledNetworks
+import all Gusfield2007.GalledTreeBuild
+import all Gusfield2007.GalledTreeDecide
+import all Gusfield2007.GalledTreeExistence
+import all Gusfield2007.GalledTreeUnrooted
 import all Gusfield2007.GlueNet
 import all Gusfield2007.Histories
 import all Gusfield2007.Hub

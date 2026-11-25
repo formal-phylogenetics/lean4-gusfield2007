@@ -1,7 +1,7 @@
 module
 
 public import Gusfield2007.External.GusfieldEtAl2004.Algorithm
-public import Gusfield2007.External.GusfieldEtAl2004.Build
+public import Gusfield2007.GalledTreeBuild
 public import Gusfield2007.External.GusfieldEtAl2004.BuildCount
 public import Gusfield2007.External.GusfieldEtAl2004.Elimination
 public import Gusfield2007.External.GusfieldEtAl2004.GalledTree

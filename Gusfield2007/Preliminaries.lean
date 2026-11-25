@@ -774,4 +774,23 @@ theorem RS_map_orderIso {ι' : Type u} [LinearOrder ι'] (e : ι ≃o ι') (c : 
 
 end Counts
 
+section Components
+
+variable {ι : Type*}
+
+/-- A site of a non-trivial component is incompatible with some site. -/
+theorem exists_incompatible_of_nontrivial {M : Finset (ι → Bool)} {c : (incompatGraph M).ConnectedComponent}
+    (hc : c.supp.Nontrivial) {i : ι} (hi : i ∈ c.supp) : ∃ k, Incompatible M i k := by
+  obtain ⟨j, hj, hij⟩ := hc.exists_ne i
+  exact SimpleGraph.Reachable.exists_adj_of_ne (SimpleGraph.ConnectedComponent.exact (hi.trans hj.symm)) hij.symm
+
+end Components
+
+namespace Decomp
+
+/-- The non-trivial components of `G`. -/
+abbrev Cent {ι : Type u} (G : SimpleGraph ι) : Type u := {c : G.ConnectedComponent // c.supp.Nontrivial}
+
+end Decomp
+
 end Gusfield2007

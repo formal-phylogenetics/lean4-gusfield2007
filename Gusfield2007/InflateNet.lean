@@ -1,6 +1,6 @@
 module
 
-public import Gusfield2007.DecompNet
+public import Gusfield2007.Blobs
 public import Mathlib.Data.Fintype.Sort
 public import Mathlib.Basic.Finite.Prod
 public import Mathlib.Basic.Finite.Sum

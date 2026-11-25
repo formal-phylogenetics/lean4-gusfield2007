@@ -1,5 +1,6 @@
 module
 
+public import Gusfield2007.ExplicitNetworks
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Data.List.GetD
@@ -14,9 +15,6 @@ from 0 here. They are computable, with no classical instance, so that facts abou
 @[expose] public section
 
 namespace Gusfield2007
-
-/-- A row, from its bits. -/
-def ofBits {m : ℕ} (l : List ℕ) : Fin m → Bool := fun i => l.getD i 0 == 1
 
 /-- The matrix of Figures 1, 2 and 3: the rows `a, b, c, d, e, f, g`. -/
 def fig1 : Finset (Fin 5 → Bool) :=

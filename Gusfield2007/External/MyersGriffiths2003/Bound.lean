@@ -1,6 +1,6 @@
 module
 
-public import Gusfield2007.Decomposition
+public import Gusfield2007.External.Gusfield1991.Existence
 public import Gusfield2007.NetworkOps
 
 /-!

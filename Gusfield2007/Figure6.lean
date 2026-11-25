@@ -1,5 +1,6 @@
 module
 
+public import Gusfield2007.Examples
 public import Gusfield2007.Components
 public import Gusfield2007.External.HudsonKaplan1985.Bound
 public import Gusfield2007.Basic.Data.Finset

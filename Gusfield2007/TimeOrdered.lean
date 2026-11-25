@@ -1,6 +1,8 @@
 module
 
-public import Gusfield2007.Examples
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.List.GetD
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Fintype.Powerset

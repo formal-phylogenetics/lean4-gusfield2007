@@ -1,5 +1,6 @@
 module
 
+public import Gusfield2007.Decomposition
 public import Gusfield2007.MdMatrix
 public import Gusfield2007.Figure6
 public import Gusfield2007.Figure10

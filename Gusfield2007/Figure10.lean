@@ -1,5 +1,6 @@
 module
 
+public import Gusfield2007.Examples
 public import Gusfield2007.External.SongHein2005.Bound
 public import Gusfield2007.Basic.Data.Finset
 

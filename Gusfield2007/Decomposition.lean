@@ -2,7 +2,7 @@ module
 
 public import Gusfield2007.Blobs
 public import Gusfield2007.SuperCharacters
-public import Gusfield2007.InflateNet
+public import Gusfield2007.External.Gusfield1991.Existence
 public import Gusfield2007.TBarFrame
 public import Gusfield2007.External.GusfieldEtAl2004.SameBlob
 
@@ -55,26 +55,6 @@ theorem exists_inflate_piece (c : Crossover) {M : Finset (ι → Bool)} (C : Dec
   have : Fintype C.1.supp := Fintype.ofFinite _
   have hnt : Nontrivial C.1.supp := Set.nontrivial_coe_sort.2 C.2
   exact inflate c (Fintype.one_lt_card_iff_nontrivial.2 hnt) _ h₃ _
-
-/-- The minimum `RS c S M` is over a nonempty set when `M` is nonempty. -/
-theorem rootedRecombSet_nonempty (c : Crossover) (S : ι → Bool) {M : Finset (ι → Bool)} (hM : M.Nonempty) :
-    {k | ∃ (a b : ℕ) (N : Network ι (Fin a) (Fin b)), N.Obeys c ∧ N.Derives M ∧ N.ancestral = S ∧
-      N.recombCount = k}.Nonempty := by
-  have : Fintype ι := Fintype.ofFinite ι
-  by_cases hι : IsEmpty ι
-  · obtain ⟨a, b, N, hr, hd, hs, -⟩ := External.Gusfield1991.exists_network_of_no_conflict M S hM (fun i => hι.elim i) (fun i => hι.elim i)
-    exact ⟨_, a, b, N, Network.obeys_of_tgt_injective (Network.tgt_injective_of_no_recomb hr) c, hd, hs, rfl⟩
-  · have hcard : 1 ≤ Fintype.card ι := by
-      rw [not_isEmpty_iff] at hι
-      exact Fintype.card_pos
-    obtain ⟨a, b, N, h₁, h₂, h₃, -, -⟩ := Decomp.exists_inflate_net c hcard M hM S
-    exact ⟨_, a, b, N, h₁, h₃, h₂, rfl⟩
-
-/-- The minimum `R c M` is over a nonempty set when `M` is nonempty. So `sInf` is the minimum of the paper. -/
-theorem recombSet_nonempty (c : Crossover) {M : Finset (ι → Bool)} (hM : M.Nonempty) :
-    {k | ∃ (a b : ℕ) (N : Network ι (Fin a) (Fin b)), N.Obeys c ∧ N.Derives M ∧ N.recombCount = k}.Nonempty := by
-  obtain ⟨k, a, b, N, h₁, h₂, -, h₄⟩ := rootedRecombSet_nonempty c hM.choose hM
-  exact ⟨k, a, b, N, h₁, h₂, h₄⟩
 
 /-- `R¹_S(M(C_k)) ≥ R¹(M(C_k))` (line 608), and in general `R(M) ≤ R_S(M)`. -/
 theorem R_le_RS (c : Crossover) (S : ι → Bool) {M : Finset (ι → Bool)} (hM : M.Nonempty) : R c M ≤ RS c S M := by

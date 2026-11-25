@@ -1,5 +1,6 @@
 module
 
+public import Gusfield2007.Examples
 public import Gusfield2007.Components
 public import Gusfield2007.SuperCharacters
 

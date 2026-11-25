@@ -3,7 +3,7 @@ module
 public import Gusfield2007.External.HudsonKaplan1985.AlgorithmBound
 public import Gusfield2007.External.MyersGriffiths2003.Algorithm1
 public import Gusfield2007.External.MyersGriffiths2003.Bound
-public import Gusfield2007.Examples
+public import Gusfield2007.ExplicitNetworks
 public import Gusfield2007.Basic.Order.Fin
 
 /-!

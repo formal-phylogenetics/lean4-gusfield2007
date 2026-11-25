@@ -1,7 +1,7 @@
 module
 
 public import Gusfield2007.Preliminaries
-public import Gusfield2007.Examples
+public import Mathlib.Data.List.GetD
 
 /-!
 # Gusfield et al. 2007: explicit networks, from lists of numbers
@@ -15,6 +15,9 @@ label of a vertex is a number, whose bit `i` is the state of the site `i`.
 open scoped Classical
 
 namespace Gusfield2007
+
+/-- A row, from its bits. -/
+def ofBits {m : ℕ} (l : List ℕ) : Fin m → Bool := fun i => l.getD i 0 == 1
 
 namespace Network
 
